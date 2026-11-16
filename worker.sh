@@ -34,7 +34,7 @@ else
     ENCODER=cegar90c CONF=20000 GROW=16 CAD_OPTS= DEADLINE=$(( HARD - 300 )) CUBE_DEPTH=${CUBE_DEPTH:-4} EXT_TIMEOUT=1500 PYSAT_CAP=240 \
       timeout --signal=KILL $(( HARD - $(date +%s) )) python3 -I -B $R/code/ccc90.py $FORMULAS $T $OUT/cube/$T $OUT $S > $OUT/cube/$T.log 2>&1
     echo "$T ccc exit $?" >> $OUT/ccc.log; }
-  export -f run1; export OUT HARD R
+  export -f run1; export OUT HARD R FORMULAS   # FORMULAS: ccc90.py argv[1] (was missing: every GHA ccc run failed with shifted arguments)
   grep -v '^$' $CHUNK | xargs -P ${PAR:-4} -I{} bash -c 'run1 {}'
 fi
 ls $OUT/proofs | wc -l > $OUT/n_proofs.txt
