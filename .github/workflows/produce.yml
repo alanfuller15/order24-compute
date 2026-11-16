@@ -1,0 +1,35 @@
+name: produce
+on:
+  workflow_dispatch:
+    inputs:
+      wave:   {description: 'wave name (chunks/<wave>/*.txt)', required: true}
+      mode:   {description: 'grun or ccc', required: true, default: grun}
+      chunks: {description: 'JSON list of chunk names, e.g. ["c01","c02"]', required: true}
+jobs:
+  work:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 355
+    strategy:
+      fail-fast: false
+      max-parallel: 20
+      matrix:
+        chunk: ${{ fromJSON(inputs.chunks) }}
+    steps:
+      - uses: actions/checkout@v4
+      - name: Prepare
+        run: |
+          sha256sum -c SHA256SUMS
+          chmod +x bin/* worker.sh
+          python3 --version
+          pip3 install --break-system-packages -q "python-sat==1.9.dev21" numpy networkx
+          nproc; free -g
+      - name: Work
+        run: bash worker.sh ${{ inputs.mode }} chunks/${{ inputs.wave }}/${{ matrix.chunk }}.txt out
+      - name: Upload
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ inputs.wave }}-${{ matrix.chunk }}
+          path: out/
+          retention-days: 30
+          compression-level: 0
