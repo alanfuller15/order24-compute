@@ -47,16 +47,45 @@ for f in glob.glob(f'{out}/q*.txt'): os.remove(f)
 os.makedirs(out, exist_ok=True)
 for j, js in enumerate(sorted(jobs, key=lambda js: -sum(E[t][0] for t in js))):
     open(f'{out}/q{j + 1:03d}.txt', 'w').write('\n'.join(js) + '\n')
-# seeds: saved lazy items of stopped or killed searches of these formulas (run_gha/ckpt_*.jsonl, 'items' lines in order),
-# so a re-packed formula resumes its search; worker.sh copies ckpt/*.jsonl lines of its chunk's tags into the job.
-sel = set(tags); seeds = []
+# Seeds (worker.sh reads ckpt/<wave>.jsonl.xz, the lines of its chunk's tags, into lazy_partial.jsonl; grun90 starts the
+# search with these items already in the CNF):
+#  (1) resume: lazy items saved by stopped or killed searches of these formulas at this layer (run_gha/ckpt_*.jsonl);
+#  (2) carried (SEED_ABOVE, default on): the final lazy list of the same key (s, a, b, m - c, h_index) at the nearest higher
+#      layer. Lazy items are 9-sets that must contain an edge and 12-sets with at least 12 edges: true for every graph of
+#      the class at any edge count, on the same 24 labelled vertices, and the checker rebuilds every item into the CNF, so
+#      where an item came from plays no part in what is proved. Carrying them skips most CEGAR iterations.
+# One line per formula: resume items in order, then carried items not already present (grun90 refuses repeated items).
+sel = set(tags); res = {}
 for f in sorted(glob.glob(f'{ldir(M)}/run_gha/ckpt_*.jsonl'), key=os.path.getmtime):
     for l in open(f):
         try: d = json.loads(l)
         except ValueError: continue
-        if d.get('tag') in sel and isinstance(d.get('items'), list): seeds.append(json.dumps(d))
-if seeds: open(f'{R}/ckpt/{WAVE}.jsonl', 'w').write('\n'.join(seeds) + '\n')
+        if d.get('tag') in sel and isinstance(d.get('items'), list): res.setdefault(d['tag'], []).extend(d['items'])
+above = {}
+if os.environ.get('SEED_ABOVE', '1') == '1':
+    for m in range(M + 1, 92):
+        p = f'{ldir(m)}/run_gha/results.jsonl'
+        if not os.path.exists(p): continue
+        for l in open(p):
+            if not l.strip(): continue
+            r = json.loads(l); k = key(r['tag'], m)
+            if k not in above and isinstance(r.get('lazy'), list) and r['lazy']: above[k] = (m, r['lazy'])
+seeds = []; n_res = n_abv = 0
+for t in tags:
+    items = []; seen = set()
+    for it in res.get(t, []) + (above[key(t, M)][1] if key(t, M) in above else []):
+        k2 = (it['kind'], tuple(it['W']))
+        if k2 not in seen: seen.add(k2); items.append({'kind': it['kind'], 'W': it['W']})
+    if not items: continue
+    n_res += t in res; n_abv += key(t, M) in above
+    seeds.append(json.dumps({'tag': t, 'items': items, 'how': 'seed: ' + '+'.join(
+        x for x, y in (('resume', t in res), (f'L{above[key(t, M)][0]} lazy' if key(t, M) in above else '', key(t, M) in above)) if y)}))
+import lzma
+for old in (f'{R}/ckpt/{WAVE}.jsonl', f'{R}/ckpt/{WAVE}.jsonl.xz'):
+    if os.path.exists(old): os.remove(old)
+if seeds:
+    with lzma.open(f'{R}/ckpt/{WAVE}.jsonl.xz', 'wt') as fo: fo.write('\n'.join(seeds) + '\n')
 loads = sorted((sum(E[t][0] for t in js) for js in jobs), reverse=True)
 print(f'{WAVE}: {len(tags)} formulas ({sum(k for _, k in E.values())} predicted from a higher layer), predicted '
       f'{total / 3600:.1f} core-h, {J} jobs; predicted load per job {loads[0] / 3600:.2f}..{loads[-1] / 3600:.2f} core-h, '
-      f'longest formula {max(v for v, _ in E.values()) / 60:.0f} min; {len(seeds)} seed lines for {len({json.loads(x)["tag"] for x in seeds})} formulas')
+      f'longest formula {max(v for v, _ in E.values()) / 60:.0f} min; seeds for {len(seeds)} formulas ({n_res} resume, {n_abv} carried from above)')

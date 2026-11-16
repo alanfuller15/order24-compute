@@ -2,7 +2,8 @@
 # worker.sh MODE CHUNKFILE OUTDIR — one GitHub Actions job (4 cores, ~16 GB, 6 h cap).
 #   MODE=grun: grun90.py (CEGAR search + CaDiCaL LRAT proof + cake_lpr self-check) on the chunk's tags, 4 workers.
 #   MODE=ccc : ccc90.py (cube-and-conquer) on the chunk's tags, up to 4 at a time; state in OUTDIR/cube/TAG (resumable).
-# Seeds: ckpt/*.jsonl lines (records or checkpoints with "tag" and "lazy") are copied into OUTDIR/lazy_ckpt.jsonl / used as
+# Seeds: ckpt/*.jsonl lines and ckpt/<wave>.jsonl.xz (the chunk's wave; lazy items carried from a higher layer, see code/make_packs.py)
+# and other ckpt lines (records or checkpoints with "tag" and "lazy") are copied into OUTDIR/lazy_ckpt.jsonl / used as
 # ccc seeds. Nothing here is trusted: every record is re-checked by gcert90d.py (pinned) by an independent auditor.
 set -u
 MODE=$1; CHUNK=$2; OUT=$3; R=$(cd $(dirname $0) && pwd); FORMULAS=$R/data/${FORMULAS_FILE:-formulas89_c66.json}
@@ -10,7 +11,7 @@ if [ "${FORMULAS_FILE:-}" = auto ]; then M=$(basename $CHUNK .txt | tr -dc 0-9);
 export MASKS12=$R/data/masks12.npy CAD=${CAD_BIN:-$R/bin/cadical} TRIM=${TRIM_BIN:-$R/bin/lrat-trim} CAKE=${CAKE_BIN:-$R/bin/cake_lpr}
 export PROOFS=$OUT/proofs CAKE_LOCK=$OUT/.cake.lock CAKE_SLOTS=2
 mkdir -p $OUT/proofs; cp $CHUNK $OUT/chunk.txt
-cat $R/ckpt/*.jsonl 2>/dev/null | python3 -c "
+{ cat $R/ckpt/*.jsonl 2>/dev/null; xz -dc $R/ckpt/$(basename $(dirname $CHUNK)).jsonl.xz 2>/dev/null; } | python3 -c "
 import sys,json
 tags=set(l.strip() for l in open('$CHUNK') if l.strip())
 ck=open('$OUT/seed_ckpt.jsonl','w'); pa=open('$OUT/seed_partial.jsonl','w'); sd=open('$OUT/seed.jsonl','w')
