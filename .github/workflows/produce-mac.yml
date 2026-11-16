@@ -1,0 +1,42 @@
+name: produce-mac
+on:
+  workflow_dispatch:
+    inputs:
+      wave:     {description: 'wave name (chunks/<wave>/*.txt)', required: true}
+      mode:     {description: 'grun or ccc', required: true, default: grun}
+      chunks:   {description: 'JSON list of chunk names', required: true}
+      formulas: {description: 'formulas file in data/', required: true}
+jobs:
+  work:
+    runs-on: macos-14
+    timeout-minutes: 355
+    strategy:
+      fail-fast: false
+      max-parallel: 5
+      matrix:
+        chunk: ${{ fromJSON(inputs.chunks) }}
+    steps:
+      - uses: actions/checkout@v4
+      - name: Build tools (macOS arm64) and install Python packages
+        run: |
+          shasum -a 256 -c SHA256SUMS | grep -v ': OK' || true
+          mkdir -p tools && for t in cadical cake_lpr lrat-trim; do tar -C tools -xzf src/$t-src.tgz; done
+          (cd tools/cadical && ./configure > /dev/null && make -j3 > /dev/null)
+          (cd tools/lrat-trim && ./configure > /dev/null && make > /dev/null)
+          (cd tools/cake_lpr && make > /dev/null)
+          ls -la tools/cadical/build/cadical tools/lrat-trim/lrat-trim tools/cake_lpr/cake_lpr
+          python3 -m pip install --break-system-packages -q "python-sat==1.9.dev21" numpy networkx || python3 -m pip install -q "python-sat==1.9.dev21" numpy networkx
+          python3 -I -c "import pysat, numpy, networkx; print(pysat.__version__)"
+          sysctl -n hw.ncpu
+      - name: Work
+        run: |
+          export CAD_BIN=$PWD/tools/cadical/build/cadical TRIM_BIN=$PWD/tools/lrat-trim/lrat-trim CAKE_BIN=$PWD/tools/cake_lpr/cake_lpr
+          FORMULAS_FILE=${{ inputs.formulas }} bash worker.sh ${{ inputs.mode }} chunks/${{ inputs.wave }}/${{ matrix.chunk }}.txt out
+      - name: Upload
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ inputs.wave }}-${{ matrix.chunk }}
+          path: out/
+          retention-days: 30
+          compression-level: 0

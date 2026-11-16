@@ -6,7 +6,7 @@
 # ccc seeds. Nothing here is trusted: every record is re-checked by gcert90d.py (pinned) by an independent auditor.
 set -u
 MODE=$1; CHUNK=$2; OUT=$3; R=$(cd $(dirname $0) && pwd); FORMULAS=$R/data/${FORMULAS_FILE:-formulas89_c66.json}
-export MASKS12=$R/data/masks12.npy CAD=$R/bin/cadical TRIM=$R/bin/lrat-trim CAKE=$R/bin/cake_lpr
+export MASKS12=$R/data/masks12.npy CAD=${CAD_BIN:-$R/bin/cadical} TRIM=${TRIM_BIN:-$R/bin/lrat-trim} CAKE=${CAKE_BIN:-$R/bin/cake_lpr}
 export PROOFS=$OUT/proofs CAKE_LOCK=$OUT/.cake.lock CAKE_SLOTS=2
 mkdir -p $OUT/proofs; cp $CHUNK $OUT/chunk.txt
 cat $R/ckpt/*.jsonl 2>/dev/null | python3 -c "
