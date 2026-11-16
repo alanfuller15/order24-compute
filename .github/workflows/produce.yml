@@ -8,6 +8,11 @@ on:
       formulas: {description: 'formulas file in data/', required: false, default: formulas89_c66.json}
       grun:     {description: 'producer script in code/ (grun90.py = encoder v7, grun90v8.py = encoder v8)', required: false, default: grun90.py}
       par:      {description: 'max concurrent jobs of this run', required: false, default: '20'}
+      prev_run: {description: 'ccc chaining: run id whose artifacts <prev_wave>-<chunk> hold the cube state to resume', required: false, default: ''}
+      prev_wave: {description: 'ccc chaining: wave name of prev_run (default: this wave)', required: false, default: ''}
+permissions:
+  contents: read
+  actions: read
 jobs:
   work:
     runs-on: ubuntu-24.04
@@ -27,6 +32,15 @@ jobs:
           sudo pip3 install --break-system-packages -q "python-sat==1.9.dev21" numpy networkx
           python3 -I -c "import pysat, numpy, networkx; print(pysat.__version__)"
           nproc; free -g
+      - name: Restore previous ccc state
+        if: ${{ inputs.prev_run != '' }}
+        continue-on-error: true
+        uses: actions/download-artifact@v4
+        with:
+          name: ${{ inputs.prev_wave != '' && inputs.prev_wave || inputs.wave }}-${{ matrix.chunk }}
+          run-id: ${{ inputs.prev_run }}
+          github-token: ${{ github.token }}
+          path: prev
       - name: Work
         run: GRUN=${{ inputs.grun }} FORMULAS_FILE=${{ inputs.formulas }} bash worker.sh ${{ inputs.mode }} chunks/${{ inputs.wave }}/${{ matrix.chunk }}.txt out
       - name: Upload

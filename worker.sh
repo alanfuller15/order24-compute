@@ -35,6 +35,17 @@ else
       timeout --signal=KILL $(( HARD - $(date +%s) )) python3 -I -B $R/code/ccc90.py $FORMULAS $T $OUT/cube/$T $OUT $S > $OUT/cube/$T.log 2>&1
     echo "$T ccc exit $?" >> $OUT/ccc.log; }
   export -f run1; export OUT HARD R FORMULAS   # FORMULAS: ccc90.py argv[1] (was missing: every GHA ccc run failed with shifted arguments)
-  grep -v '^$' $CHUNK | xargs -P ${PAR:-4} -I{} bash -c 'run1 {}'
+  # Chaining (workflow input prev_run): PREV holds the artifact of this chunk from an earlier ccc job. A formula recorded
+  # there is skipped (its record and proof are in that artifact); otherwise its cube state folder (tree, items, proved
+  # cube segments) is copied in and ccc90.py resumes from it, so no work is lost at the 6-h job limit.
+  PREV=${PREV:-$R/prev}; : > $OUT/todo.txt
+  for T in $(grep -v '^$' $CHUNK); do
+    if [ -f $PREV/results.jsonl ] && python3 -c "import json,sys; sys.exit(0 if any(json.loads(l).get('tag')==sys.argv[1] for l in open(sys.argv[2]) if l.strip()) else 1)" $T $PREV/results.jsonl; then
+      echo "$T recorded in the previous job: skipped" >> $OUT/ccc.log; continue; fi
+    if [ -f $PREV/cube/$T/tree.json ]; then mkdir -p $OUT/cube; cp -r $PREV/cube/$T $OUT/cube/$T; rm -rf $OUT/cube/$T/work
+      echo "$T resumed from the previous job's state ($(ls $PREV/cube/$T | wc -l) files)" >> $OUT/ccc.log; fi
+    echo $T >> $OUT/todo.txt
+  done
+  xargs -P ${PAR:-4} -I{} bash -c 'run1 {}' < $OUT/todo.txt
 fi
 ls $OUT/proofs | wc -l > $OUT/n_proofs.txt
