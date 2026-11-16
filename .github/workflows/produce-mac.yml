@@ -8,7 +8,7 @@ on:
       formulas: {description: 'formulas file in data/', required: true}
 jobs:
   work:
-    runs-on: macos-14
+    runs-on: macos-latest
     timeout-minutes: 355
     strategy:
       fail-fast: false
