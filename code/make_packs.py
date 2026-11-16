@@ -28,7 +28,11 @@ for m in range(M + 1, 92):          # nearest higher layer first
         if k not in pred: pred[k] = r.get('seconds', 0) + r.get('resumed_seconds', 0) + r.get('proof_seconds', 0)
 prof = {}
 for k, v in pred.items(): prof.setdefault(k[:4], []).append(v)
-tags = [t for t in F if key(t, M)[0] >= 9]
+tags = [t for t in F if key(t, M)[0] >= (int(os.environ.get('MIN_S', '9')))]
+if os.environ.get('UNRECORDED'):   # only formulas with no record yet in l<M>/run_gha (a re-pack of a layer in progress)
+    rp = f'{ldir(M)}/run_gha/results.jsonl'
+    done = {json.loads(l)['tag'] for l in open(rp) if l.strip()} if os.path.exists(rp) else set()
+    tags = [t for t in tags if t not in done]
 def est(t):
     k = key(t, M)
     if k in pred: return pred[k], 1
@@ -38,12 +42,21 @@ total = sum(v for v, _ in E.values()); J = max(math.ceil(total / CAP), math.ceil
 heap = [(0.0, j) for j in range(J)]; jobs = [[] for _ in range(J)]
 for t in sorted(tags, key=lambda t: (-E[t][0], t)):
     load, j = heapq.heappop(heap); jobs[j].append(t); heapq.heappush(heap, (load + E[t][0], j))
-out = f'{R}/chunks/m{M}p'
+WAVE = os.environ.get('WAVE', f'm{M}p'); out = f'{R}/chunks/{WAVE}'
 for f in glob.glob(f'{out}/q*.txt'): os.remove(f)
 os.makedirs(out, exist_ok=True)
 for j, js in enumerate(sorted(jobs, key=lambda js: -sum(E[t][0] for t in js))):
     open(f'{out}/q{j + 1:03d}.txt', 'w').write('\n'.join(js) + '\n')
+# seeds: saved lazy items of stopped or killed searches of these formulas (run_gha/ckpt_*.jsonl, 'items' lines in order),
+# so a re-packed formula resumes its search; worker.sh copies ckpt/*.jsonl lines of its chunk's tags into the job.
+sel = set(tags); seeds = []
+for f in sorted(glob.glob(f'{ldir(M)}/run_gha/ckpt_*.jsonl'), key=os.path.getmtime):
+    for l in open(f):
+        try: d = json.loads(l)
+        except ValueError: continue
+        if d.get('tag') in sel and isinstance(d.get('items'), list): seeds.append(json.dumps(d))
+if seeds: open(f'{R}/ckpt/{WAVE}.jsonl', 'w').write('\n'.join(seeds) + '\n')
 loads = sorted((sum(E[t][0] for t in js) for js in jobs), reverse=True)
-print(f'm{M}p: {len(tags)} formulas ({sum(k for _, k in E.values())} predicted from a higher layer), predicted '
+print(f'{WAVE}: {len(tags)} formulas ({sum(k for _, k in E.values())} predicted from a higher layer), predicted '
       f'{total / 3600:.1f} core-h, {J} jobs; predicted load per job {loads[0] / 3600:.2f}..{loads[-1] / 3600:.2f} core-h, '
-      f'longest formula {max(v for v, _ in E.values()) / 60:.0f} min')
+      f'longest formula {max(v for v, _ in E.values()) / 60:.0f} min; {len(seeds)} seed lines for {len({json.loads(x)["tag"] for x in seeds})} formulas')
