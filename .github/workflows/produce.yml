@@ -6,6 +6,7 @@ on:
       mode:   {description: 'grun or ccc', required: true, default: grun}
       chunks: {description: 'JSON list of chunk names, e.g. ["c01","c02"]', required: true}
       formulas: {description: 'formulas file in data/', required: false, default: formulas89_c66.json}
+      grun:     {description: 'producer script in code/ (grun90.py = encoder v7, grun90v8.py = encoder v8)', required: false, default: grun90.py}
 jobs:
   work:
     runs-on: ubuntu-24.04
@@ -26,7 +27,7 @@ jobs:
           python3 -I -c "import pysat, numpy, networkx; print(pysat.__version__)"
           nproc; free -g
       - name: Work
-        run: FORMULAS_FILE=${{ inputs.formulas }} bash worker.sh ${{ inputs.mode }} chunks/${{ inputs.wave }}/${{ matrix.chunk }}.txt out
+        run: GRUN=${{ inputs.grun }} FORMULAS_FILE=${{ inputs.formulas }} bash worker.sh ${{ inputs.mode }} chunks/${{ inputs.wave }}/${{ matrix.chunk }}.txt out
       - name: Upload
         if: always()
         uses: actions/upload-artifact@v4

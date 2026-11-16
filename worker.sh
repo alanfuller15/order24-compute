@@ -24,7 +24,7 @@ T0=$(date +%s); HARD=$(( T0 + ${WINDOW:-20400} ))
 if [ "$MODE" = grun ]; then
   cp $OUT/seed_ckpt.jsonl $OUT/lazy_ckpt.jsonl; cp $OUT/seed_partial.jsonl $OUT/lazy_partial.jsonl
   TODO_FILE=$CHUNK CONF=20000 GROW=4 CAD_OPTS= STOP_AFTER=${STOP_AFTER:-15000} \
-    timeout --signal=KILL $(( HARD - $(date +%s) )) python3 -I -B $R/code/grun90.py $FORMULAS $OUT 4 14400 > $OUT/grun.log 2>&1
+    timeout --signal=KILL $(( HARD - $(date +%s) )) python3 -I -B $R/code/${GRUN:-grun90.py} $FORMULAS $OUT 4 14400 > $OUT/grun.log 2>&1
   echo "grun exit $?" >> $OUT/grun.log
 else
   run1() { T=$1; mkdir -p $OUT/cube/$T; grep "\"$T\"" $OUT/seed.jsonl > $OUT/cube/seed_$T.jsonl || true
