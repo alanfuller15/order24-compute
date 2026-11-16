@@ -5,6 +5,7 @@ on:
       wave:   {description: 'wave name (chunks/<wave>/*.txt)', required: true}
       mode:   {description: 'grun or ccc', required: true, default: grun}
       chunks: {description: 'JSON list of chunk names, e.g. ["c01","c02"]', required: true}
+      formulas: {description: 'formulas file in data/', required: false, default: formulas89_c66.json}
 jobs:
   work:
     runs-on: ubuntu-24.04
@@ -25,7 +26,7 @@ jobs:
           python3 -I -c "import pysat, numpy, networkx; print(pysat.__version__)"
           nproc; free -g
       - name: Work
-        run: bash worker.sh ${{ inputs.mode }} chunks/${{ inputs.wave }}/${{ matrix.chunk }}.txt out
+        run: FORMULAS_FILE=${{ inputs.formulas }} bash worker.sh ${{ inputs.mode }} chunks/${{ inputs.wave }}/${{ matrix.chunk }}.txt out
       - name: Upload
         if: always()
         uses: actions/upload-artifact@v4

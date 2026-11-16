@@ -5,7 +5,7 @@
 # Seeds: ckpt/*.jsonl lines (records or checkpoints with "tag" and "lazy") are copied into OUTDIR/lazy_ckpt.jsonl / used as
 # ccc seeds. Nothing here is trusted: every record is re-checked by gcert90d.py (pinned) by an independent auditor.
 set -u
-MODE=$1; CHUNK=$2; OUT=$3; R=$(cd $(dirname $0) && pwd)
+MODE=$1; CHUNK=$2; OUT=$3; R=$(cd $(dirname $0) && pwd); FORMULAS=$R/data/${FORMULAS_FILE:-formulas89_c66.json}
 export MASKS12=$R/data/masks12.npy CAD=$R/bin/cadical TRIM=$R/bin/lrat-trim CAKE=$R/bin/cake_lpr
 export PROOFS=$OUT/proofs CAKE_LOCK=$OUT/.cake.lock CAKE_SLOTS=2
 mkdir -p $OUT/proofs; cp $CHUNK $OUT/chunk.txt
@@ -24,13 +24,13 @@ T0=$(date +%s); HARD=$(( T0 + ${WINDOW:-20400} ))
 if [ "$MODE" = grun ]; then
   cp $OUT/seed_ckpt.jsonl $OUT/lazy_ckpt.jsonl; cp $OUT/seed_partial.jsonl $OUT/lazy_partial.jsonl
   TODO_FILE=$CHUNK CONF=20000 GROW=4 CAD_OPTS= STOP_AFTER=${STOP_AFTER:-15000} \
-    timeout --signal=KILL $(( HARD - $(date +%s) )) python3 -I -B $R/code/grun90.py $R/data/formulas89_c66.json $OUT 4 14400 > $OUT/grun.log 2>&1
+    timeout --signal=KILL $(( HARD - $(date +%s) )) python3 -I -B $R/code/grun90.py $FORMULAS $OUT 4 14400 > $OUT/grun.log 2>&1
   echo "grun exit $?" >> $OUT/grun.log
 else
   run1() { T=$1; mkdir -p $OUT/cube/$T; grep "\"$T\"" $OUT/seed.jsonl > $OUT/cube/seed_$T.jsonl || true
     S=""; [ -s $OUT/cube/seed_$T.jsonl ] && S=$OUT/cube/seed_$T.jsonl
     ENCODER=cegar90c CONF=20000 GROW=16 CAD_OPTS= DEADLINE=$(( HARD - 300 )) CUBE_DEPTH=${CUBE_DEPTH:-4} EXT_TIMEOUT=1500 PYSAT_CAP=240 \
-      timeout --signal=KILL $(( HARD - $(date +%s) )) python3 -I -B $R/code/ccc90.py $R/data/formulas89_c66.json $T $OUT/cube/$T $OUT $S > $OUT/cube/$T.log 2>&1
+      timeout --signal=KILL $(( HARD - $(date +%s) )) python3 -I -B $R/code/ccc90.py $FORMULAS $T $OUT/cube/$T $OUT $S > $OUT/cube/$T.log 2>&1
     echo "$T ccc exit $?" >> $OUT/ccc.log; }
   export -f run1; export OUT HARD R
   grep -v '^$' $CHUNK | xargs -P ${PAR:-4} -I{} bash -c 'run1 {}'
