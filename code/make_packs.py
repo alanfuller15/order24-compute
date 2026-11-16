@@ -38,15 +38,24 @@ def est(t):
     if k in pred: return pred[k], 1
     return (statistics.median(prof[k[:4]]) if k[:4] in prof else 60.0), 0
 E = {t: est(t) for t in tags}
-total = sum(v for v, _ in E.values()); J = max(math.ceil(total / CAP), math.ceil(len(tags) / 48))
+# HARD profiles (env HARD, default '10,4,18'): their formulas grow ~2-3x harder per layer down and run for hours, so a
+# job holding one of them keeps 3 of its 4 cores idle once its other formulas are done. They get jobs of their own,
+# 4 per job (one per core), named h01, h02, ...; the rest are packed as before.
+HARD = {tuple(map(int, x.split(','))) for x in os.environ.get('HARD', '10,4,18').split(';') if x}
+hard = sorted([t for t in tags if key(t, M)[:3] in HARD], key=lambda t: (-E[t][0], t)); tags = [t for t in tags if t not in set(hard)]
+total = sum(E[t][0] for t in tags); J = max(1, math.ceil(total / CAP), math.ceil(len(tags) / 48)) if tags else 0
 heap = [(0.0, j) for j in range(J)]; jobs = [[] for _ in range(J)]
 for t in sorted(tags, key=lambda t: (-E[t][0], t)):
     load, j = heapq.heappop(heap); jobs[j].append(t); heapq.heappush(heap, (load + E[t][0], j))
 WAVE = os.environ.get('WAVE', f'm{M}p'); out = f'{R}/chunks/{WAVE}'
 for f in glob.glob(f'{out}/q*.txt'): os.remove(f)
 os.makedirs(out, exist_ok=True)
+for f in glob.glob(f'{out}/h*.txt'): os.remove(f)
 for j, js in enumerate(sorted(jobs, key=lambda js: -sum(E[t][0] for t in js))):
     open(f'{out}/q{j + 1:03d}.txt', 'w').write('\n'.join(js) + '\n')
+for i in range(0, len(hard), 4):
+    open(f'{out}/h{i // 4 + 1:02d}.txt', 'w').write('\n'.join(hard[i:i + 4]) + '\n')
+tags = tags + hard   # for the seeds below
 # Seeds (worker.sh reads ckpt/<wave>.jsonl.xz, the lines of its chunk's tags, into lazy_partial.jsonl; grun90 starts the
 # search with these items already in the CNF):
 #  (1) resume: lazy items saved by stopped or killed searches of these formulas at this layer (run_gha/ckpt_*.jsonl);
@@ -85,7 +94,7 @@ for old in (f'{R}/ckpt/{WAVE}.jsonl', f'{R}/ckpt/{WAVE}.jsonl.xz'):
     if os.path.exists(old): os.remove(old)
 if seeds:
     with lzma.open(f'{R}/ckpt/{WAVE}.jsonl.xz', 'wt') as fo: fo.write('\n'.join(seeds) + '\n')
-loads = sorted((sum(E[t][0] for t in js) for js in jobs), reverse=True)
+loads = sorted((sum(E[t][0] for t in js) for js in jobs), reverse=True) or [0]
 print(f'{WAVE}: {len(tags)} formulas ({sum(k for _, k in E.values())} predicted from a higher layer), predicted '
-      f'{total / 3600:.1f} core-h, {J} jobs; predicted load per job {loads[0] / 3600:.2f}..{loads[-1] / 3600:.2f} core-h, '
+      f'{total / 3600:.1f} core-h, {J} jobs + {(len(hard) + 3) // 4} hard jobs ({len(hard)} formulas); predicted load per job {loads[0] / 3600:.2f}..{loads[-1] / 3600:.2f} core-h, '
       f'longest formula {max(v for v, _ in E.values()) / 60:.0f} min; seeds for {len(seeds)} formulas ({n_res} resume, {n_abv} carried from above)')
