@@ -20,6 +20,8 @@ jobs:
       - name: Build tools (macOS arm64) and install Python packages
         run: |
           shasum -a 256 -c SHA256SUMS | grep -v ': OK' || true
+          brew install coreutils > /dev/null 2>&1 || true
+          echo "$(brew --prefix coreutils)/libexec/gnubin" >> $GITHUB_PATH
           mkdir -p tools && for t in cadical cake_lpr lrat-trim; do tar -C tools -xzf src/$t-src.tgz; done
           (cd tools/cadical && ./configure > /dev/null && make -j3 > /dev/null)
           (cd tools/lrat-trim && ./configure > /dev/null && make > /dev/null)
