@@ -21,7 +21,8 @@ jobs:
           sha256sum -c SHA256SUMS
           chmod +x bin/* worker.sh
           python3 --version
-          pip3 install --break-system-packages -q "python-sat==1.9.dev21" numpy networkx
+          sudo pip3 install --break-system-packages -q "python-sat==1.9.dev21" numpy networkx
+          python3 -I -c "import pysat, numpy, networkx; print(pysat.__version__)"
           nproc; free -g
       - name: Work
         run: bash worker.sh ${{ inputs.mode }} chunks/${{ inputs.wave }}/${{ matrix.chunk }}.txt out
