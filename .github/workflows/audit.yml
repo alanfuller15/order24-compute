@@ -1,0 +1,43 @@
+name: audit
+# Runs the PINNED checker audit_kit/l<layer>/code/gcert<layer>.py (unmodified) on records + proofs of one producer
+# artifact, on a 16 GB runner (for proofs too big for the auditors' machine), plus two negative controls. The outputs
+# (aout/) are reviewed by an independent auditor; this workflow approves nothing by itself.
+on:
+  workflow_dispatch:
+    inputs:
+      layer:      {description: 'layer M (audit_kit/l<M> must exist)', required: true}
+      run_id:     {description: 'producer run id holding the artifact', required: true}
+      artifact:   {description: 'producer artifact name, e.g. m87d2-h01', required: true}
+      tags_regex: {description: 'full-match regex of the record tags to check', required: true}
+permissions:
+  contents: read
+  actions: read
+jobs:
+  check:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 355
+    steps:
+      - uses: actions/checkout@v4
+      - name: Pins and tools
+        run: |
+          (cd audit_kit/l${{ inputs.layer }} && sha256sum -c PINS.sha256)
+          echo "29e02af756c1f0fc4ccac78e9a908e0d8ef01201786f257f1b27b26603390798  bin/cake_lpr" | sha256sum -c
+          [ -x /usr/bin/time ] || sudo apt-get install -y -q time
+          mkdir -p ~/tools/cake_lpr && cp bin/cake_lpr ~/tools/cake_lpr/cake_lpr && chmod +x ~/tools/cake_lpr/cake_lpr
+          sudo pip3 install --break-system-packages -q "python-sat==1.9.dev21" numpy networkx
+          python3 -I -c "import pysat; print(pysat.__version__)"; nproc; free -m; python3 --version
+      - uses: actions/download-artifact@v4
+        with:
+          name: ${{ inputs.artifact }}
+          run-id: ${{ inputs.run_id }}
+          github-token: ${{ github.token }}
+          path: in
+      - name: Check
+        run: bash audit_kit/run_audit.sh ${{ inputs.layer }} '${{ inputs.tags_regex }}'
+      - name: Upload
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: audit-l${{ inputs.layer }}-${{ inputs.artifact }}
+          path: aout/
+          retention-days: 30
