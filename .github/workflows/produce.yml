@@ -7,13 +7,14 @@ on:
       chunks: {description: 'JSON list of chunk names, e.g. ["c01","c02"]', required: true}
       formulas: {description: 'formulas file in data/', required: false, default: formulas89_c66.json}
       grun:     {description: 'producer script in code/ (grun90.py = encoder v7, grun90v8.py = encoder v8)', required: false, default: grun90.py}
+      par:      {description: 'max concurrent jobs of this run', required: false, default: '20'}
 jobs:
   work:
     runs-on: ubuntu-24.04
     timeout-minutes: 355
     strategy:
       fail-fast: false
-      max-parallel: 20
+      max-parallel: ${{ fromJSON(inputs.par) }}
       matrix:
         chunk: ${{ fromJSON(inputs.chunks) }}
     steps:
