@@ -3,7 +3,7 @@ on:
   workflow_dispatch:
     inputs:
       wave:   {description: 'wave name (chunks/<wave>/*.txt)', required: true}
-      mode:   {description: 'grun or ccc', required: true, default: grun}
+      mode:   {description: 'grun, ccc or merge (join CUBE_SHARD states, then stitch)', required: true, default: grun}
       chunks: {description: 'JSON list of chunk names, e.g. ["c01","c02"]', required: true}
       formulas: {description: 'formulas file in data/', required: false, default: formulas89_c66.json}
       grun:     {description: 'producer script in code/ (grun90.py = encoder v7, grun90v8.py = encoder v8)', required: false, default: grun90.py}
@@ -37,16 +37,28 @@ jobs:
       - name: Restore previous ccc state
         if: ${{ inputs.prev_run != '' }}
         continue-on-error: true
-        uses: actions/download-artifact@v4
-        with:
-          name: ${{ inputs.prev_wave != '' && inputs.prev_wave || inputs.wave }}-${{ matrix.chunk }}
-          run-id: ${{ inputs.prev_run }}
-          github-token: ${{ github.token }}
-          path: prev
+        env:
+          GH_TOKEN: ${{ github.token }}
+          CHUNK: ${{ matrix.chunk }}
+          PW: ${{ inputs.prev_wave != '' && inputs.prev_wave || inputs.wave }}
+          PR: ${{ inputs.prev_run }}
+          MODE: ${{ inputs.mode }}
+          REPO: ${{ github.repository }}
+        run: |
+          B=${CHUNK%%k[0-9]*}
+          if [ "$MODE" = merge ]; then
+            for a in $(gh api "repos/$REPO/actions/runs/$PR/artifacts?per_page=100" --jq '.artifacts[].name' | grep -E "^$PW-${B}k[0-9]+of[0-9]+$"); do
+              gh run download "$PR" -R "$REPO" -n "$a" -D "shards/$a"; done
+            ls shards
+          else
+            gh run download "$PR" -R "$REPO" -n "$PW-$CHUNK" -D prev || gh run download "$PR" -R "$REPO" -n "$PW-$B" -D prev
+            ls prev | head
+          fi
       - name: Work
         env:
           TUNE: ${{ inputs.tune }}
-        run: EXT_TIMEOUT=${TUNE%%,*} PYSAT_CAP=${TUNE##*,} CUBE_DEPTH=${{ inputs.cube_depth }} GRUN=${{ inputs.grun }} FORMULAS_FILE=${{ inputs.formulas }} bash worker.sh ${{ inputs.mode }} chunks/${{ inputs.wave }}/${{ matrix.chunk }}.txt out
+          CHUNK: ${{ matrix.chunk }}
+        run: CUBE_SHARD=$(echo "$CHUNK" | sed -n 's/.*k\([0-9]*\)of\([0-9]*\)$/\1\/\2/p') EXT_TIMEOUT=${TUNE%%,*} PYSAT_CAP=${TUNE##*,} CUBE_DEPTH=${{ inputs.cube_depth }} GRUN=${{ inputs.grun }} FORMULAS_FILE=${{ inputs.formulas }} bash worker.sh ${{ inputs.mode }} chunks/${{ inputs.wave }}/${{ matrix.chunk }}.txt out
       - name: Upload
         if: always()
         uses: actions/upload-artifact@v4

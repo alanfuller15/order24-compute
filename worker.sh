@@ -38,8 +38,16 @@ else
   # Chaining (workflow input prev_run): PREV holds the artifact of this chunk from an earlier ccc job. A formula recorded
   # there is skipped (its record and proof are in that artifact); otherwise its cube state folder (tree, items, proved
   # cube segments) is copied in and ccc90.py resumes from it, so no work is lost at the 6-h job limit.
+  if [ "$MODE" = merge ]; then   # join the shard states of each tag (ccc_merge.py), then stitch them with ccc90.py
+    unset CUBE_SHARD; PREV=/nonexistent
+    for T in $(grep -v '^$' $CHUNK); do
+      ENCODER=cegar90c python3 -I -B $R/code/ccc_merge.py $FORMULAS $T $OUT/cube/$T $(ls -d $R/shards/*/cube/$T 2>/dev/null) >> $OUT/ccc.log 2>&1 \
+        || echo "$T merge FAILED" >> $OUT/ccc.log
+    done
+  fi
   PREV=${PREV:-$R/prev}; : > $OUT/todo.txt
   for T in $(grep -v '^$' $CHUNK); do
+    if [ "$MODE" = merge ] && [ ! -f $OUT/cube/$T/tree.json ]; then echo "$T: no merged state: skipped" >> $OUT/ccc.log; continue; fi
     if [ -f $PREV/results.jsonl ] && python3 -c "import json,sys; sys.exit(0 if any(json.loads(l).get('tag')==sys.argv[1] for l in open(sys.argv[2]) if l.strip()) else 1)" $T $PREV/results.jsonl; then
       echo "$T recorded in the previous job: skipped" >> $OUT/ccc.log; continue; fi
     if [ -f $PREV/cube/$T/tree.json ]; then mkdir -p $OUT/cube; cp -r $PREV/cube/$T $OUT/cube/$T; rm -rf $OUT/cube/$T/work

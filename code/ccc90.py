@@ -345,6 +345,18 @@ def main():
         append_line(logp, {'event': 'cubes', 'n': len(leaves), 'depth': DEPTH0, 'd8': d8, 'seconds': round(time.time() - t0, 1)})
         say(f'{tag}: {len(leaves)} cubes (depth {DEPTH0}; {len(cand)} candidates, {len(d8)} of them d_T >= 8) in {time.time() - t0:.0f} s')
     C.need(tree['tag'] == tag and tree['encoder'] == ENC_LABEL, 'the state folder belongs to another formula or encoder')
+    # CUBE_SHARD=i/N (version 1.2): work only on the open cubes this shard owns (every N-th of the open list sorted by key
+    # when the shard first started, and all their sub-cubes), then exit 4 without stitching; ccc_merge.py joins the shards.
+    shard = os.environ.get('CUBE_SHARD', ''); mine = None
+    if shard:
+        si, sn = map(int, shard.split('/')); C.need(0 <= si < sn, ('bad CUBE_SHARD', shard))
+        if 'shard' not in tree:
+            roots = sorted(key(c) for c in tree['open'])
+            tree['shard'] = {'i': si, 'N': sn, 'roots': [k for j, k in enumerate(roots) if j % sn == si]}; jsave(treep, tree)
+        C.need(tree['shard']['i'] == si and tree['shard']['N'] == sn, 'the state folder belongs to another shard')
+        mine = set(tree['shard']['roots']); lens = sorted({len(k.split()) if k else 0 for k in mine})
+        append_line(logp, {'event': 'shard', 'i': si, 'N': sn, 'roots': len(mine), 'time': round(time.time())})
+    def is_mine(c): return mine is None or any(key(c[:n]) in mine for n in lens if n <= len(c))
     M = C.masks12(); sol = Solver(name='cadical195', bootstrap_with=cnf.clauses)
     def add(new, note):
         for x in new:
@@ -362,8 +374,10 @@ def main():
         append_line(os.path.join(outdir, 'results.jsonl'), {'status': 'ORIGINAL_MODEL_FOUND', 'tag': tag, 'edges': edges, 'cube': cube,
                     's': f['s'], 'a': f['a'], 'b': f['b'], 'c': f['c'], 'h_index': f['h_index'], 'encoder': ENC_LABEL})
         say('ORIGINAL_MODEL_FOUND'); sys.exit(2)
-    while tree['open']:
-        cube = tree['open'][0]; k = key(cube); conf = tree['conf'].get(k, CONF0)
+    while True:
+        idx = next((j for j, c in enumerate(tree['open']) if is_mine(c)), None)
+        if idx is None: break
+        cube = tree['open'][idx]; k = key(cube); conf = tree['conf'].get(k, CONF0)
         if left() < MARGIN + 60: stop('deadline')
         # a. PySAT under the cube's assumptions. PySAT's CaDiCaL cannot be interrupted, so the time cap is a conflict
         #    cap from the measured conflict rate
@@ -391,7 +405,7 @@ def main():
         dt = time.time() - t0
         if st == 'UNSAT':
             val.update({'seg': seg, 'pysat': 'UNSAT' if ans is False else 'budget'})
-            tree['seq'] += 1; tree['done'][k] = val; tree['open'].pop(0); jsave(treep, tree)
+            tree['seq'] += 1; tree['done'][k] = val; tree['open'].pop(idx); jsave(treep, tree)
             append_line(logp, {'event': 'closed', 'cube': k, 'seconds': round(dt, 1), **val})
             say(f'cube [{k}] closed: {val["n"]} clauses, CaDiCaL {val["cad_seconds"]} s; {len(tree["done"])} closed, {len(tree["open"])} open')
         elif st == 'SAT':
@@ -403,12 +417,15 @@ def main():
             if to < EXT_TIMEOUT: stop('deadline')
             x = lookahead(cnf.clauses, cube, cand)
             C.need(x is not None, ('no variable to split', k))
-            tree['splits'][k] = x; tree['open'][0:1] = [cube + [x], cube + [-x]]
-            for c2 in tree['open'][:2]: tree['conf'][key(c2)] = conf
+            tree['splits'][k] = x; tree['open'][idx:idx + 1] = [cube + [x], cube + [-x]]
+            for c2 in tree['open'][idx:idx + 2]: tree['conf'][key(c2)] = conf
             tree['conf'].pop(k, None); jsave(treep, tree)
             append_line(logp, {'event': 'split', 'cube': k, 'var': x, 'seconds': round(dt, 1)})
             say(f'cube [{k}] split on {x} after {dt:.0f} s')
     sol.delete()
+    if mine is not None:
+        append_line(logp, {'event': 'shard_done', 'time': round(time.time()), 'done': len(tree['done']), 'open': len(tree['open']), 'items': len(items)})
+        say(f'shard {shard} done: {len(tree["done"])} cubes closed in this state, {len(tree["open"])} open (other shards)'); sys.exit(4)
     # 3. stitch, check, record
     if left() < MARGIN + 600: stop('deadline before the stitch')
     cnfp = os.path.join(outdir, tag + '.cnf'); fresh = C.rebuild(f, items)
