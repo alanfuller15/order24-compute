@@ -12,6 +12,7 @@ on:
       prev_wave: {description: 'ccc chaining: wave name of prev_run (default: this wave)', required: false, default: ''}
       cube_depth: {description: 'ccc: initial cube depth (CUBE_DEPTH)', required: false, default: '4'}
       tune: {description: 'ccc tuning "EXT_TIMEOUT,PYSAT_CAP" in seconds (default 1500,240)', required: false, default: '1500,240'}
+      window: {description: 'seconds of work per job (WINDOW of worker.sh; empty = 20400). Short values are for probe runs', required: false, default: ''}
       fan: {description: 'ccc shard chunks: "all" = a job named <chunk>k0of<N> (N <= 4) runs all N shards in parallel on its 4 cores, one artifact per shard; "1" = one shard per job', required: false, default: '1'}
 permissions:
   contents: read
@@ -73,6 +74,7 @@ jobs:
         env:
           TUNE: ${{ inputs.tune }}
           CHUNK: ${{ matrix.chunk }}
+          WINDOW: ${{ inputs.window }}
         run: |
           pids=""
           for j in 0 1 2 3; do
@@ -82,7 +84,8 @@ jobs:
             pids="$pids $!"
           done
           rc=0; for p in $pids; do wait $p || rc=$?; done
-          df -h / | tail -1; free -g | sed -n 2p; cat out*/ccc.log 2>/dev/null | tail -12
+          df -h / | tail -1; free -m | sed -n 2p; du -sh out* prev_* 2>/dev/null | tr '\n' ' '; echo
+          cat out*/ccc.log 2>/dev/null | tail -12; for f in out*/cube/*.log; do echo "== $f"; tail -n 3 "$f" | cut -c1-300; done
           exit $rc
       - name: Upload
         if: always()
