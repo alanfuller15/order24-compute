@@ -33,7 +33,13 @@ jobs:
           github-token: ${{ github.token }}
           path: in
       - name: Check
-        run: bash audit_kit/run_audit.sh ${{ inputs.layer }} '${{ inputs.tags_regex }}'
+        env:
+          LAYER: ${{ inputs.layer }}
+          TAGS_REGEX: ${{ inputs.tags_regex }}
+        run: |
+          bash audit_kit/run_audit.sh "$LAYER" "$TAGS_REGEX"
+          [ "$(cat aout/main.exit)" = 3 ] || [ "$(cat aout/main.exit)" = 0 ]
+          [ "$(cat aout/negA.exit)" = 1 ] && [ "$(cat aout/negB.exit)" = 1 ]
       - name: Upload
         if: always()
         uses: actions/upload-artifact@v4

@@ -9,7 +9,7 @@ date -u +%FT%TZ > $O/start.txt
 python3 -I -c 'import json,re,sys; rx=re.compile(sys.argv[2]); open(sys.argv[3],"w").writelines(l for l in open(sys.argv[1]) if l.strip() and rx.fullmatch(json.loads(l)["tag"]))' $ROOT/in/results.jsonl "$RX" $O/records.jsonl
 echo "$RX" > $O/regex.txt; wc -l < $O/records.jsonl > $O/n_records.txt
 (cd $ROOT/in && sha256sum results.jsonl proofs/*) > $O/inputs.sha256; sha256sum $O/records.jsonl $G $K/code/*.py $F $HOME/tools/cake_lpr/cake_lpr >> $O/inputs.sha256
-( while true; do echo "$(date -u +%T) $(free -m | awk '/Mem:/{print "used="$3" avail="$7}') $(for p in $(pgrep -x cake_lpr); do grep VmHWM /proc/$p/status 2>/dev/null | tr -s ' '; done | tr '\n' ' ')"; sleep 5; done ) > $O/mem.log 2>&1 &
+( while true; do echo "$(date -u +%T) $(free -m | awk '/Mem:/{print "used="$3" avail="$7}') $(for p in $(pgrep -f CML_HEAP_SIZE); do grep VmHWM /proc/$p/status 2>/dev/null | tr -s ' '; done | tr '\n' ' ')"; sleep 5; done ) > $O/mem.log 2>&1 &
 SAMP=$!
 run() { # run NAME RECORDS PROOFS
   ( cd $K && /usr/bin/time -v -o $O/$1.time env -i PATH=/usr/bin:/bin HOME=$HOME PARTIAL_RECORDS=1 python3 -I -B $G $F $2 $3 $O/run_$1 1 "$RX" > $O/$1.stdout 2> $O/$1.stderr ); echo $? > $O/$1.exit; }

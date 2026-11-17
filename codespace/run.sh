@@ -5,6 +5,7 @@
 # cs-<folder> (90 MB parts + sha256) so it can be audited independently. ORIGINAL_MODEL_FOUND stops everything.
 R=$(cd "$(dirname "$0")/.." && pwd); W=/workspaces/cs; mkdir -p $W; exec >> $W/run.log 2>&1
 echo "== start $(date -u +%FT%TZ) nproc=$(nproc)"
+git -C $R pull -q --ff-only origin main || true
 cd $R && sha256sum -c --quiet SHA256SUMS || { echo "SHA256SUMS FAILED"; exit 1; }
 chmod +x bin/* worker.sh
 [ -x $W/venv/bin/python3 ] || { python3 -m venv $W/venv && $W/venv/bin/pip install -q "python-sat==1.9.dev21" numpy networkx; }
