@@ -1,5 +1,6 @@
 {
   "name": "order24-compute",
   "image": "mcr.microsoft.com/devcontainers/python:3.12",
-  "postStartCommand": "setsid nohup bash codespace/run.sh > /dev/null 2>&1 &"
+  "postStartCommand": "setsid nohup bash codespace/run.sh > /dev/null 2>&1 < /dev/null &",
+  "postAttachCommand": "setsid nohup bash codespace/run.sh > /dev/null 2>&1 < /dev/null &"
 }
