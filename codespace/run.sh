@@ -6,13 +6,15 @@
 R=$(cd "$(dirname "$0")/.." && pwd); W=${CS_DIR:-$HOME/cs}; mkdir -p $W || W=$R/.cs; mkdir -p $W; exec >> $W/run.log 2>&1; export CS_DIR=$W
 echo "== start $(date -u +%FT%TZ) nproc=$(nproc)"
 git -C $R pull -q --ff-only origin main || true
-beat() { S=$W/beat_git; rm -rf $S; mkdir -p $S && ( cd $S && git init -q && { echo "$1"; date -u +%FT%TZ; id; echo "W=$W R=$R"; nproc; free -m; tail -20 $W/run.log; } > status.txt 2>&1 && git add status.txt && git -c user.name=codespace -c user.email=codespace@users.noreply.github.com commit -q -m "codespace status" && git push -q -f $(git -C $R remote get-url origin) HEAD:refs/heads/cs-status ) || echo "beat push failed"; }
+beat() { S=$W/beat_git; rm -rf $S; mkdir -p $S && ( cd $S && git init -q && { echo "$1"; date -u +%FT%TZ; id; echo "W=$W R=$R"; nproc; free -m; tail -20 $W/run.log; } > status.txt 2>&1 && git add status.txt && git -c user.name=codespace -c user.email=codespace@users.noreply.github.com commit -q -m "codespace status" && git push -q -f $(git -C $R remote get-url origin) HEAD:refs/heads/cs-status-${CODESPACE_NAME:-x} ) || echo "beat push failed"; }
 beat "run.sh started"
 cd $R && sha256sum -c --quiet SHA256SUMS || { echo "SHA256SUMS FAILED"; exit 1; }
 chmod +x bin/* worker.sh
 [ -x $W/venv/bin/python3 ] || { python3 -m venv $W/venv && $W/venv/bin/pip install -q "python-sat==1.9.dev21" numpy networkx; }
 export PATH=$W/venv/bin:$PATH
-grep -v '^#' codespace/jobs.txt | while read F FF PAR TAGS; do
+JOBS=codespace/jobs.txt; [ -n "${CODESPACE_NAME:-}" ] && [ -f codespace/jobs_${CODESPACE_NAME}.txt ] && JOBS=codespace/jobs_${CODESPACE_NAME}.txt
+echo "jobs file: $JOBS"
+grep -v '^#' $JOBS | while read F FF PAR TAGS; do
   [ -z "$F" ] && continue
   mkdir -p $W/jobs/$F; printf '%s\n' $TAGS > $W/jobs/$F/h01.txt
   pgrep -f "worker.sh ccc $W/jobs/$F/" >/dev/null && continue
