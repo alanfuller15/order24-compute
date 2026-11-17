@@ -1,6 +1,6 @@
 #!/bin/bash
 # watch.sh: every 5 min, push newly recorded proofs to branch cs-<folder>; stop all on ORIGINAL_MODEL_FOUND.
-R=$(cd "$(dirname "$0")/.." && pwd); W=/workspaces/cs; exec >> $W/watch.log 2>&1
+R=$(cd "$(dirname "$0")/.." && pwd); W=${CS_DIR:-$HOME/cs}; exec >> $W/watch.log 2>&1
 while true; do
   if grep -rqs ORIGINAL_MODEL_FOUND $W/out_*/results.jsonl $W/out_*/cube/*/ 2>/dev/null; then echo "ORIGINAL_MODEL_FOUND $(date -u)"; pkill -f worker.sh; pkill -f ccc90.py; exit 0; fi
   for O in $W/out_*; do F=${O##*/out_}; [ -f $O/results.jsonl ] || continue
