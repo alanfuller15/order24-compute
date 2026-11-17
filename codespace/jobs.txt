@@ -1,4 +1,4 @@
 # codespace jobs: one line per worker: <wave-folder> <formulas file> <PAR> <tags...>   (folder name picks the seeds ckpt/<folder>.jsonl.xz)
 m85e formulas85_c62.json 3 L85_s10a4b18c63_0003 L85_s10a4b18c63_0005 L85_s10a4b18c63_0006
 m84e formulas84_c61.json 1 L84_s10a4b18c62_0000
-m80h formulas80_c57.json 1 L80_s10a4b18c58_0000
+m80c4 formulas80_c57.json 1 L80_s10a4b18c58_0000
