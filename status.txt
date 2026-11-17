@@ -1,0 +1,38 @@
+2026-11-17T08:38:49Z
+ 08:38:49 up  8:22,  0 users,  load average: 6.22, 6.10, 6.04
+4
+               total        used        free      shared  buff/cache   available
+Mem:           15993        8803         335          67        7268        7189
+Swap:              0           0           0
+/dev/loop4       32G  4.6G   26G  16% /workspaces
+14725 bash worker.sh ccc /home/vscode/cs/jobs/m85e/h01.txt /home/vscode/cs/out_m85e
+14730 bash worker.sh ccc /home/vscode/cs/jobs/m84e/h01.txt /home/vscode/cs/out_m84e
+14787 timeout --signal=KILL 604800 python3 -I -B /workspaces/order24-compute/code/ccc90.py /workspaces/order24-compute/data/formulas85_c62.json L85_s10a4b18c63_
+14789 timeout --signal=KILL 604800 python3 -I -B /workspaces/order24-compute/code/ccc90.py /workspaces/order24-compute/data/formulas85_c62.json L85_s10a4b18c63_
+14790 python3 -I -B /workspaces/order24-compute/code/ccc90.py /workspaces/order24-compute/data/formulas85_c62.json L85_s10a4b18c63_0003 /home/vscode/cs/out_m85e
+14791 timeout --signal=KILL 604800 python3 -I -B /workspaces/order24-compute/code/ccc90.py /workspaces/order24-compute/data/formulas84_c61.json L84_s10a4b18c62_
+14793 python3 -I -B /workspaces/order24-compute/code/ccc90.py /workspaces/order24-compute/data/formulas85_c62.json L85_s10a4b18c63_0005 /home/vscode/cs/out_m85e
+14795 python3 -I -B /workspaces/order24-compute/code/ccc90.py /workspaces/order24-compute/data/formulas84_c61.json L84_s10a4b18c62_0000 /home/vscode/cs/out_m84e
+86035 bash worker.sh ccc /home/vscode/cs/jobs/m80c4/h01.txt /home/vscode/cs/out_m80c4
+86073 timeout --signal=KILL 604799 python3 -I -B /workspaces/order24-compute/code/ccc90.py /workspaces/order24-compute/data/formulas80_c57.json L80_s10a4b18c58_
+86074 python3 -I -B /workspaces/order24-compute/code/ccc90.py /workspaces/order24-compute/data/formulas80_c57.json L80_s10a4b18c58_0000 /home/vscode/cs/out_m80c
+== /home/vscode/cs/out_m80c4/cube/L80_s10a4b18c58_0000.log
+08:13:22 cube [-8 26 -21 -16 27 33 38] closed: 3133 clauses, CaDiCaL 4.5 s; 89 closed, 39 open
+08:21:39 cube [-8 26 -21 -16 27 33 -38] closed: 213758 clauses, CaDiCaL 426.3 s; 90 closed, 38 open
+== /home/vscode/cs/out_m84e/cube/L84_s10a4b18c62_0000.log
+07:57:02 cube [-8 -27 7 26 -16 33 38] closed: 891 clauses, CaDiCaL 6.4 s; 102 closed, 27 open
+08:33:10 cube [-8 -27 7 26 -16 33 -38] closed: 615513 clauses, CaDiCaL 2030.2 s; 103 closed, 26 open
+== /home/vscode/cs/out_m85e/cube/L85_s10a4b18c63_0003.log
+07:29:37 cube [-8 -27 7 25 -17 16 26 42] closed: 526833 clauses, CaDiCaL 1931.5 s; 101 closed, 28 open
+08:19:07 cube [-8 -27 7 25 -17 16 26 -42] closed: 617727 clauses, CaDiCaL 2817.9 s; 102 closed, 27 open
+== /home/vscode/cs/out_m85e/cube/L85_s10a4b18c63_0005.log
+07:52:12 cube [-8 -27 7 -25 -42 -21 41 38] closed: 415711 clauses, CaDiCaL 1427.3 s; 111 closed, 18 open
+08:33:59 cube [-8 -27 7 -25 -42 -21 41 -38] closed: 494452 clauses, CaDiCaL 2351.5 s; 112 closed, 17 open
+== /home/vscode/cs/out_m85e/cube/L85_s10a4b18c63_0006.log
+04:34:30 cube [-8 -27 7 -26 21 -41 39] closed: 104604 clauses, CaDiCaL 192.1 s; 107 closed, 21 open
+04:36:29 cube [-8 -27 7 -26 21 -41 -39] closed: 40312 clauses, CaDiCaL 80.0 s; 108 closed, 20 open
+/home/vscode/cs/out_m80c4/cube/L80_s10a4b18c58_0000/log.jsonl closed=90
+/home/vscode/cs/out_m84e/cube/L84_s10a4b18c62_0000/log.jsonl closed=103
+/home/vscode/cs/out_m85e/cube/L85_s10a4b18c63_0003/log.jsonl closed=102
+/home/vscode/cs/out_m85e/cube/L85_s10a4b18c63_0005/log.jsonl closed=112
+/home/vscode/cs/out_m85e/cube/L85_s10a4b18c63_0006/log.jsonl closed=108
