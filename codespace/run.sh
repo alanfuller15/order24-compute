@@ -16,7 +16,7 @@ grep -v '^#' codespace/jobs.txt | while read F FF PAR TAGS; do
   [ -z "$F" ] && continue
   mkdir -p $W/jobs/$F; printf '%s\n' $TAGS > $W/jobs/$F/h01.txt
   pgrep -f "worker.sh ccc $W/jobs/$F/" >/dev/null && continue
-  setsid nohup env FORMULAS_FILE=$FF CUBE_DEPTH=7 PAR=$PAR WINDOW=604800 PREV=$W/none bash worker.sh ccc $W/jobs/$F/h01.txt $W/out_$F > $W/out_$F.nohup 2>&1 &
+  setsid nohup env EXT_TIMEOUT=${EXT_TIMEOUT:-3600} PYSAT_CAP=${PYSAT_CAP:-60} FORMULAS_FILE=$FF CUBE_DEPTH=7 PAR=$PAR WINDOW=604800 PREV=$W/none bash worker.sh ccc $W/jobs/$F/h01.txt $W/out_$F > $W/out_$F.nohup 2>&1 &
   echo "started $F ($TAGS)"
 done
 beat "workers launched"
