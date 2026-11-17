@@ -11,6 +11,7 @@ on:
       prev_run: {description: 'ccc chaining: run id whose artifacts <prev_wave>-<chunk> hold the cube state to resume', required: false, default: ''}
       prev_wave: {description: 'ccc chaining: wave name of prev_run (default: this wave)', required: false, default: ''}
       cube_depth: {description: 'ccc: initial cube depth (CUBE_DEPTH)', required: false, default: '4'}
+      tune: {description: 'ccc tuning "EXT_TIMEOUT,PYSAT_CAP" in seconds (default 1500,240)', required: false, default: '1500,240'}
 permissions:
   contents: read
   actions: read
@@ -43,7 +44,9 @@ jobs:
           github-token: ${{ github.token }}
           path: prev
       - name: Work
-        run: CUBE_DEPTH=${{ inputs.cube_depth }} GRUN=${{ inputs.grun }} FORMULAS_FILE=${{ inputs.formulas }} bash worker.sh ${{ inputs.mode }} chunks/${{ inputs.wave }}/${{ matrix.chunk }}.txt out
+        env:
+          TUNE: ${{ inputs.tune }}
+        run: EXT_TIMEOUT=${TUNE%%,*} PYSAT_CAP=${TUNE##*,} CUBE_DEPTH=${{ inputs.cube_depth }} GRUN=${{ inputs.grun }} FORMULAS_FILE=${{ inputs.formulas }} bash worker.sh ${{ inputs.mode }} chunks/${{ inputs.wave }}/${{ matrix.chunk }}.txt out
       - name: Upload
         if: always()
         uses: actions/upload-artifact@v4

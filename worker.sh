@@ -31,7 +31,7 @@ if [ "$MODE" = grun ]; then
 else
   run1() { T=$1; mkdir -p $OUT/cube/$T; grep "\"$T\"" $OUT/seed.jsonl > $OUT/cube/seed_$T.jsonl || true
     S=""; [ -s $OUT/cube/seed_$T.jsonl ] && S=$OUT/cube/seed_$T.jsonl
-    ENCODER=cegar90c CONF=20000 GROW=16 CAD_OPTS= DEADLINE=$(( HARD - 300 )) CUBE_DEPTH=${CUBE_DEPTH:-4} EXT_TIMEOUT=1500 PYSAT_CAP=240 \
+    ENCODER=cegar90c CONF=20000 GROW=16 CAD_OPTS= DEADLINE=$(( HARD - 300 )) CUBE_DEPTH=${CUBE_DEPTH:-4} EXT_TIMEOUT=${EXT_TIMEOUT:-1500} PYSAT_CAP=${PYSAT_CAP:-240} \
       timeout --signal=KILL $(( HARD - $(date +%s) )) python3 -I -B $R/code/ccc90.py $FORMULAS $T $OUT/cube/$T $OUT $S > $OUT/cube/$T.log 2>&1
     echo "$T ccc exit $?" >> $OUT/ccc.log; }
   export -f run1; export OUT HARD R FORMULAS   # FORMULAS: ccc90.py argv[1] (was missing: every GHA ccc run failed with shifted arguments)
