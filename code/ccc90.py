@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""ccc90.py, version 1.1 (R90D should-fix 3-5: ORIGINAL_MODEL_FOUND also goes to OUTDIR/results.jsonl; a seed line may
+"""ccc90.py, version 1.5 (on-line calibration of the hard-cube model, see "Version 1.5" below; PRED_ONLINE=0 = 1.4) / 1.1 (R90D should-fix 3-5: ORIGINAL_MODEL_FOUND also goes to OUTDIR/results.jsonl; a seed line may
 hold its items under "lazy" (lazy_ckpt.jsonl); the tree keeps the depth it was made with) (producer-side; not trusted, not part of any check): cube-and-conquer CEGAR for one hard layer-90
 formula, ending in ONE ordinary record with ONE LRAT proof, so that the assembler, gcert90c.py and cake_lpr are used
 unchanged.
@@ -70,23 +70,52 @@ PYSAT_CAP = float(os.environ.get('PYSAT_CAP', '900')); DEADLINE = float(os.envir
 # segments, stitch and checks are unchanged (a split is a split). At most one predicted split between two real attempts
 # (children of a predicted split always get a CaDiCaL attempt). PREDICT=0 turns it off; PRED_TH overrides the threshold.
 _HERE = os.path.dirname(os.path.abspath(__file__))
+# Version 1.5 (research/pred3, producer-side only): on-line calibration of the 'pre' model inside the run. Every attempted cube
+# whose p was computed adds (p, timed out?) to a window of the last PRED_W attempts of THIS state folder (rebuilt from the "pp"
+# fields of log.jsonl on resume); the shipped p is shifted in logit space by b = logit((Y + A*Pm)/(N + A)) - logit(Pm) (Y timeouts,
+# N attempts, Pm mean shipped p in the window; |b| <= PRED_B), so a model trained on another encoder or time scale corrects itself
+# from the tree's own outcomes. Guard: with a full window, if the calibrated p's log loss is worse than the window's own constant
+# rate by more than PRED_M nats per cube, the cube is attempted (plain behaviour) and the split is logged as held back. Any error in
+# the model or the calibration -> plain behaviour for that cube. PRED_ONLINE=0 gives v1.4's decisions exactly (with PRED_TH as
+# v1.4 used it). Only which cubes are split before an attempt changes; formula, segments, stitch and checks are untouched.
+ONLINE = os.environ.get('PRED_ONLINE', '1') != '0'
+PRED_W = int(os.environ.get('PRED_W', '40')); PRED_A = float(os.environ.get('PRED_A', '10'))
+PRED_B = float(os.environ.get('PRED_B', '3')); PRED_M = float(os.environ.get('PRED_M', '0.1'))
 def _load_pred():
     if os.environ.get('PREDICT', '1') == '0': return None
     try:
         m = json.load(open(os.path.join(_HERE, '..', 'data', 'pred_model.json')))
         v = json.load(open(os.path.join(_HERE, '..', 'data', 'pred_votes.json')))
-        m['th'] = float(os.environ.get('PRED_TH', m.get('threshold', 0.2))); m['votes'] = v['votes']; m['tags'] = v['tags']; return m
+        m['th'] = float(os.environ.get('PRED_TH', m.get('threshold', 0.2))); m['votes'] = v['votes']; m['tags'] = v['tags']
+        import math
+        q = _pred_p(m, [1, 1, 6, 0.5, 5])                        # version 1.5: a malformed model fails here, not mid-run
+        if not (0.0 <= q <= 1.0 and math.isfinite(q)) or not isinstance(m['votes'], dict) or not isinstance(m['tags'], list): return None
+        return m
     except Exception:
         return None
-PRED = _load_pred()
-def pred_p(x):
+def _pred_p(M, x):
     import math
-    s = PRED['init']
-    for L, R, F, Th, V in PRED['trees']:
+    s = M['init']
+    for L, R, F, Th, V in M['trees']:
         n = 0
         while L[n] != -1: n = L[n] if x[F[n]] <= Th[n] else R[n]
-        s += PRED['lr'] * V[n]
+        s += M['lr'] * V[n]
     return 1 / (1 + math.exp(-s))
+PRED = _load_pred()
+def pred_p(x): return _pred_p(PRED, x)
+def _lg(p): import math; p = min(max(p, 1e-6), 1 - 1e-6); return math.log(p / (1 - p))
+def _sg(z): import math; return 1 / (1 + math.exp(-max(-50.0, min(50.0, z))))
+def calibrate(hist, p):
+    """(q, b, ok): calibrated p, the logit shift, and False when the guard holds the split back (version 1.5)"""
+    import math
+    if not hist: return p, 0.0, True
+    n = len(hist); Y = sum(h[1] for h in hist); Pm = sum(h[0] for h in hist) / n
+    b = max(-PRED_B, min(PRED_B, _lg((Y + PRED_A * Pm) / (n + PRED_A)) - _lg(Pm))); ok = True
+    if n >= PRED_W:
+        base = (Y + 1) / (n + 2); cl = lambda q, y: -math.log(min(max(q if y else 1 - q, 1e-4), 1.0))
+        lm = sum(cl(h[2], h[1]) for h in hist) / n; lc = sum(cl(base, h[1]) for h in hist) / n
+        ok = lm <= lc + PRED_M
+    return _sg(_lg(p) + b), b, ok
 TRIM_MAX = int(os.environ.get('TRIM_MAX', str(3 << 30))); MARGIN = 90
 
 def say(*a): print(time.strftime('%H:%M:%S'), *a, flush=True)
@@ -398,11 +427,19 @@ def main():
                     's': f['s'], 'a': f['a'], 'b': f['b'], 'c': f['c'], 'h_index': f['h_index'], 'encoder': ENC_LABEL})
         say('ORIGINAL_MODEL_FOUND'); sys.exit(2)
     timed_out, predicted = set(), set()
+    import collections; hist = collections.deque(maxlen=max(1, PRED_W))   # version 1.5: (shipped p, timed out, calibrated p)
     if os.path.exists(logp):
         for _l in open(logp):
             if '"split"' in _l:
-                _e = json.loads(_l)
+                try: _e = json.loads(_l)
+                except ValueError: continue                     # version 1.5: a line torn by a kill is skipped (was: crash)
                 if _e.get('event') == 'split': (predicted if 'predicted' in _e else timed_out).add(_e['cube'])
+            if '"pp"' in _l:
+                try:
+                    _e = json.loads(_l)
+                    if _e.get('event') in ('closed', 'split') and 'predicted' not in _e:
+                        hist.append((float(_e['pp']), _e['event'] == 'split', float(_e.get('pq', _e['pp']))))
+                except (ValueError, KeyError, TypeError): pass
     own = PRED['tags'].index(tag) if PRED and tag in PRED['tags'] else -1
     def hard_p(cube, dt, used):
         if PRED is None or len(cube) < 2: return None
@@ -419,19 +456,29 @@ def main():
         if idx is None: break
         cube = tree['open'][idx]; k = key(cube); conf = tree['conf'].get(k, CONF0)
         if left() < MARGIN + 60: stop('deadline')
+        pfx = {}
         if PRE:
             # version 1.4: the PySAT probe never shortened a proof (a cube it refuted still needs CaDiCaL's LRAT segment), so with a
             # pre-attempt model it is skipped; predicted-hard cubes are split at once, all others go straight to CaDiCaL
-            hp = hard_p(cube, 0.0, 0)
-            if hp is not None and hp >= PRED['th']:
+            try: hp = hard_p(cube, 0.0, 0)
+            except Exception: hp = None                          # version 1.5: a model error -> plain behaviour, never a crash
+            hq, hb, hok = hp, 0.0, True
+            if hp is not None and ONLINE:
+                try: hq, hb, hok = calibrate(hist, hp)
+                except Exception: hq, hb, hok = hp, 0.0, False  # calibration error -> plain behaviour (attempt)
+            if hq is not None and hq >= PRED['th'] and hok:
                 x = lookahead(cnf.clauses, cube, cand)
                 if x is not None:
                     tree['splits'][k] = x; tree['open'][idx:idx + 1] = [cube + [x], cube + [-x]]
                     for c2 in tree['open'][idx:idx + 2]: tree['conf'][key(c2)] = conf
                     tree['conf'].pop(k, None); jsave(treep, tree); predicted.add(k)
-                    append_line(logp, {'event': 'split', 'cube': k, 'var': x, 'seconds': 0, 'predicted': round(hp, 3)})
-                    say(f'cube [{k}] split on {x} (predicted hard before any attempt, p = {hp:.2f})')
+                    ev = {'event': 'split', 'cube': k, 'var': x, 'seconds': 0, 'predicted': round(hq, 3)}
+                    if ONLINE: ev.update({'p0': round(hp, 3), 'b': round(hb, 3)})
+                    append_line(logp, ev)
+                    say(f'cube [{k}] split on {x} (predicted hard before any attempt, p = {hq:.2f})')
                     continue
+            # version 1.5: the attempt's log line carries pp (shipped p) and pq (calibrated p) for the on-line window
+            pfx = {} if hp is None or not ONLINE else {'pp': round(hp, 4), 'pq': round(hq, 4), **({} if hok else {'held': 1})}
             ans = None; hp = None
         # a. PySAT under the cube's assumptions. PySAT's CaDiCaL cannot be interrupted, so the time cap is a conflict
         #    cap from the measured conflict rate
@@ -471,7 +518,8 @@ def main():
         if st == 'UNSAT':
             val.update({'seg': seg, 'pysat': 'skipped' if PRE else ('UNSAT' if ans is False else 'budget')})
             tree['seq'] += 1; tree['done'][k] = val; tree['open'].pop(idx); jsave(treep, tree)
-            append_line(logp, {'event': 'closed', 'cube': k, 'seconds': round(dt, 1), **val})
+            append_line(logp, {'event': 'closed', 'cube': k, 'seconds': round(dt, 1), **val, **pfx})
+            if pfx: hist.append((pfx['pp'], False, pfx['pq']))
             say(f'cube [{k}] closed: {val["n"]} clauses, CaDiCaL {val["cad_seconds"]} s; {len(tree["done"])} closed, {len(tree["open"])} open')
         elif st == 'SAT':
             new, edges = violated(E, M, val)
@@ -485,8 +533,9 @@ def main():
             tree['splits'][k] = x; tree['open'][idx:idx + 1] = [cube + [x], cube + [-x]]
             for c2 in tree['open'][idx:idx + 2]: tree['conf'][key(c2)] = conf
             tree['conf'].pop(k, None); jsave(treep, tree)
-            append_line(logp, {'event': 'split', 'cube': k, 'var': x, 'seconds': round(dt, 1)})
+            append_line(logp, {'event': 'split', 'cube': k, 'var': x, 'seconds': round(dt, 1), **pfx})
             timed_out.add(k)
+            if pfx: hist.append((pfx['pp'], True, pfx['pq']))
             say(f'cube [{k}] split on {x} after {dt:.0f} s')
     sol.delete()
     if mine is not None:
