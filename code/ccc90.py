@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""ccc90.py, version 1.5 (on-line calibration of the hard-cube model, see "Version 1.5" below; PRED_ONLINE=0 = 1.4) / 1.1 (R90D should-fix 3-5: ORIGINAL_MODEL_FOUND also goes to OUTDIR/results.jsonl; a seed line may
+"""ccc90.py, version 1.6 (pred4: richer pre-attempt model data/pred_model4.json, see "Version 1.6" below; PRED4=0 = 1.5) / 1.5 (on-line calibration of the hard-cube model, see "Version 1.5" below; PRED_ONLINE=0 = 1.4) / 1.1 (R90D should-fix 3-5: ORIGINAL_MODEL_FOUND also goes to OUTDIR/results.jsonl; a seed line may
 hold its items under "lazy" (lazy_ckpt.jsonl); the tree keeps the depth it was made with) (producer-side; not trusted, not part of any check): cube-and-conquer CEGAR for one hard layer-90
 formula, ending in ONE ordinary record with ONE LRAT proof, so that the assembler, gcert90c.py and cake_lpr are used
 unchanged.
@@ -103,6 +103,44 @@ def _pred_p(M, x):
     return 1 / (1 + math.exp(-s))
 PRED = _load_pred()
 def pred_p(x): return _pred_p(PRED, x)
+# Version 1.6 (research/pred4_jepa, producer-side only): a second 'pre' model, data/pred_model4.json, same tree format, 25 inputs known
+# before the attempt: the five of version 1.4, the formula (layer, c, H index, log10 of the time limit), the cube's last two literals
+# and its negative literals, and the outcomes of relatives ALREADY attempted in this state folder's log (sibling, uncle, every cube
+# under the same grand-parent, the parent's log-seconds). PRED4=0 (or PREDICT=0, or a missing/malformed file, or any error while
+# computing the inputs) -> the version 1.5 model decides, exactly as before. PRED4_ENC_GATE=0 keeps other encoders' votes (default:
+# votes recorded under another encoder than this run's are ignored by the new model; all 13 false splits on v9 trees came from them).
+P4_NAMES = ['parent_to', 'grand_to', 'depth', 'vote', 'n_vote', 'layer', 'c', 'hidx', 'logT', 'last_sign', 'last_var', 'n_neg', 'frac_neg',
+            'prev_sign', 'prev_var', 'sib_known', 'sib_to', 'sib_ls', 'unc_known', 'unc_to', 'unc_ls', 'cous_n', 'cous_rate', 'cous_mls', 'par_ls']
+def _p4_ls(s): import math; return math.log10(max(float(s), 0.1))
+def p4_feats(tag, cube, T, timed_out, seen, o):
+    """the 25 inputs of pred_model4.json. cube: list of literals; T: time limit in seconds; timed_out: set of cube keys; seen: {cube key:
+    (timed out, log10 seconds)} of the cubes attempted so far in this log whose parent was not a predicted split; o: votes (0/1) of
+    other formulas for this cube key. Mirrors research/pred4_jepa/build_data.py (checked by install/test/test_feats.py)."""
+    import math, re
+    key = lambda c: ' '.join(map(str, c))                         # (the module's key() is defined further down)
+    li = [int(v) for v in cube]; n = len(li); k = key(li); par = key(li[:-1]); gp = key(li[:-2]); sib = key(li[:-1] + [-li[-1]])
+    unc = key(li[:-2] + [-li[-2]]) if n >= 2 else None
+    m = re.match(r'L(\d+)_s(\d+)a(\d+)b(\d+)c(\d+)_(\d+)', tag); logT = math.log10(max(100.0, round(float(T), -2)))
+    pto = int(par in timed_out); gto = int(gp in timed_out); neg = sum(v < 0 for v in li)
+    cous = [seen[q] for q in seen if q.startswith(gp + ' ') and q != k] if gp else []
+    s_ = seen.get(sib); u_ = seen.get(unc) if unc else None; p_ = seen.get(par)
+    return [pto, gto, n, (sum(o) / len(o)) if o else -1.0, min(len(o), 20), int(m.group(1)), int(m.group(5)), int(m.group(6)), logT,
+            1.0 if li[-1] > 0 else 0.0, abs(li[-1]), neg, neg / n, (1.0 if li[-2] > 0 else 0.0) if n > 1 else 0.5, abs(li[-2]) if n > 1 else 0,
+            float(s_ is not None), float(s_[0]) if s_ else 0.0, s_[1] if s_ else 1.0, float(u_ is not None), float(u_[0]) if u_ else 0.0, u_[1] if u_ else 1.0,
+            math.log10(1 + len(cous)), (sum(c[0] for c in cous) + 0.26) / (len(cous) + 2), (sum(c[1] for c in cous) / len(cous)) if cous else 1.0,
+            p_[1] if p_ else (logT if pto else 1.0)]
+def _load_pred4():
+    if PRED is None or PRED.get('stage') != 'pre' or os.environ.get('PRED4', '1') == '0': return None
+    try:
+        import math
+        m = json.load(open(os.path.join(_HERE, '..', 'data', 'pred_model4.json')))
+        if m.get('features') != P4_NAMES or m.get('stage') != 'pre': return None
+        q = _pred_p(m, p4_feats('L87_s10a4b18c65_0000', [8, -22, 36], 1500.0, {'8 -22'}, {'8 -22': (True, 3.2), '8 -22 -36': (False, 1.0)}, [1, 0]))
+        return m if 0.0 <= q <= 1.0 and math.isfinite(q) else None
+    except Exception:
+        return None
+PRED4 = _load_pred4()
+P4_GATE = os.environ.get('PRED4_ENC_GATE', '1') != '0'
 def _lg(p): import math; p = min(max(p, 1e-6), 1 - 1e-6); return math.log(p / (1 - p))
 def _sg(z): import math; return 1 / (1 + math.exp(-max(-50.0, min(50.0, z))))
 def calibrate(hist, p):
@@ -441,13 +479,34 @@ def main():
                         hist.append((float(_e['pp']), _e['event'] == 'split', float(_e.get('pq', _e['pp']))))
                 except (ValueError, KeyError, TypeError): pass
     own = PRED['tags'].index(tag) if PRED and tag in PRED['tags'] else -1
+    seen4 = {}                                                   # version 1.6: {cube key: (timed out, log10 seconds)}, in log order
+    def note4(k4, to4, s4):
+        try:
+            if PRED4 is not None and ' '.join(k4.split()[:-1]) not in predicted: seen4[k4] = (bool(to4), _p4_ls(s4))
+        except Exception: pass
+    if PRED4 is not None and os.path.exists(logp):
+        for _l in open(logp):
+            if '"closed"' in _l or '"split"' in _l:
+                try:
+                    _e = json.loads(_l)
+                    if _e.get('event') == 'closed': note4(_e['cube'], False, _e.get('cad_seconds') or 0)
+                    elif _e.get('event') == 'split' and 'predicted' not in _e: note4(_e['cube'], True, _e.get('seconds') or 0)
+                except (ValueError, KeyError, TypeError): pass
     def hard_p(cube, dt, used):
         if PRED is None or len(cube) < 2: return None
         par, gp = key(cube[:-1]), key(cube[:-2])
         if par in predicted: return None                       # children of a predicted split always get a real attempt
         o = [t for g, t in PRED['votes'].get(key(cube), []) if g != own]
         v = [(sum(o) / len(o)) if o else -1.0, min(len(o), 20)]
-        if PRED.get('stage') == 'pre': return pred_p([int(par in timed_out), int(gp in timed_out), len(cube)] + v)
+        if PRED.get('stage') == 'pre':
+            if PRED4 is not None:                                  # version 1.6; any error -> the version 1.5 model below
+                try:
+                    import math
+                    o4 = o if (not P4_GATE or PRED4.get('votes_encoder') in (None, ENC_LABEL)) else []
+                    q4 = _pred_p(PRED4, p4_feats(tag, cube, EXT_TIMEOUT, timed_out, seen4, o4))
+                    if 0.0 <= q4 <= 1.0 and math.isfinite(q4): return q4
+                except Exception: pass
+            return pred_p([int(par in timed_out), int(gp in timed_out), len(cube)] + v)
         x = [int(par in timed_out), int(gp in timed_out), len(cube), dt, used / max(1.0, dt)] + v
         return pred_p(x)
     PRE = PRED is not None and PRED.get('stage') == 'pre'          # version 1.4: decide before any attempt, no PySAT probe
@@ -519,6 +578,7 @@ def main():
             val.update({'seg': seg, 'pysat': 'skipped' if PRE else ('UNSAT' if ans is False else 'budget')})
             tree['seq'] += 1; tree['done'][k] = val; tree['open'].pop(idx); jsave(treep, tree)
             append_line(logp, {'event': 'closed', 'cube': k, 'seconds': round(dt, 1), **val, **pfx})
+            note4(k, False, val.get('cad_seconds') or 0)
             if pfx: hist.append((pfx['pp'], False, pfx['pq']))
             say(f'cube [{k}] closed: {val["n"]} clauses, CaDiCaL {val["cad_seconds"]} s; {len(tree["done"])} closed, {len(tree["open"])} open')
         elif st == 'SAT':
@@ -534,7 +594,7 @@ def main():
             for c2 in tree['open'][idx:idx + 2]: tree['conf'][key(c2)] = conf
             tree['conf'].pop(k, None); jsave(treep, tree)
             append_line(logp, {'event': 'split', 'cube': k, 'var': x, 'seconds': round(dt, 1), **pfx})
-            timed_out.add(k)
+            timed_out.add(k); note4(k, True, round(dt, 1))
             if pfx: hist.append((pfx['pp'], True, pfx['pq']))
             say(f'cube [{k}] split on {x} after {dt:.0f} s')
     sol.delete()
