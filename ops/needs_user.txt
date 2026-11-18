@@ -1,0 +1,2 @@
+# Items that need the user (one per line, written by the manager). PUBLIC repo: production facts only (decisions,
+# quotas, run ids). Never accounts, sign-ins, passwords, e-mail, names, chat links or anything personal.

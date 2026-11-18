@@ -1,0 +1,78 @@
+name: refill
+# E4: the manager's refill loop (opt/autochain.sh -> layers/code/shard_ccc.py pool) as a workflow. Scheduling only:
+# it continues finished produce runs with ops/pool.py (the same policy), lists finished formulas in ops/new_records.txt for
+# the manager, and never records, audits, deletes, closes or cancels anything. ORIGINAL_MODEL_FOUND -> ops/ALERT +
+# control/HOLD, run fails. control/HOLD present -> does nothing. At most ops/config.json "cap" (40) jobs busy.
+# Live only when ops/config.json has "live": true. Then schedule / workflow_run passes are live, and a manual dispatch is live
+# with dry_run=false. With "live": false every pass is a dry run, whatever dry_run says (refill.py forces it).
+# Cron is the primary trigger (workflow_run cannot chain more than 3 levels); workflow_run is the low-latency extra.
+on:
+  schedule:
+    - cron: '3,13,23,33,43,53 * * * *'
+  workflow_run:
+    workflows: [produce]
+    types: [completed]
+  workflow_dispatch:
+    inputs:
+      dry_run:
+        description: 'true = everything except commit and dispatch (plan in the job summary; status goes to branch status-dry). false is live only when ops/config.json has live: true'
+        required: false
+        default: 'true'
+        type: choice
+        options: ['true', 'false']
+permissions:
+  actions: write
+  contents: write
+concurrency:
+  group: refill
+  cancel-in-progress: false
+jobs:
+  refill:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+          fetch-depth: 50
+      - name: Mode
+        id: mode
+        env:
+          EV: ${{ github.event_name }}
+          IN: ${{ inputs.dry_run }}
+        run: |
+          LIVE=$(python3 -I -c "import json; print(1 if json.load(open('ops/config.json')).get('live') is True else 0)")
+          DRY=--dry
+          if [ "$LIVE" = 1 ]; then
+            if [ "$EV" != workflow_dispatch ] || [ "$IN" = false ]; then DRY=; fi
+          fi
+          echo "dry=$DRY" >> "$GITHUB_OUTPUT"
+          echo "event $EV, config live=$LIVE -> ${DRY:-LIVE}"
+          if [ -e control/HOLD ]; then echo "control/HOLD present: the refill will do nothing"; head -5 control/HOLD; fi
+      - name: Setup
+        continue-on-error: true
+        run: sudo pip3 install --break-system-packages -q "numpy==2.2.6"
+      - name: Refill
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: python3 -I ops/refill.py ${{ steps.mode.outputs.dry }} --repo-dir . --work "$RUNNER_TEMP/refill"
+      - name: Status page
+        if: always()
+        env:
+          GH_TOKEN: ${{ github.token }}
+          DRY: ${{ steps.mode.outputs.dry }}
+        run: |
+          BR=status; if [ -n "$DRY" ]; then BR=status-dry; fi
+          git fetch -q --depth=1 origin '+refs/heads/lane-status-*:refs/remotes/origin/lane-status-*' || true
+          if git fetch -q --depth=1 origin "+refs/heads/$BR:refs/remotes/origin/$BR" 2>/dev/null; then
+            git show "origin/$BR:status.json" > "$RUNNER_TEMP/prev_status.json" || echo '{}' > "$RUNNER_TEMP/prev_status.json"
+          else echo '{}' > "$RUNNER_TEMP/prev_status.json"; fi
+          python3 -I ops/status.py --repo-dir . --pass "$RUNNER_TEMP/refill/pass.json" --prev "$RUNNER_TEMP/prev_status.json" --out "$RUNNER_TEMP/status"
+          cat "$RUNNER_TEMP/status/STATUS.md" >> "$GITHUB_STEP_SUMMARY"
+          # one-commit branch, force-pushed (no history kept on it; the events list lives in status.json)
+          B1=$(git hash-object -w "$RUNNER_TEMP/status/STATUS.md"); B2=$(git hash-object -w "$RUNNER_TEMP/status/status.json")
+          T=$(printf '100644 blob %s\tSTATUS.md\n100644 blob %s\tstatus.json\n' "$B1" "$B2" | git mktree)
+          printf 'status %s\n\nCo-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>\nClaude-Session: https://claude.ai/code/session_01MTjZowtCtrDAyKuAmKSoH2\n' "$(date -u +%Y-%m-%dT%H:%MZ)" > "$RUNNER_TEMP/status_msg.txt"
+          C=$(git -c user.name='github-actions[bot]' -c user.email='41898282+github-actions[bot]@users.noreply.github.com' commit-tree "$T" -F "$RUNNER_TEMP/status_msg.txt")
+          git push -q -f origin "$C:refs/heads/$BR"
+          echo "pushed $BR"

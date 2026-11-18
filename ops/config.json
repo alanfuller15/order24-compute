@@ -1,0 +1,10 @@
+{
+ "live": false,
+ "cap": 40,
+ "cutoff": "2026-11-16T23:40:00Z",
+ "jmax": 6,
+ "window": 9000,
+ "min_api_remaining": 400,
+ "max_pass_minutes": 12,
+ "note": "live=false: every pass is a dry run (a manual dry_run=false does not override it). cutoff: produce runs created before it are never touched; it must be NO LATER than the created_at of the oldest produce run still in flight (default: autochain's own bound); ops/handled_runs.txt keeps already-continued runs out. Switch with local ops/switch_ledger.py only after opt/AUTOCHAIN_OFF is set and no autochain.sh / shard_ccc.py process is left; it writes fresh ledgers, live=true and the cutoff for ONE commit."
+}

@@ -65,10 +65,10 @@ jobs:
         run: |
           B=${CHUNK%%k[0-9]*}
           # PB = this chunk's name in the previous wave: the same, or without the letter that marks a one-formula chunk split off a larger one (h01a <- h01)
-          gh api "repos/$REPO/actions/runs/$PR/artifacts?per_page=100" --jq '.artifacts[].name' > "$RUNNER_TEMP/arts.txt" || true
+          gh api --paginate "repos/$REPO/actions/runs/$PR/artifacts?per_page=100" --jq '.artifacts[].name' > "$RUNNER_TEMP/arts.txt" || true
           PB=$B; grep -qE "^$PW-${B}(k[0-9]+of[0-9]+)?$" "$RUNNER_TEMP/arts.txt" || PB=$(echo "$B" | sed 's/[a-z]*$//')
           if [ "$MODE" = merge ]; then
-            for a in $(gh api "repos/$REPO/actions/runs/$PR/artifacts?per_page=100" --jq '.artifacts[].name' | grep -E "^$PW-${B}k[0-9]+of[0-9]+$"); do
+            for a in $(grep -E "^$PW-${B}k[0-9]+of[0-9]+$" "$RUNNER_TEMP/arts.txt"); do
               gh run download "$PR" -R "$REPO" -n "$a" -D "shards/$a"; done
             ls shards
           elif [ "$RESHARD" = 1 ]; then
@@ -137,3 +137,35 @@ jobs:
           path: out_3/
           retention-days: 30
           compression-level: 0
+      - name: Collect meta
+        # E3: the small files the refill needs (ops/refill.py), one folder per shard named like its artifact:
+        # meta/<wave>-<shard chunk>/{results.jsonl, chunk.txt, ccc.log, cube/*.log, cube/*/log.jsonl, cube/*/tree.json,
+        # cube/*/ORIGINAL_MODEL_FOUND.json}. No proofs. The artifacts above are unchanged. The API lists a run's artifacts
+        # newest first, so a -meta artifact is usually artifacts[0]: every consumer must skip names ending in -meta.
+        # continue-on-error: a failed meta step never fails the job (refill then reads the full artifact by range).
+        if: always()
+        continue-on-error: true
+        env:
+          WAVE: ${{ inputs.wave }}
+          CHUNK: ${{ matrix.chunk }}
+        run: |
+          rm -rf meta
+          for j in 0 1 2 3; do
+            eval "C=\${A$j:-}"; if [ "$j" = 0 ] && [ -z "$C" ]; then C=$CHUNK; fi
+            if [ -z "$C" ]; then continue; fi
+            O=out; if [ "$j" -gt 0 ]; then O=out_$j; fi
+            if [ ! -d "$O" ]; then continue; fi
+            D="$GITHUB_WORKSPACE/meta/$WAVE-$C"; mkdir -p "$D"
+            ( cd "$O" && for f in results.jsonl chunk.txt ccc.log cube/*.log cube/*/log.jsonl cube/*/tree.json cube/*/ORIGINAL_MODEL_FOUND.json; do
+                if [ -f "$f" ]; then cp --parents "$f" "$D/"; fi; done )
+          done
+          du -sh meta 2>/dev/null || echo "no meta files"
+      - name: Upload meta
+        if: always()
+        continue-on-error: true
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ inputs.wave }}-${{ env.A0 || matrix.chunk }}-meta
+          path: meta/
+          retention-days: 30
+          if-no-files-found: ignore
