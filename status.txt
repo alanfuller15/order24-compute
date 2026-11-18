@@ -1,0 +1,43 @@
+2026-11-18T00:54:16Z
+ 00:54:16 up 11:59,  0 users,  load average: 1.42, 0.51, 0.35
+4
+               total        used        free      shared  buff/cache   available
+Mem:           15993        2772         257          67       13377       13221
+Swap:              0           0           0
+/dev/loop4       32G   11G   20G  36% /workspaces
+== /home/vscode/cs/out_m80c4/cube/L80_s10a4b18c58_0000.log
+22:30:10 cube [-8 -26 7 -21 25 -17 16 33 -38] split on 42 after 3604 s
+22:34:41 cube [-8 -26 7 -21 25 -17 16 33 -38 42] closed: 114469 clauses, CaDiCaL 186.2 s; 113 closed, 23 open
+== /home/vscode/cs/out_m82f4/cube/L82_s10a4b18c60_0002.log
+22:45:55 cube [-8 -27 7 26 16 42 -38] closed: 499319 clauses, CaDiCaL 2017.1 s; 98 closed, 30 open
+23:05:22 cube [-8 -27 7 26 16 -42 33] closed: 331572 clauses, CaDiCaL 1054.6 s; 99 closed, 29 open
+== /home/vscode/cs/out_m84c4/cube/L84_s10a4b18c62_0003.log
+18:17:21 cube [-8 -27 7 -26 -21 25 17 -42 -41] closed: 389151 clauses, CaDiCaL 1237.4 s; 111 closed, 19 open
+19:18:44 cube [-8 -27 7 -26 -21 25 -17] split on 42 after 3604 s
+== /home/vscode/cs/out_m84e/cube/L84_s10a4b18c62_0000.log
+22:28:50 cube [-8 -27 7 -26 -21 25 16 17 -42 33] split on 38 after 3604 s
+22:28:57 cube [-8 -27 7 -26 -21 25 16 17 -42 33 38] closed: 375 clauses, CaDiCaL 2.6 s; 116 closed, 22 open
+== /home/vscode/cs/out_m85c4/cube/L85_s10a4b18c63_0002.log
+12:36:50 cube [8 -22 -18 -26 -34 -126 125] closed: 24404 clauses, CaDiCaL 86.1 s; 63 closed, 65 open
+12:39:22 cube [8 -22 -18 -26 -34 -126 -125] closed: 32057 clauses, CaDiCaL 120.2 s; 64 closed, 64 open
+== /home/vscode/cs/out_m85e/cube/L85_s10a4b18c63_0003.log
+09:43:13 cube [-8 -27 7 25 -17 16 -26 42] closed: 397615 clauses, CaDiCaL 1283.7 s; 103 closed, 27 open
+10:44:42 cube [-8 -27 7 25 -17 16 -26 -42] split on 41 after 3605 s
+== /home/vscode/cs/out_m85e/cube/L85_s10a4b18c63_0005.log
+09:35:10 cube [-8 -27 7 -25 -42 -21 -41] split on 24 after 3604 s
+10:35:17 cube [-8 -27 7 -25 -42 -21 -41 24] closed: 734228 clauses, CaDiCaL 3426.3 s; 113 closed, 17 open
+== /home/vscode/cs/out_m85e/cube/L85_s10a4b18c63_0006.log
+04:34:30 cube [-8 -27 7 -26 21 -41 39] closed: 104604 clauses, CaDiCaL 192.1 s; 107 closed, 21 open
+04:36:29 cube [-8 -27 7 -26 21 -41 -39] closed: 40312 clauses, CaDiCaL 80.0 s; 108 closed, 20 open
+== /home/vscode/cs/out_m85e4/cube/L85_s10a4b18c63_0000.log
+22:56:26 cube [-8 -27 7 25 17 -42 -33 29 -41] closed: 727129 clauses, CaDiCaL 2779.7 s; 103 closed, 29 open
+22:59:21 cube [-8 -27 7 25 17 -42 -33 -29] closed: 62637 clauses, CaDiCaL 127.2 s; 104 closed, 28 open
+/home/vscode/cs/out_m80c4/cube/L80_s10a4b18c58_0000/log.jsonl closed=113
+/home/vscode/cs/out_m82f4/cube/L82_s10a4b18c60_0002/log.jsonl closed=99
+/home/vscode/cs/out_m84c4/cube/L84_s10a4b18c62_0003/log.jsonl closed=111
+/home/vscode/cs/out_m84e/cube/L84_s10a4b18c62_0000/log.jsonl closed=116
+/home/vscode/cs/out_m85c4/cube/L85_s10a4b18c63_0002/log.jsonl closed=64
+/home/vscode/cs/out_m85e/cube/L85_s10a4b18c63_0003/log.jsonl closed=103
+/home/vscode/cs/out_m85e/cube/L85_s10a4b18c63_0005/log.jsonl closed=113
+/home/vscode/cs/out_m85e/cube/L85_s10a4b18c63_0006/log.jsonl closed=108
+/home/vscode/cs/out_m85e4/cube/L85_s10a4b18c63_0000/log.jsonl closed=104
