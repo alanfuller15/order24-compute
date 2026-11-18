@@ -1,5 +1,5 @@
 {
- "live": false,
+ "live": true,
  "cap": 40,
  "cutoff": "2026-11-16T23:40:00Z",
  "jmax": 6,
