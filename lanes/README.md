@@ -43,7 +43,7 @@ L84_s10a4b18c62_0000 formulas84_c61.json codex-m84-lane4 /workspace/out84x CUBE_
 
 ## What one tick does (every 60 s)
 
-1. `git pull --ff-only`, then `sha256sum -c SHA256SUMS` plus a check that `lanes/supervise.sh` and `worker.sh` are
+1. `git fetch --no-tags origin main && git merge --ff-only FETCH_HEAD`, then `sha256sum -c SHA256SUMS` plus a check that `lanes/supervise.sh` and `worker.sh` are
    pinned. On failure nothing starts; in MODE run a failure lasting 120 s stops the solvers (not stitching ones); in
    MODE fill nothing is stopped and the status carries `ALERT SHA256SUMS FAILED`. A changed, verified `supervise.sh`
    that passes `bash -n` replaces the running loop (exec, same pid); solvers keep running.

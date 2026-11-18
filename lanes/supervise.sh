@@ -2,7 +2,7 @@
 # lanes/supervise.sh N - self-healing supervisor for Codex lane N (producer side; nothing here is trusted by the audit).
 # Start:  cd /workspace/r && setsid nohup bash lanes/supervise.sh N > /dev/null 2>&1 < /dev/null &   (safe to run twice)
 # Every SV_TICK (60) s:
-#   1. git pull --ff-only; sha256sum -c SHA256SUMS, and lanes/supervise.sh and worker.sh must be pinned there.
+#   1. git fetch origin main + merge --ff-only (main only); sha256sum -c SHA256SUMS, and lanes/supervise.sh and worker.sh must be pinned there.
 #      On failure nothing is started; MODE run stops the solvers once the failure has lasted SV_SHA_GRACE (120) s
 #      (never one that is stitching its final proof); MODE fill stops nothing and raises an ALERT. A changed, verified
 #      supervise.sh that passes bash -n replaces this process (exec, same pid) without touching the solvers.
@@ -387,7 +387,7 @@ tick() {
   NOTES=(); ALERTS=(); PUBNOTE=""; local now; now=$(date +%s)
   # 1. code
   local pulled=OK
-  timeout 120 git -C "$R" pull -q --ff-only 2>>"$LOG" || pulled=FAILED
+  { timeout 120 git -C "$R" fetch -q --no-tags origin main 2>>"$LOG" && git -C "$R" merge -q --ff-only FETCH_HEAD 2>>"$LOG"; } || pulled=FAILED   # main only: a plain pull also fetches the GB-sized codex-* proof branches (lane 8, 08:31Z: RPC failed / early EOF)
   [ $pulled = OK ] || NOTES+=("git pull failed (running the current verified code)")
   VER=$(head -c 64 "$R/lanes/VERSION" 2>/dev/null | tr -dc 'A-Za-z0-9._-'); VER=${VER:-0}
   read_assign; [ -n "$BAD" ] && NOTES+=("assignment:$BAD")
