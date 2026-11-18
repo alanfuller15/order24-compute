@@ -49,3 +49,9 @@ jobs:
           name: ${{ inputs.name }}
           path: exp_out/
           retention-days: 14
+      - name: Gate
+        if: always()
+        run: |
+          # fails the job (after the upload) when a script reported a failure or any MODEL_FOUND.json exists
+          if [ -e exp_out/GATE_FAIL ]; then echo "GATE_FAIL: $(cat exp_out/GATE_FAIL)"; exit 1; fi
+          if [ -n "$(find exp_out in -name MODEL_FOUND.json 2>/dev/null)" ]; then echo "MODEL_FOUND.json present"; exit 1; fi
