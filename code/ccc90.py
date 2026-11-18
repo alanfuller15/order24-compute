@@ -64,6 +64,29 @@ CAD_OPTS = os.environ.get('CAD_OPTS', '--unsat').split()
 CONF0 = int(os.environ.get('CONF', '20000')); GROW = int(os.environ.get('GROW', '16'))
 DEPTH0 = int(os.environ.get('CUBE_DEPTH', '3')); EXT_TIMEOUT = float(os.environ.get('EXT_TIMEOUT', '1500'))
 PYSAT_CAP = float(os.environ.get('PYSAT_CAP', '900')); DEADLINE = float(os.environ.get('DEADLINE', '0')) or None
+# Hard-cube prediction (version 1.3, producer-side only): after the PySAT probe runs out of budget, a cube that the model
+# (data/pred_model.json, trained on earlier cube logs; votes from other formulas' trees in data/pred_votes.json) predicts to hit
+# EXT_TIMEOUT is split at once by the same lookahead instead of running CaDiCaL until the time limit. The cube tree, proof
+# segments, stitch and checks are unchanged (a split is a split). At most one predicted split between two real attempts
+# (children of a predicted split always get a CaDiCaL attempt). PREDICT=0 turns it off; PRED_TH overrides the threshold.
+_HERE = os.path.dirname(os.path.abspath(__file__))
+def _load_pred():
+    if os.environ.get('PREDICT', '1') == '0': return None
+    try:
+        m = json.load(open(os.path.join(_HERE, '..', 'data', 'pred_model.json')))
+        v = json.load(open(os.path.join(_HERE, '..', 'data', 'pred_votes.json')))
+        m['th'] = float(os.environ.get('PRED_TH', m.get('threshold', 0.2))); m['votes'] = v['votes']; m['tags'] = v['tags']; return m
+    except Exception:
+        return None
+PRED = _load_pred()
+def pred_p(x):
+    import math
+    s = PRED['init']
+    for L, R, F, Th, V in PRED['trees']:
+        n = 0
+        while L[n] != -1: n = L[n] if x[F[n]] <= Th[n] else R[n]
+        s += PRED['lr'] * V[n]
+    return 1 / (1 + math.exp(-s))
 TRIM_MAX = int(os.environ.get('TRIM_MAX', str(3 << 30))); MARGIN = 90
 
 def say(*a): print(time.strftime('%H:%M:%S'), *a, flush=True)
@@ -374,6 +397,20 @@ def main():
         append_line(os.path.join(outdir, 'results.jsonl'), {'status': 'ORIGINAL_MODEL_FOUND', 'tag': tag, 'edges': edges, 'cube': cube,
                     's': f['s'], 'a': f['a'], 'b': f['b'], 'c': f['c'], 'h_index': f['h_index'], 'encoder': ENC_LABEL})
         say('ORIGINAL_MODEL_FOUND'); sys.exit(2)
+    timed_out, predicted = set(), set()
+    if os.path.exists(logp):
+        for _l in open(logp):
+            if '"split"' in _l:
+                _e = json.loads(_l)
+                if _e.get('event') == 'split': (predicted if 'predicted' in _e else timed_out).add(_e['cube'])
+    own = PRED['tags'].index(tag) if PRED and tag in PRED['tags'] else -1
+    def hard_p(cube, dt, used):
+        if PRED is None or len(cube) < 2: return None
+        par, gp = key(cube[:-1]), key(cube[:-2])
+        if par in predicted: return None                       # children of a predicted split always get a real attempt
+        o = [t for g, t in PRED['votes'].get(key(cube), []) if g != own]
+        x = [int(par in timed_out), int(gp in timed_out), len(cube), dt, used / max(1.0, dt), (sum(o) / len(o)) if o else -1.0, min(len(o), 20)]
+        return pred_p(x)
     while True:
         idx = next((j for j, c in enumerate(tree['open']) if is_mine(c)), None)
         if idx is None: break
@@ -397,6 +434,16 @@ def main():
         append_line(logp, {'event': 'pysat', 'cube': k, 'result': 'UNSAT' if ans is False else 'budget', 'budget': budget,
                            'conflicts': used, 'seconds': round(dt, 1)})
         if ans is None and left() < MARGIN + 60: stop('deadline')
+        hp = hard_p(cube, dt, used) if ans is None else None
+        if hp is not None and hp >= PRED['th']:
+            x = lookahead(cnf.clauses, cube, cand)
+            if x is not None:
+                tree['splits'][k] = x; tree['open'][idx:idx + 1] = [cube + [x], cube + [-x]]
+                for c2 in tree['open'][idx:idx + 2]: tree['conf'][key(c2)] = conf
+                tree['conf'].pop(k, None); jsave(treep, tree); predicted.add(k)
+                append_line(logp, {'event': 'split', 'cube': k, 'var': x, 'seconds': 0, 'predicted': round(hp, 3)})
+                say(f'cube [{k}] split on {x} (predicted hard, p = {hp:.2f})')
+                continue
         # b. the external proof-writing CaDiCaL on F_c
         to = min(EXT_TIMEOUT, left() - MARGIN)
         if to < min(60, EXT_TIMEOUT): stop('deadline')
@@ -421,6 +468,7 @@ def main():
             for c2 in tree['open'][idx:idx + 2]: tree['conf'][key(c2)] = conf
             tree['conf'].pop(k, None); jsave(treep, tree)
             append_line(logp, {'event': 'split', 'cube': k, 'var': x, 'seconds': round(dt, 1)})
+            timed_out.add(k)
             say(f'cube [{k}] split on {x} after {dt:.0f} s')
     sol.delete()
     if mine is not None:
