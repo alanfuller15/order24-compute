@@ -110,7 +110,8 @@ PRIMARY = json.load(open(a.primary)) if a.primary and os.path.exists(a.primary) 
 waves = {}
 for an in arts:
     m = re.match(r'(m(\d\d)([c-f])\S*?)-(h\d+[a-z]?)(?:k(\d+)of(\d+))?$', an)
-    if m and not m.group(1).endswith('m'):
+    if m:   # 2026-11-18: merge waves (name ending in m) are read too: a merge job that hit its deadline with open cubes left no record
+            # and was never continued (L81_s10a4b18c59_0001 sat 2 cubes from done for 16 h); a finished merge has its tag recorded -> nothing left
         waves.setdefault((m.group(1), int(m.group(2))), {}).setdefault(m.group(4), []).append((an, m.group(5), m.group(6)))
 
 def state_open(dirs, tag):   # open cubes and whether every shard is done, from the fetched logs (a joined state starts with a "merged" event)

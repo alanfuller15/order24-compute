@@ -245,8 +245,7 @@ for r in new[:a.max_runs]:
     for l in added: event(f'FINISHED (to fetch, audit, record): {l.split(chr(9))[0]} run {run} artifact {l.split(chr(9))[3]}')
     paths = ['ops/scanned_runs.txt']; dispatches = []; plan_note = ''
     if r['conclusion'] == 'success' and run not in handled:
-        if re.search(r's\d.*m-', first): plan_note = 'merge wave, no continuation'
-        elif re.match(r'm\d\d[c-f]', first):
+        if re.match(r'm\d\d[c-f]', first):   # merge waves included (2026-11-18): pool.py continues one only if its formula has no record
             if not free_known:
                 log(f'run {run}: job count unknown (a new run lists no jobs yet): continued next pass')
                 P['needs'].append(f'run {run}: not continued this pass: job count unknown (runs without jobs: {unknown})'); continue
