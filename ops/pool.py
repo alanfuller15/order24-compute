@@ -15,6 +15,10 @@ Differences from shard_ccc.py (none of them changes a decision for the same inpu
   - ORIGINAL_MODEL_FOUND: exit code 2 and plan.stop (shard_ccc.py: sys.exit with the same message). Nothing of that run is
     dispatched by the caller (shard_ccc.py could already have dispatched an earlier wave of the same run: stricter here).
   - artifact names ending in -meta are ignored (they never matched the regex anyway: shown in the test).
+  - encoder (v9 package): a wave's encoder label is read from its fetched state (cube/*/tree.json "encoder") and records
+    (results.jsonl "encoder"), over all its shard folders. v7 or no label: the dispatch bodies are exactly as before (no
+    "encoder" input, so produce.yml's default cegar90c). v9: the ccc and merge bodies carry "encoder": "cegar90e". Two
+    different labels, or any other label (v6, ...): the wave is NOT continued (handle by hand), nothing is written for it.
 Producer-side only: nothing here records, audits, deletes or closes anything."""
 import sys, os, json, re, glob, shutil, argparse, math, struct
 
@@ -87,6 +91,21 @@ def _predict_one(x):
 
 def gh_dispatch_body(inputs): return json.dumps({'ref': 'main', 'inputs': inputs})
 
+ENC_MOD = {'v7': 'cegar90c', 'v9': 'cegar90e'}          # encoder label (tree.json, records) -> produce.yml input `encoder`
+def wave_labels(dirs):
+    """the encoder labels found in the fetched state of these shard folders: every cube/*/tree.json and results.jsonl line"""
+    out = set()
+    for d in dirs:
+        for tp in sorted(glob.glob(f'{d}/cube/*/tree.json')):
+            try: out.add(json.load(open(tp)).get('encoder'))
+            except ValueError: out.add('unreadable tree.json')
+        if os.path.exists(f'{d}/results.jsonl'):
+            for l in open(f'{d}/results.jsonl', errors='replace'):
+                try: r = json.loads(l)
+                except ValueError: continue
+                if isinstance(r, dict) and r.get('encoder'): out.add(r['encoder'])
+    return out
+
 PRIMARY = json.load(open(a.primary)) if a.primary and os.path.exists(a.primary) else {}
 waves = {}
 for an in arts:
@@ -157,6 +176,11 @@ for (wave, M), chunks in sorted(waves.items()):
             if sharded and alldone: merge_chunks.setdefault(ch, []).append(t)
             else: cont.append((nb, t, nopen, cost_to_go(dirs, t)))
     if bad and not cont and not merge_chunks: continue
+    labs = wave_labels([f'{G}/{x}' for lst in chunks.values() for x, _, _ in lst])
+    if (cont or merge_chunks) and (len(labs) > 1 or not labs <= set(ENC_MOD)):
+        say(f'{wave}: encoder labels {sorted(map(str, labs))}: NOT continued (handle by hand)'); continue
+    enc = ENC_MOD.get(next(iter(labs)), 'cegar90c') if len(labs) == 1 else 'cegar90c'
+    encin = {} if enc == 'cegar90c' else {'encoder': enc}   # v7: bodies unchanged (produce.yml default cegar90c)
     if sharded:
         k = int(re.search(r'n(\d+)$', wave).group(1)) + 1 if re.search(r'n\d+$', wave) else 2
         stem = re.sub(r'n\d+$', '', wave); nw = f'{stem}n{k}'; mw = f'{stem}m'
@@ -167,7 +191,7 @@ for (wave, M), chunks in sorted(waves.items()):
             with wopen(f'{R}/chunks/{mw}/{ch}.txt') as fo: fo.write('\n'.join(ts) + '\n')
         commit([f'chunks/{mw}'], f'chunks {mw}: merge the finished shards of {wave} (run {run})')
         body = gh_dispatch_body({'wave': mw, 'mode': 'merge', 'chunks': json.dumps(sorted(merge_chunks)), 'formulas': f'formulas{M}_c{M - 23}.json',
-                                 'grun': 'grun90.py', 'par': str(len(merge_chunks)), 'prev_run': str(run), 'prev_wave': wave, 'tune': '1500,60', 'fan': '1'})
+                                 'grun': 'grun90.py', 'par': str(len(merge_chunks)), 'prev_run': str(run), 'prev_wave': wave, 'tune': '1500,60', 'fan': '1', **encin})
         PLAN['dispatches'].append({'body': body, 'jobs': len(merge_chunks), 'layer': M, 'wave': mw}); say('DRY dispatch ' + body)
     if cont:
         makedirs(f'{R}/chunks/{nw}'); names = []; extra = max(0, FREE - len(cont))
@@ -190,7 +214,7 @@ for (wave, M), chunks in sorted(waves.items()):
         commit([f'chunks/{nw}'] + seeds(wave, nw), f'chunks {nw}: pool {wave} (run {run}): one formula per chunk, 4 shards per job' + (', shards joined and re-sharded' if sharded else ''))
         body = json.dumps({'ref': 'main', 'inputs': {'wave': nw, 'mode': 'ccc', 'chunks': json.dumps(names), 'formulas': f'formulas{M}_c{M - 23}.json', 'grun': 'grun90.py',
                                                      'par': str(len(names)), 'prev_run': str(run), 'prev_wave': wave, 'tune': '3600,60' if M % 2 else '1500,60', 'fan': 'all', 'reshard': '1' if sharded else '',
-                                                     'window': os.environ.get('POOL_WINDOW', '9000')}})
+                                                     'window': os.environ.get('POOL_WINDOW', '9000'), **encin}})
         PLAN['dispatches'].append({'body': body, 'jobs': len(names), 'layer': M, 'wave': nw}); say('DRY dispatch ' + body)
     if not cont and not merge_chunks: say(f'{wave}: nothing left')
 finish(0)

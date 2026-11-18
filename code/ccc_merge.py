@@ -12,7 +12,7 @@ clause position is mapped to the merged one (item by item: same item -> same enc
 segments are rewritten. Nothing here is trusted: the final stitched proof is checked by cake_lpr in ccc90.py and later by
 the independent auditor (gcert<m>.py) against the CNF rebuilt from the merged lazy list.
 
-Usage: ENCODER=cegar90c MASKS12=... python3 -I -B ccc_merge.py FORMULAS.json TAG OUTSTATE SHARDSTATE [SHARDSTATE ...]"""
+Usage: ENCODER=cegar90c|cegar90e MASKS12=... python3 -I -B ccc_merge.py FORMULAS.json TAG OUTSTATE SHARDSTATE [SHARDSTATE ...]"""
 import sys, os, json, lzma, bisect, importlib, time
 HERE = os.path.dirname(os.path.abspath(__file__)); sys.path.insert(0, HERE)
 C = importlib.import_module(os.environ.get('ENCODER', 'cegar90c'))
@@ -79,6 +79,8 @@ def main():
     f = json.load(open(fpath))[tag]
     trees = [json.load(open(os.path.join(s, 'tree.json'))) for s in shards]
     for t in trees: assert t['tag'] == tag and t['encoder'] == trees[0]['encoder']
+    lab = {'cegar91': 'v4', 'cegar90': 'v5', 'cegar90b': 'v6', 'cegar90c': 'v7', 'cegar90e': 'v9'}.get(C.__name__)   # v9 package
+    C.need(trees[0]['encoder'] == lab, ('the shard states were made with encoder', trees[0]['encoder'], 'but ENCODER is', C.__name__))   # not an assert: kept under python -O
     items_by = [K.load_items(s, tag, None) for s in shards]
     merged_items = []; seen = set()
     for its in items_by:

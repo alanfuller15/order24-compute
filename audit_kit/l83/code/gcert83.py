@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""gcert83.py: made by layers/code/make_gcert.py from gcert88.py (23efd4b7…) for layer 83 (formulas83_c60.json, f15403b2…, 435 formulas), adding encoder version 8 (cegar90d.py, 3c91eb94…). gcert88.py was: gcert89.py (d1b89923…) for layer 88, changed only in: the formulas pin (formulas88_c65.json,
+"""gcert83.py (encoder version 9 added): made by layers/code/make_gcert_v9.py from the previous gcert83.py (384a2e7c…), adding encoder version 9 (cegar90e.py, 7c416f1c…: version 7 plus the family auts) under the label v9; records may name v7, v8 or v9. Nothing else changed. The previous gcert83.py was: made by layers/code/make_gcert.py from gcert88.py (23efd4b7…) for layer 83 (formulas83_c60.json, f15403b2…, 435 formulas), adding encoder version 8 (cegar90d.py, 3c91eb94…). gcert88.py was: gcert89.py (d1b89923…) for layer 88, changed only in: the formulas pin (formulas88_c65.json,
 9835d162…, 432 formulas), its own name in CODE_FILES, the run label l88. gcert89.py was: gcert90d.py for layer 89, with the formulas pin, its own name, the run label l89, v7 records only, and no V1 resume rule (R89A).
 The rest of this docstring is gcert90d.py's, about layer 90. --- gcert90d.py: gcert90c.py (review R90C) with a fourth pinned encoder. A record that says "encoder": "v7" is rebuilt
 with cegar90c.py (encoder version 7: version 6 plus the family twins, BOUNDS90.md "Version 7"); "v6" with cegar90b.py
@@ -62,13 +62,14 @@ if __name__ == '__main__' and not sys.flags.isolated:  # before any other import
     if os.environ.get('ALLOW_NOT_ISOLATED') != '1': sys.exit('run this checker as python3 -I (isolated mode)')
 import os, io, re, json, time, types, hashlib, shutil, subprocess, fcntl, tempfile, stat, lzma, multiprocessing as mp
 HERE = os.path.dirname(os.path.abspath(__file__))
-CODE_FILES = ('gcert83.py', 'cegar91.py', 'cegar90.py', 'cegar90b.py', 'cegar90c.py', 'cegar90d.py')
+CODE_FILES = ('gcert83.py', 'cegar91.py', 'cegar90.py', 'cegar90b.py', 'cegar90c.py', 'cegar90d.py', 'cegar90e.py')
 SRC = {f: open(os.path.join(HERE, f), 'rb').read() for f in CODE_FILES}    # the bytes hashed are the bytes compiled
 ENCODER_PINS = {'cegar91.py': 'b2f00fd670c5ee7f359692b28811dd50ef07d3ccb1813008ceb6406c8dd4cd7b',   # version 4 (R91B, R90A)
                 'cegar90.py': '8d65a5287baf11e7ccf92e72cd5fc69f385967f30b41b8f0982a72aed8a912ec',   # version 5 (BOUNDS90.md, R90B)
                 'cegar90b.py': '6e2f884b5b018137aba941182ffa3ba26f653452b434a6457ad03028fb980a88',   # version 6 (R90C)
                 'cegar90c.py': '7699f39b78d7703cfb65691f5d7e8cd5f149f6a587400596bbbfb6122ffa86b9',   # version 7 (BOUNDS90.md)
-                'cegar90d.py': '3c91eb94a2c3bbef04e6521eac6940cd12ed1bd3571125e7e6028d858ed43c82'}   # version 8: version 7 accepting s = 8 (layers <= 87)
+                'cegar90d.py': '3c91eb94a2c3bbef04e6521eac6940cd12ed1bd3571125e7e6028d858ed43c82',   # version 8: version 7 accepting s = 8 (layers <= 87)
+                'cegar90e.py': '7c416f1c6e33c6b95ebea72210ecfc0afa8f3b9ec7e29fa844145c118828de8e'}   # version 9: version 7 plus auts (SYM_V9.md)
 for _f, _p in ENCODER_PINS.items():
     if hashlib.sha256(SRC[_f]).hexdigest() != _p: sys.exit(f'{_f} is not the pinned encoder')
 V1_CODE_SHA = 'edb0aacfd9035f09921534b8f4f39de29c9af9cc4accd6b43ff0aadc9342d67d'   # gcert90.py + cegar91.py (A90 G1)
@@ -85,7 +86,8 @@ C5 = from_source('cegar90')                                                     
 C6 = from_source('cegar90b')                                                    # encoder version 6
 C7 = from_source('cegar90c')                                                    # encoder version 7
 C8 = from_source('cegar90d')                                                    # encoder version 8
-ENC = {'v4': C4, 'v5': C5, 'v6': C6, 'v7': C7, 'v8': C8}
+C9 = from_source('cegar90e')                                                    # encoder version 9
+ENC = {'v4': C4, 'v5': C5, 'v6': C6, 'v7': C7, 'v8': C8, 'v9': C9}
 sys.path[:] = _path
 FORMULAS_PIN = 'f15403b2edb588166563d2d7aed95c0ccc173379719fd7fc1d3e51bb9d77af73'; N_FORMULAS = 435   # formulas83_c60.json
 CAKE = os.environ.get('CAKE', os.path.expanduser('~/tools/cake_lpr/cake_lpr'))
@@ -235,7 +237,7 @@ if __name__ == '__main__':
         if r['status'] != 'UNSAT': sys.exit(f"record {r['tag']} is not UNSAT")
         if not isinstance(r.get('proof_sha256'), str): sys.exit(f"record {r['tag']} names no proof")
         enc = r.get('encoder', 'v4')
-        if enc not in ('v7', 'v8'): sys.exit(f"record {r['tag']} does not name encoder v7 or v8 (layer 83 accepts v7 and v8 records only)")
+        if enc not in ('v7', 'v8', 'v9'): sys.exit(f"record {r['tag']} does not name encoder v7, v8 or v9 (layer 83 accepts v7, v8 and v9 records only)")
     if partial:
         sel = {t for t in F if rx.search(t)}
         if not sel <= set(tags): sys.exit('the results do not cover every selected formula')

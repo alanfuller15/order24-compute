@@ -14,6 +14,7 @@ on:
       tune: {description: 'ccc tuning "EXT_TIMEOUT,PYSAT_CAP" in seconds (default 1500,240)', required: false, default: '1500,240'}
       window: {description: 'seconds of work per job (WINDOW of worker.sh; empty = 20400). Short values are for probe runs', required: false, default: ''}
       fan: {description: 'ccc shard chunks: shards per job. A job named <chunk>k<i>of<N> runs shards i .. i+fan-1 (< N) in parallel on its 4 cores, one artifact per shard ("all" = 4; default 1)', required: false, default: '1'}
+      encoder: {description: 'ccc/merge: encoder module in code/ (cegar90c = v7, cegar90e = v9); a chained or resharded state must use the encoder it was made with', required: false, default: cegar90c}
       reshard: {description: 'ccc: "1" = prev_wave is a shard wave with any number of shards: every job first joins all its shard states of the chunk (ccc_merge.py) and then shards the joined state anew (rebalances the open cubes, allows a different N)', required: false, default: ''}
 permissions:
   contents: read
@@ -62,7 +63,9 @@ jobs:
           RESHARD: ${{ inputs.reshard }}
           WAVE: ${{ inputs.wave }}
           FORMULAS: ${{ inputs.formulas }}
+          ENC: ${{ inputs.encoder }}
         run: |
+          case "$ENC" in cegar90c|cegar90e) ;; *) echo "bad encoder $ENC"; exit 1;; esac
           B=${CHUNK%%k[0-9]*}
           # PB = this chunk's name in the previous wave: the same, or without the letter that marks a one-formula chunk split off a larger one (h01a <- h01)
           gh api --paginate "repos/$REPO/actions/runs/$PR/artifacts?per_page=100" --jq '.artifacts[].name' > "$RUNNER_TEMP/arts.txt" || true
@@ -78,7 +81,7 @@ jobs:
             ls shards; mkdir -p prev_base/cube
             cat shards/*/results.jsonl 2>/dev/null > prev_base/results.jsonl || true
             for T in $(grep -v '^$' "chunks/$WAVE/$CHUNK.txt"); do
-              ENCODER=cegar90c MASKS12=$PWD/data/masks12.npy python3 -I -B code/ccc_merge.py "data/$FORMULAS" "$T" "prev_base/cube/$T" $(ls -d shards/*/cube/$T) || echo "$T: join FAILED"
+              ENCODER=$ENC MASKS12=$PWD/data/masks12.npy python3 -I -B code/ccc_merge.py "data/$FORMULAS" "$T" "prev_base/cube/$T" $(ls -d shards/*/cube/$T) || echo "$T: join FAILED"
             done
             rm -rf shards; for j in 0 1 2 3; do ln -s prev_base prev_$j; done; du -sh prev_base
           else
@@ -93,12 +96,14 @@ jobs:
           TUNE: ${{ inputs.tune }}
           CHUNK: ${{ matrix.chunk }}
           WINDOW: ${{ inputs.window }}
+          ENC: ${{ inputs.encoder }}
         run: |
+          case "$ENC" in cegar90c|cegar90e) ;; *) echo "bad encoder $ENC"; exit 1;; esac
           pids=""
           for j in 0 1 2 3; do
             eval "C=\${A$j:-}"; [ -z "$C" ] && continue
             O=out; [ $j -gt 0 ] && O=out_$j
-            ( CUBE_SHARD=$(echo "$C" | sed -n 's/.*k\([0-9]*\)of\([0-9]*\)$/\1\/\2/p') PREV=$PWD/prev_$j EXT_TIMEOUT=${TUNE%%,*} PYSAT_CAP=${TUNE##*,} CUBE_DEPTH=${{ inputs.cube_depth }} GRUN=${{ inputs.grun }} FORMULAS_FILE=${{ inputs.formulas }} bash worker.sh ${{ inputs.mode }} chunks/${{ inputs.wave }}/$C.txt $O ) &
+            ( ENCODER=$ENC CUBE_SHARD=$(echo "$C" | sed -n 's/.*k\([0-9]*\)of\([0-9]*\)$/\1\/\2/p') PREV=$PWD/prev_$j EXT_TIMEOUT=${TUNE%%,*} PYSAT_CAP=${TUNE##*,} CUBE_DEPTH=${{ inputs.cube_depth }} GRUN=${{ inputs.grun }} FORMULAS_FILE=${{ inputs.formulas }} bash worker.sh ${{ inputs.mode }} chunks/${{ inputs.wave }}/$C.txt $O ) &
             pids="$pids $!"
           done
           rc=0; for p in $pids; do wait $p || rc=$?; done

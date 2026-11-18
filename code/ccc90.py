@@ -46,7 +46,7 @@ Steps.
 DEADLINE (epoch seconds): no solver call is started that could run past it; the run stops with exit 3 and resumes
 from its state folder on the next start. Exit 0: recorded; 1: cake_lpr did not verify (failed_attempts.jsonl);
 2: ORIGINAL_MODEL_FOUND; 3: stopped for the deadline.
-Usage: MASKS12=... ENCODER=cegar90b|cegar90c [PROOFS=dir] [CAKE_LOCK=path] [CONF] [GROW] [CAD_OPTS] [CUBE_DEPTH] [EXT_TIMEOUT]
+Usage: MASKS12=... ENCODER=cegar90b|cegar90c|cegar90e [PROOFS=dir] [CAKE_LOCK=path] [CONF] [GROW] [CAD_OPTS] [CUBE_DEPTH] [EXT_TIMEOUT]
        [PYSAT_CAP] [DEADLINE] [TRIM_MAX] python3 -I -B ccc90.py FORMULAS.json TAG STATEDIR OUTDIR [SEED.jsonl]
 SEED.jsonl (first start only): grun90 lazy_partial.jsonl or lazy_ckpt.jsonl files, comma-separated; the lines of TAG
 give the seed items, in order, each item kept once."""
@@ -54,7 +54,7 @@ import sys, os, json, time, subprocess, hashlib, io, lzma, fcntl, importlib
 HERE = os.path.dirname(os.path.abspath(__file__)); sys.path.insert(0, HERE)
 ENCODER_MOD = os.environ.get('ENCODER', 'cegar90b')
 C = importlib.import_module(ENCODER_MOD)
-ENC_LABEL = {'cegar91': 'v4', 'cegar90': 'v5', 'cegar90b': 'v6', 'cegar90c': 'v7'}[ENCODER_MOD]
+ENC_LABEL = {'cegar91': 'v4', 'cegar90': 'v5', 'cegar90b': 'v6', 'cegar90c': 'v7', 'cegar90e': 'v9'}[ENCODER_MOD]   # v9: cegar90e.py (v7 + auts)
 from pysat.solvers import Solver
 import pysat
 CAD = os.environ.get('CAD', os.path.expanduser('~/tools/cadical/build/cadical'))
@@ -159,7 +159,7 @@ def candidates(f, cnf, E):
     read off the iso8 clauses (not dX[k][8] or kv or kw or not vw)"""
     cand = sorted(l for l in E.values() if not isinstance(l, bool))
     s = f['s']; T = list(range(s, 24)); ev = set(cand); d8 = set()
-    if ENC_LABEL in ('v6', 'v7') and f['b'] == 3 * (len(T) - 8):
+    if ENC_LABEL in ('v6', 'v7', 'v9') and f['b'] == 3 * (len(T) - 8):     # v9 has v7's iso8 clauses, in the same place
         deg = [0] * s
         for u, v in f['h_edges']: deg[u] += 1; deg[v] += 1
         for k in (k for k in range(s) if deg[k] == 0):

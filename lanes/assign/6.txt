@@ -5,6 +5,7 @@
 MODE fill
 ENV CUBE_DEPTH=7 EXT_TIMEOUT=3600 PYSAT_CAP=60
 # TAG FORMULAS_FILE PUBLISHER_BRANCH [OUTDIR|-] [CUBE_DEPTH= EXT_TIMEOUT= PYSAT_CAP= SEED_WAVE=]  (OUTDIR - = the existing state folder with the most closed cubes)
-L84_s10a4b18c62_0001 formulas84_c61.json codex-m84-lane6
+# L84_s10a4b18c62_0001 RECORDED on GitHub 2026-11-18 08:30Z (run 44257942449): its lane solver may be stopped; slot goes to L83_s10a4b18c61_0000
+L83_s10a4b18c61_0000 formulas83_c60.json codex-m83-lane6
 L85_s10a4b18c63_0000 formulas85_c62.json codex-m85-lane6
 L83_s10a4b18c61_0001 formulas83_c60.json codex-m83-lane6
