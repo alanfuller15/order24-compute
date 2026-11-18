@@ -172,6 +172,39 @@ def fetch_small(run, arts):
         except Exception as e: log(f'run {run}: {n}: ranged read failed: {e}')
     bad = [x['name'] for x in arts if not x['name'].endswith('-meta') and not x.get('expired') and re.match(r'm\d\d', x['name']) and not os.path.exists(f'{G}/{x["name"]}/chunk.txt')]
     return G, names, nm, nr, bad
+def live_votes(G, recorded_tags):
+    """2026-11-18 fast path (ops/config.json "votes_live"): fold the cube outcomes of this run's fetched logs into
+    data/pred_votes.json BEFORE its continuation is dispatched, so the next wave's jobs read them at start (the full model
+    retrain runs on the manager's side and arrives later). Outcome per cube: closed -> 0, a timeout split -> 1 (predicted
+    splits are not outcomes). Only trees whose tree.json names encoder v7 or none (the votes the models were trained on).
+    An entry (tag, outcome) is added to a cube's list only if that exact pair is not there yet. Returns the number added."""
+    vp = f'{RD}/data/pred_votes.json'; V = json.load(open(vp)); tags = V['tags']; ti = {t: i for i, t in enumerate(tags)}; added = 0
+    for lp in glob.glob(f'{G}/*/cube/L*/log.jsonl'):
+        tag = lp.split('/')[-2]; tp = os.path.join(os.path.dirname(lp), 'tree.json')
+        try:
+            if os.path.exists(tp) and json.load(open(tp)).get('encoder') not in (None, 'v7'): continue
+        except ValueError: continue
+        out = {}; pred = set()
+        for l in open(lp, errors='replace'):
+            try: e = json.loads(l)
+            except ValueError: continue
+            k = e.get('event'); c = e.get('cube')
+            if not c: continue
+            if k == 'split' and 'predicted' in e: pred.add(c)
+            elif k == 'closed': out.setdefault(c, 0)
+            elif k == 'split': out.setdefault(c, 1)
+        for c, o in out.items():
+            if ' '.join(c.split()[:-1]) in pred: continue
+            if tag not in ti: ti[tag] = len(tags); tags.append(tag)
+            lst = V['votes'].setdefault(c, [])
+            if [ti[tag], o] not in lst: lst.append([ti[tag], o]); added += 1
+    if added:
+        json.dump(V, open(vp, 'w'), separators=(',', ':'))
+        import hashlib
+        L = open(f'{RD}/SHA256SUMS').read().splitlines(); h = hashlib.sha256(open(vp, 'rb').read()).hexdigest()
+        open(f'{RD}/SHA256SUMS', 'w').write('\n'.join((f'{h}  data/pred_votes.json' if l.split(None, 1)[1].lstrip('*') == 'data/pred_votes.json' else l) for l in L) + '\n')
+    return added
+
 def scan(G):
     """-> (omf list, finished records [(tag, artifact)])"""
     omf = []; fin = []
@@ -244,6 +277,11 @@ for r in new[:a.max_runs]:
         added.append(f'{tag}\tL{lm2.group(1) if lm2 else "?"}\t{run}\t{art}\t{NOW}'); listed_new.add(tag)
     for l in added: event(f'FINISHED (to fetch, audit, record): {l.split(chr(9))[0]} run {run} artifact {l.split(chr(9))[3]}')
     paths = ['ops/scanned_runs.txt']; dispatches = []; plan_note = ''
+    if CFG.get('votes_live') and not DRY:
+        try:
+            nv = live_votes(G, recorded)
+            if nv: paths += ['data/pred_votes.json', 'SHA256SUMS']; event(f'run {run}: {nv} new cube outcomes folded into data/pred_votes.json')
+        except Exception as e: event(f'run {run}: live votes skipped ({e})')
     if r['conclusion'] == 'success' and run not in handled:
         if re.match(r'm\d\d[c-f]', first):   # merge waves included (2026-11-18): pool.py continues one only if its formula has no record
             if not free_known:
