@@ -1,0 +1,40 @@
+name: exp
+# Research experiments only (exp/*.py). Nothing here produces records or proofs that count; outputs are uploaded for reading.
+on:
+  workflow_dispatch:
+    inputs:
+      script: {description: 'script in exp/ (e.g. sym_ab.py)', required: true}
+      args:   {description: 'arguments passed to the script', required: false, default: ''}
+      name:   {description: 'artifact name', required: true}
+      minutes: {description: 'job time limit in minutes (max 350)', required: false, default: '300'}
+permissions:
+  contents: read
+  actions: read
+jobs:
+  run:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 355
+    steps:
+      - uses: actions/checkout@v4
+      - name: Prepare
+        run: |
+          sha256sum -c SHA256SUMS
+          chmod +x bin/*
+          sudo pip3 install --break-system-packages -q "python-sat==1.9.dev21" numpy networkx
+          nproc; free -g
+      - name: Run
+        env:
+          SCRIPT: ${{ inputs.script }}
+          ARGS: ${{ inputs.args }}
+          MIN: ${{ inputs.minutes }}
+        run: |
+          mkdir -p exp_out
+          case "$SCRIPT" in *[!A-Za-z0-9_.-]*) echo "bad script name"; exit 1;; esac
+          timeout --signal=INT $(( MIN * 60 )) python3 -I -B "exp/$SCRIPT" $ARGS 2>&1 | tee exp_out/log.txt || true
+      - name: Upload
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ inputs.name }}
+          path: exp_out/
+          retention-days: 14
