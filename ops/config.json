@@ -2,7 +2,7 @@
  "live": true,
  "cap": 40,
  "cutoff": "2026-11-16T23:40:00Z",
- "jmax": 6,
+ "jmax": 12,
  "window": 9000,
  "min_api_remaining": 400,
  "max_pass_minutes": 12,

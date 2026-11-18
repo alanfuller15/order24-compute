@@ -4,11 +4,13 @@
 # own folder and slot; free slots are filled stitch-ready first, then in file order: both v9 trees (fresh, depth 8;
 # hedge: lanes 1-9 depth 8, lanes 10-12 depth 10), then the v7 trees, which only resume an existing v7 folder
 # (V7_FRESH=no; no folder -> skipped with a NOTE). EXT_TIMEOUT/PYSAT_CAP: this lane's values, unchanged.
+# 2026-11-18 20:55Z: resume this lane's own v7 tree of L83_s10a4b18c61_0001 (the slowest of the 7 formulas still without a
+# certificate; a GitHub tree runs it too: whichever finishes first is recorded and audited). All other tags stay STOPped.
 MODE fill
 ENV CUBE_DEPTH=7 EXT_TIMEOUT=3600 PYSAT_CAP=60 V7_FRESH=no
 STOP L83_s10a4b18c61_0000
-STOP L83_s10a4b18c61_0001
 STOP L84_s10a4b18c62_0001
 STOP L85_s10a4b18c63_0000
 STOP L84_s10a4b18c62_0000
 # TAG FORMULAS_FILE PUBLISHER_BRANCH [OUTDIR|-] [CUBE_DEPTH= EXT_TIMEOUT= PYSAT_CAP= SEED_WAVE= ENCODER=cegar90c|cegar90e]
+L83_s10a4b18c61_0001 formulas83_c60.json codex-m83-lane8
