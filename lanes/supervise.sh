@@ -361,9 +361,14 @@ folder_enc() {   # STATEDIR -> encoder label of its tree.json (a tree without th
   python3 -I -c 'import json,sys
 try: print(json.load(open(sys.argv[1] + "/tree.json")).get("encoder", "v7"))
 except Exception: print("-")' "$1"; }
-penc() {   # PID STATEDIR -> the encoder a running solver really uses: ENCODER in its environment, else its tree's label
-  local e; e=$(tr '\0' '\n' 2>/dev/null < "/proc/$1/environ" | sed -n 's/^ENCODER=//p' | head -1)
-  if [ -n "$e" ]; then enclab "$e"; else e=$(folder_enc "$2"); [ "$e" = - ] && echo "?" || echo "$e"; fi; }
+penc() {   # PID STATEDIR -> the encoder a running solver really uses: ENCODER in its environment; without it the tree's
+  # label (an unlabelled tree is v7), and with no tree v7 (worker.sh and ccc90.py default to cegar90c). "?" only when
+  # the environment cannot be read and there is no tree.
+  local env e; env=$(tr '\0' '\n' 2>/dev/null < "/proc/$1/environ") || env=UNREADABLE
+  [ -r "/proc/$1/environ" ] || env=UNREADABLE
+  e=$(echo "$env" | sed -n 's/^ENCODER=//p' | head -1)
+  if [ -n "$e" ]; then enclab "$e"; return; fi
+  e=$(folder_enc "$2"); if [ "$e" != - ]; then echo "$e"; elif [ "$env" = UNREADABLE ]; then echo "?"; else echo v7; fi; }
 stopped_by() { [[ " ${A_STOP[$1]:-} " == *" $2 "* || " ${A_STOP[$1]:-} " == *" * "* ]]; }   # TAG LABEL: a STOP line covers this solver
 pbof() { [ "$(penc "$1" "$3")" = v9 ] && echo "$2.v9" || echo "$2"; }   # PID TAG STATEDIR -> pair key of a running solver
 outdir_for() {   # KEY: sticky, encoder-aware choice of the state folder for a pair (never one of another encoder)
@@ -537,8 +542,9 @@ tick() {
     local rec=no; [ -n "${REC[$t]:-}" ] && rec=yes
     local line="$t closed=$c open=$o recorded=$rec pid=$(echo ${pids:--} | tr ' ' ,) state=$O" RS=stopped
     # outside-scope solvers of this tag that may use this encoder (unknown counts as this one): block the start
-    local LX="" x xe; for x in ${LRUN[$t]:-}; do [[ " ${pids} " == *" $x "* ]] && continue
-      xe=$(enclab "$(tr '\0' '\n' 2>/dev/null < "/proc/$x/environ" | sed -n 's/^ENCODER=//p' | head -1)"); { [ "$xe" = "$WL" ] || [ "$xe" = "?" ]; } && LX="$LX$x "; done
+    # (a strict-matched solver is already accounted for as its own (TAG, ENCODER) pair: it never blocks another pair)
+    local LX="" x xe xs; for x in ${LRUN[$t]:-}; do [ -n "${STRICTP[$x]:-}" ] && continue
+      xs=$(echo "$LP" | awk -v p="$x" '$1 == p {print $3; exit}'); xe=$(penc "$x" "$xs"); { [ "$xe" = "$WL" ] || [ "$xe" = "?" ]; } && LX="$LX$x "; done
     if [ -n "$pids" ]; then
       [ -f "$W/run/$k.ver" ] || { echo "$VER" > "$W/run/$k.ver"; echo "$O" > "$W/run/$k.out"; echo "$WL" > "$W/run/$k.enc"; ver=$VER; say "adopted running $t (pid $pids, $WL) in $O at version $VER"; }
       [ -f "$W/run/$k.nexit" ] || { grep -c "^$t ccc exit " "$O/ccc.log" 2>/dev/null > "$W/run/$k.nexit" || echo 0 > "$W/run/$k.nexit"; }
