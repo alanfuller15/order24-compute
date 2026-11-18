@@ -1,0 +1,10 @@
+# lanes/assign/3.txt - BEST GUESS (2026-11-18 ~04:30Z): reconstructed from STATE.md, the RETARGET message
+# (opt/lane_move_msg.txt) and lane-status-3 at 04:15-04:20Z; CONFIRM against lane-status-3, then change MODE to run.
+# stopped L81_0001, L82_0001; kept L85_0000 (codex-m85m); new from position 3: L83_0001, L84_0000. ENV guessed like lane 1.
+# MODE fill: start missing tags into free slots only; never stop a running solver (safe while this is a guess).
+MODE fill
+ENV CUBE_DEPTH=7 EXT_TIMEOUT=1500 PYSAT_CAP=240
+# TAG FORMULAS_FILE PUBLISHER_BRANCH [OUTDIR|-] [CUBE_DEPTH= EXT_TIMEOUT= PYSAT_CAP= SEED_WAVE=]  (OUTDIR - = the existing state folder with the most closed cubes)
+L85_s10a4b18c63_0000 formulas85_c62.json codex-m85-lane3
+L83_s10a4b18c61_0001 formulas83_c60.json codex-m83-lane3
+L84_s10a4b18c62_0000 formulas84_c61.json codex-m84-lane3
