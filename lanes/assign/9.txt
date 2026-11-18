@@ -1,11 +1,16 @@
-# lanes/assign/9.txt - BEST GUESS (2026-11-18 ~04:30Z): reconstructed from STATE.md, the RETARGET message
-# (opt/lane_move_msg.txt) and lane-status-9 at 04:15-04:20Z; CONFIRM against lane-status-9, then change MODE to run.
-# kept L84_0001 (codex-m84h), L84_0000 (codex-m84q); stopped L82_0002; position 4 (L84_0000) already running -> L83_0000. ENV guessed.
-# MODE fill: start missing tags into free slots only; never stop a running solver (safe while this is a guess).
+# lanes/assign/9.txt - 2026-11-18: encoder v9 (cegar90e) for the two remaining H 0000 formulas.
+# Layer 83 is closed by a reviewed corollary and L84_0001 is recorded: their solvers are STOPped (at a cube boundary,
+# never while stitching; folders kept; any record still published). Each line below is a (TAG, ENCODER) pair with its
+# own folder and slot; free slots are filled stitch-ready first, then in file order: both v9 trees (fresh, depth 8;
+# hedge: lanes 1-9 depth 8, lanes 10-12 depth 10), then the v7 trees, which only resume an existing v7 folder
+# (V7_FRESH=no; no folder -> skipped with a NOTE). EXT_TIMEOUT/PYSAT_CAP: this lane's values, unchanged.
 MODE fill
-ENV CUBE_DEPTH=7 EXT_TIMEOUT=3600 PYSAT_CAP=60
-# TAG FORMULAS_FILE PUBLISHER_BRANCH [OUTDIR|-] [CUBE_DEPTH= EXT_TIMEOUT= PYSAT_CAP= SEED_WAVE=]  (OUTDIR - = the existing state folder with the most closed cubes)
-# L84_s10a4b18c62_0001 RECORDED on GitHub 2026-11-18 08:30Z (run 44257942449): its lane solver may be stopped; slot goes to L83_s10a4b18c61_0001
-L83_s10a4b18c61_0001 formulas83_c60.json codex-m83-lane9
+ENV CUBE_DEPTH=7 EXT_TIMEOUT=3600 PYSAT_CAP=60 V7_FRESH=no
+STOP L83_s10a4b18c61_0000
+STOP L83_s10a4b18c61_0001
+STOP L84_s10a4b18c62_0001
+# TAG FORMULAS_FILE PUBLISHER_BRANCH [OUTDIR|-] [CUBE_DEPTH= EXT_TIMEOUT= PYSAT_CAP= SEED_WAVE= ENCODER=cegar90c|cegar90e]
+L85_s10a4b18c63_0000 formulas85_c62.json codex-m85-lane9 - ENCODER=cegar90e CUBE_DEPTH=8
+L84_s10a4b18c62_0000 formulas84_c61.json codex-m84-lane9 - ENCODER=cegar90e CUBE_DEPTH=8
 L84_s10a4b18c62_0000 formulas84_c61.json codex-m84-lane9
-L83_s10a4b18c61_0000 formulas83_c60.json codex-m83-lane9
+L85_s10a4b18c63_0000 formulas85_c62.json codex-m85-lane9

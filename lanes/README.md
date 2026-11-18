@@ -41,6 +41,31 @@ L84_s10a4b18c62_0000 formulas84_c61.json codex-m84-lane4 /workspace/out84x CUBE_
 - Lines are checked strictly (tag, `formulas*_c*.json` present in data/, `codex-*` branch, absolute path); a bad
   line is skipped and named in the status.
 
+## Encoders (v7 and v9), pairs and STOP
+
+- **An assignment line is a (TAG, ENCODER) pair**: `ENCODER=cegar90c` (encoder v7, the default) or `ENCODER=cegar90e`
+  (v9), per line or as an `ENV` default; anything else is rejected. A tag may be listed once per encoder; each pair is
+  its own solver, with its own state folder and its own slot (files `sv/run/TAG.*` for v7, `sv/run/TAG.v9.*` for v9).
+  A running v7 solver is never stopped because a v9 line exists; it runs on as the (TAG, cegar90c) pair if that pair
+  is listed (otherwise it is an unlisted solver: kept in MODE fill, stopped in MODE run). Two pairs of one tag use
+  different folders, so the duplicate guard does not fire.
+- **Folders**: a state folder is only ever resumed by its own encoder (`tree.json` carries `"encoder": "v7"|"v9"`;
+  ccc90.py refuses a mismatch; a tree without the key counts as v7). A v9 pair without a v9 folder starts in
+  `/workspace/out_sv_TAG_v9`. An explicit OUTDIR holding another encoder's tree is refused. v7 folders are never
+  deleted or touched. A solver's encoder is ENCODER in `/proc/PID/environ`, else its tree's label.
+- **`ENV V7_FRESH=no`**: a v7 pair only resumes an existing v7 folder and is never started fresh; without one it is
+  skipped (`run=stopped … skipped (no v7 folder …)` and a NOTE). Default `yes` (old behaviour).
+- **Fill order**: free slots go first to stitch-ready pairs (a tree with no open cube: the stitch is cheap), then to
+  the listed pairs in file order.
+- **`STOP TAG [ENCODER]`** (every mode): the tag's in-scope solver(s) of that encoder (all encoders without one) stop
+  at their next cube boundary (or after SV_SOFT_MAX), never while stitching (`STOP waits: pid … is stitching`); the
+  tag is never restarted, even if it is also listed; its folders are kept and any record of it is still published.
+  Status: `run=stopping … (STOP: …)`, then `run=stopped enc=- (STOP)`. **STOP is the only way MODE fill stops a
+  solver.** A process outside scope is never stopped (it blocks starts of its encoder's pair; unknown encoder blocks).
+- A tag recorded under either encoder is never started again; records and publishing work per tag as before (a second
+  record of the same tag is not published again: the branch already holds `TAG.sha256`). Status lines carry
+  `enc=v7|v9` per pair.
+
 ## What one tick does (every 60 s)
 
 1. `git fetch --no-tags origin main && git merge --ff-only FETCH_HEAD`, then `sha256sum -c SHA256SUMS` plus a check that `lanes/supervise.sh` and `worker.sh` are

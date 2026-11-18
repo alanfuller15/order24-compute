@@ -22,6 +22,14 @@
 # Gentle stops: a solver is killed right after its log.jsonl gains an event (the tree is saved before the event is
 # written), or after SV_SOFT_MAX (1800) s; one whose tree has no open cube is never stopped for a retarget or upgrade.
 # State folders are never deleted or moved.
+# Encoders: an assignment entry is a (TAG, ENCODER) pair, ENCODER=cegar90c (v7, default) or cegar90e (v9); a tag may
+# be listed once per encoder, each pair its own solver, folder and slot. A state folder is resumed only by its own
+# encoder (tree.json "encoder"; ccc90.py refuses others); a v9 pair without a v9 folder starts in $SV_BASE/out_sv_TAG_v9.
+# 'ENV V7_FRESH=no': a v7 pair is only resumed from an existing v7 folder, never started fresh (skipped with a NOTE).
+# A solver's encoder: ENCODER in /proc/PID/environ, else its tree's label. Free slots go to stitch-ready pairs (tree
+# with no open cube) first, then to the pairs in file order.
+# 'STOP TAG [ENCODER]': stop that tag's in-scope solver(s) at a cube boundary (never a stitching one), never restart the
+# tag, keep its folders, publish its record: THE ONLY WAY MODE fill STOPS A SOLVER.
 set -u
 N=${1:-}; [[ $N =~ ^[0-9]{1,3}$ ]] || { echo "usage: supervise.sh LANE_NUMBER"; exit 2; }
 SELF=$(cd "$(dirname "$0")" && pwd)/$(basename "$0"); R=$(cd "$(dirname "$0")/.." && pwd)
@@ -50,22 +58,22 @@ echo $$ > "$W/supervise.pid"; pstart $$ > "$W/supervise.pidstart"; exec 9>&-
 
 PY_INFO='
 import sys, json, os
-# stdin: TAG STATEDIR per line -> TAG closed open logsize
+# stdin: TAG STATEDIR per line -> TAG closed open logsize encoder ("-" without a tree; a tree without the key is v7)
 for l in sys.stdin:
     p = l.split()
     if len(p) < 2: continue
-    t, st = p[:2]; c = o = "-"
+    t, st = p[:2]; c = o = "-"; e = "-"
     try:
-        tr = json.load(open(os.path.join(st, "tree.json"))); c = str(len(tr["done"])); o = str(len(tr["open"]))
+        tr = json.load(open(os.path.join(st, "tree.json"))); c = str(len(tr["done"])); o = str(len(tr["open"])); e = str(tr.get("encoder", "v7"))
     except Exception:
         if os.path.isdir(st): o = "initializing"
     try: sz = os.path.getsize(os.path.join(st, "log.jsonl"))
     except Exception: sz = 0
-    print(t, c, o, sz)
+    print(t, c, o, sz, e)
 '
 PY_RECS='
 import sys, json, os, re
-# argv: CACHE OUTDIR... -> "TAG OUTDIR" for every UNSAT record line (cached by size and mtime of results.jsonl)
+# argv: CACHE OUTDIR... -> "TAG OUTDIR ENC" for every UNSAT record line (cached by size and mtime of results.jsonl)
 cache_p = sys.argv[1]; rx = re.compile(r"^L[0-9]{2}_s[0-9]+a[0-9]+b[0-9]+c[0-9]+_[0-9]{4}$")
 try: cache = json.load(open(cache_p))
 except Exception: cache = {}
@@ -83,23 +91,24 @@ for od in sys.argv[2:]:
                 if "UNSAT" not in x[:200]: continue
                 try: d = json.loads(x)
                 except Exception: continue
-                if d.get("status") == "UNSAT" and rx.match(str(d.get("tag", ""))) and d["tag"] not in tags: tags.append(d["tag"])
+                te = [d.get("tag"), str(d.get("encoder", "v7"))]
+                if d.get("status") == "UNSAT" and rx.match(str(d.get("tag", ""))) and te not in tags: tags.append(te)
         except Exception: pass
     new[p] = [k, tags]
-    for t in tags: print(t, od)
+    for t, e in tags: print(t, od, e)
 try:
     open(cache_p + ".tmp", "w").write(json.dumps(new)); os.replace(cache_p + ".tmp", cache_p)
 except Exception: pass
 '
 PY_FIND='
 import sys, json, glob, os
-# best existing state folder of TAG: most closed cubes (tree.json), then newest; prints OUTDIR or nothing
-t, base, w = sys.argv[1:4]; best = None
+# best existing state folder of TAG made with encoder LABEL: most closed cubes (tree.json), then newest; prints OUTDIR
+t, base, w, lab = sys.argv[1:5]; best = None
 for tp in set(glob.glob(f"{base}/out*/cube/{t}/tree.json") + glob.glob(f"{base}/*/cube/{t}/tree.json")):
     if tp.startswith(w + "/"): continue
     try: tr = json.load(open(tp)); k = (len(tr["done"]), os.path.getmtime(tp))
     except Exception: continue
-    if tr.get("tag") == t and (best is None or k > best[0]): best = (k, os.path.dirname(os.path.dirname(os.path.dirname(tp))))
+    if tr.get("tag") == t and str(tr.get("encoder", "v7")) == lab and (best is None or k > best[0]): best = (k, os.path.dirname(os.path.dirname(os.path.dirname(tp))))
 if best: print(best[1])
 '
 
@@ -137,14 +146,13 @@ alive() { local n=0 a b c d; while read -r a b c d; do [ -n "${a:-}" ] && [ "${d
 rpath() { realpath -m -- "$1" 2>/dev/null || echo "$1"; }
 kill_tree() { local p=$1 c; kill -STOP "$p" 2>/dev/null; for c in $(ps -o pid= --ppid "$p" 2>/dev/null); do kill_tree "$c"; done; kill -KILL "$p" 2>/dev/null; kill -CONT "$p" 2>/dev/null; }
 mark_killed() { touch "$W/run/$1.killed" 2>/dev/null; rm -f "$W/run/$1.t0"; }
-hard_stop() { local T=$1 why=$2 p; for p in $(procs | awk -v t="$T" '$2 == t {print $1}'); do kill_tree "$p"; done; mark_killed "$T"; rm -f "$W/run/$T.stop"; say "stopped $T ($why)"; }
 tree_open() { python3 -I -c 'import json,sys; print(len(json.load(open(sys.argv[1]))["open"]))' "$1/tree.json" 2>/dev/null || echo 1; }
 stop_some() {   # WHY KEEP_STITCHING(0/1) SPARE_TAGS... : kill solvers, optionally sparing stitching trees and given tags
   local why=$1 keep=$2 p t st; shift 2; local spare=" $* "
   while read -r p t st _; do [ -n "${p:-}" ] || continue
     [[ $spare == *" $t "* ]] && continue
     [ "$keep" = 1 ] && [ "$(tree_open "$st")" = 0 ] && continue
-    kill_tree "$p"; mark_killed "$t"; rm -f "$W/run/$t.stop"; say "stopped $t ($why)"
+    local k; k=$(pbof "$p" "$t" "$st"); kill_tree "$p"; mark_killed "$k"; rm -f "$W/run/$k.stop"; say "stopped $t pid $p ($why)"
   done <<< "$(procs)"; }
 
 # ---- push methods. git: the lane clone's own remote and credentials. gh: GitHub's git-data REST API through the
@@ -308,23 +316,29 @@ for x in open(sys.argv[2], errors="replace"):
 }
 
 # ---- assignment
-declare -A A_FF A_BR A_OUT A_D A_E A_P A_SW A_PUB
+declare -A A_FF A_BR A_OUT A_D A_E A_P A_SW A_PUB A_ENC A_TAG A_STOP
 read_assign() {
   local F=$R/lanes/assign/$N.txt line t ff br od kv k v d e p sw
-  A_TAGS=(); A_FF=(); A_BR=(); A_OUT=(); A_D=(); A_E=(); A_P=(); A_SW=(); A_PUB=(); MODE=run; BAD=""
-  local DD=7 DE=1500 DP=240 DS=""
+  A_TAGS=(); A_FF=(); A_BR=(); A_OUT=(); A_D=(); A_E=(); A_P=(); A_SW=(); A_PUB=(); A_ENC=(); A_TAG=(); A_STOP=(); V7FRESH=yes; MODE=run; BAD=""
+  local DD=7 DE=1500 DP=240 DS="" DN=cegar90c en
   [ -f "$F" ] || { BAD="no assignment file lanes/assign/$N.txt"; return; }
   while read -r line; do
     line=${line%%#*}; set -f; set -- $line; set +f; [ $# -eq 0 ] && continue
     if [ "$1" = PUBLISH ]; then   # PUBLISH TAG [BRANCH]: opt-in publication of a record not found in a folder this loop ran
       if [[ ${2:-} =~ $TAGRE ]] && { [ -z "${3:-}" ] || [[ $3 =~ ^codex-[A-Za-z0-9._-]{1,60}$ ]]; }; then A_PUB[$2]=${3:-codex-m${2:1:2}-lane$N}
       else BAD="$BAD bad PUBLISH line;"; fi; continue; fi
+    if [ "$1" = STOP ]; then   # STOP TAG [ENCODER]
+      if [[ ${2:-} =~ $TAGRE ]]; then case ${3:-} in "") A_STOP[$2]="${A_STOP[$2]:-} *";; cegar90c) A_STOP[$2]="${A_STOP[$2]:-} v7";;
+          cegar90e) A_STOP[$2]="${A_STOP[$2]:-} v9";; *) BAD="$BAD bad STOP encoder '$3';";; esac
+      else BAD="$BAD bad STOP line;"; fi; continue; fi
     if [ "$1" = MODE ]; then case ${2:-} in run|fill) MODE=$2;; *) BAD="$BAD bad MODE;";; esac; continue; fi
     if [ "$1" = ENV ]; then shift; for kv in "$@"; do k=${kv%%=*}; v=${kv#*=}
         case $k in CUBE_DEPTH) [[ $v =~ ^[0-9]{1,2}$ ]] && DD=$v;; EXT_TIMEOUT) [[ $v =~ ^[0-9]{1,6}$ ]] && DE=$v;;
-          PYSAT_CAP) [[ $v =~ ^[0-9]{1,6}$ ]] && DP=$v;; SEED_WAVE) [[ $v =~ ^m[0-9a-z]{1,20}$ ]] && DS=$v;; *) BAD="$BAD bad ENV $kv;";; esac; done; continue; fi
+          PYSAT_CAP) [[ $v =~ ^[0-9]{1,6}$ ]] && DP=$v;; SEED_WAVE) [[ $v =~ ^m[0-9a-z]{1,20}$ ]] && DS=$v;;
+          ENCODER) case $v in cegar90c|cegar90e) DN=$v;; *) BAD="$BAD bad ENV ENCODER '$v';";; esac;;
+          V7_FRESH) case $v in yes|no) V7FRESH=$v;; *) BAD="$BAD bad ENV V7_FRESH '$v';";; esac;; *) BAD="$BAD bad ENV $kv;";; esac; done; continue; fi
     t=$1; ff=${2:-}; br=${3:-}; od=${4:--}; shift; [ $# -gt 0 ] && shift; [ $# -gt 0 ] && shift; [ $# -gt 0 ] && shift
-    d=$DD; e=$DE; p=$DP; sw=$DS
+    d=$DD; e=$DE; p=$DP; sw=$DS; en=$DN
     [[ $t =~ $TAGRE ]] || { BAD="$BAD bad tag '$t';"; continue; }
     [[ $ff =~ ^formulas[0-9]{2}_c[0-9]{2}\.json$ ]] && [ -f "$R/data/$ff" ] || { BAD="$BAD $t: bad formulas file '$ff';"; continue; }
     [[ $br =~ ^codex-[A-Za-z0-9._-]{1,60}$ ]] || { BAD="$BAD $t: bad branch '$br';"; continue; }
@@ -333,19 +347,35 @@ read_assign() {
     od=${od%/}; [ -z "$od" ] && od=-
     for kv in "$@"; do k=${kv%%=*}; v=${kv#*=}
       case $k in CUBE_DEPTH) [[ $v =~ ^[0-9]{1,2}$ ]] && d=$v;; EXT_TIMEOUT) [[ $v =~ ^[0-9]{1,6}$ ]] && e=$v;;
-        PYSAT_CAP) [[ $v =~ ^[0-9]{1,6}$ ]] && p=$v;; SEED_WAVE) [[ $v =~ ^m[0-9a-z]{1,20}$ ]] && sw=$v;; *) BAD="$BAD $t: bad option $kv;";; esac; done
-    [ -n "${A_FF[$t]:-}" ] && { BAD="$BAD $t twice;"; continue; }
-    A_TAGS+=("$t"); A_FF[$t]=$ff; A_BR[$t]=$br; A_OUT[$t]=$od; A_D[$t]=$d; A_E[$t]=$e; A_P[$t]=$p; A_SW[$t]=$sw
+        PYSAT_CAP) [[ $v =~ ^[0-9]{1,6}$ ]] && p=$v;; SEED_WAVE) [[ $v =~ ^m[0-9a-z]{1,20}$ ]] && sw=$v;;
+        ENCODER) case $v in cegar90c|cegar90e) en=$v;; *) BAD="$BAD $t: bad ENCODER '$v';"; continue 2;; esac;; *) BAD="$BAD $t: bad option $kv;";; esac; done
+    local K=$t; [ "$en" = cegar90e ] && K=$t.v9   # pair key = file base in sv/run and sv/jobs (v7 keeps the plain tag)
+    [ -n "${A_FF[$K]:-}" ] && { BAD="$BAD $t listed twice with encoder $en;"; continue; }
+    A_TAGS+=("$K"); A_TAG[$K]=$t; A_FF[$K]=$ff; A_BR[$K]=$br; A_OUT[$K]=$od; A_D[$K]=$d; A_E[$K]=$e; A_P[$K]=$p; A_SW[$K]=$sw; A_ENC[$K]=$en
+    [ -n "${A_BR[$t]:-}" ] || A_BR[$t]=$br   # per-tag branch (OMF evidence, records): the tag's first pair
   done < "$F"
 }
 okpath() { [[ ${1:-} =~ ^/[A-Za-z0-9._/-]+$ ]] && [[ $1 != *..* ]]; }
-outdir_for() {   # sticky choice of the state folder for an assigned tag
-  local T=$1 o
-  [ "${A_OUT[$T]}" != - ] && { echo "${A_OUT[$T]}"; return; }
-  o=$(procs | awk -v t="$T" '$2 == t {print $4; exit}'); [ -n "$o" ] && { echo "$o"; return; }
-  o=$(head -c 4096 "$W/run/$T.out" 2>/dev/null | head -1); okpath "$o" && { echo "$o"; return; }
-  o=$(python3 -I -c "$PY_FIND" "$T" "$BASE" "$W"); okpath "$o" && { echo "$o"; return; }
-  echo "$BASE/out_sv_$T"
+enclab() { case ${1:-} in cegar90c) echo v7;; cegar90e) echo v9;; cegar90b) echo v6;; *) echo "?";; esac; }
+folder_enc() {   # STATEDIR -> encoder label of its tree.json (a tree without the key: v7), or - without a tree
+  python3 -I -c 'import json,sys
+try: print(json.load(open(sys.argv[1] + "/tree.json")).get("encoder", "v7"))
+except Exception: print("-")' "$1"; }
+penc() {   # PID STATEDIR -> the encoder a running solver really uses: ENCODER in its environment, else its tree's label
+  local e; e=$(tr '\0' '\n' 2>/dev/null < "/proc/$1/environ" | sed -n 's/^ENCODER=//p' | head -1)
+  if [ -n "$e" ]; then enclab "$e"; else e=$(folder_enc "$2"); [ "$e" = - ] && echo "?" || echo "$e"; fi; }
+stopped_by() { [[ " ${A_STOP[$1]:-} " == *" $2 "* || " ${A_STOP[$1]:-} " == *" * "* ]]; }   # TAG LABEL: a STOP line covers this solver
+pbof() { [ "$(penc "$1" "$3")" = v9 ] && echo "$2.v9" || echo "$2"; }   # PID TAG STATEDIR -> pair key of a running solver
+outdir_for() {   # KEY: sticky, encoder-aware choice of the state folder for a pair (never one of another encoder)
+  local K=$1 T=${A_TAG[$1]} WL; WL=$(enclab "${A_ENC[$1]:-cegar90c}"); local o p st fe
+  [ "${A_OUT[$K]}" != - ] && { echo "${A_OUT[$K]}"; return; }
+  while read -r p _ st o; do [ -n "${p:-}" ] && [ "$(penc "$p" "$st")" = "$WL" ] && { echo "$o"; return; }; done <<< "$(procs | awk -v t="$T" '$2 == t')"
+  o=$(head -c 4096 "$W/run/$K.out" 2>/dev/null | head -1)
+  if okpath "$o"; then fe=$(folder_enc "$o/cube/$T"); { [ "$fe" = "$WL" ] || { [ "$fe" = - ] && [ "$(head -c 8 "$W/run/$K.enc" 2>/dev/null)" = "$WL" ]; }; } && { echo "$o"; return; }; fi
+  o=$(python3 -I -c "$PY_FIND" "$T" "$BASE" "$W" "$WL"); okpath "$o" && { echo "$o"; return; }
+  o=$BASE/out_sv_$T; [ "$WL" = v7 ] || o=${o}_$WL
+  fe=$(folder_enc "$o/cube/$T"); { [ "$fe" = - ] || [ "$fe" = "$WL" ]; } || o=${o}_$WL
+  echo "$o"
 }
 known_outdirs() {
   { procs | awk '{print $4}'; for f in "$W"/run/*.out; do [ -f "$f" ] && head -1 "$f"; done; awk '{print $1}' "$W/run/seen_pairs" 2>/dev/null
@@ -365,21 +395,22 @@ has_omf() { local T=$1 O=$2; [ -f "$O/cube/$T/ORIGINAL_MODEL_FOUND.json" ] && re
   grep -F "\"$T\"" "$O/results.jsonl" 2>/dev/null | grep -qF ORIGINAL_MODEL_FOUND && return 0
   grep -qxF "$T ccc exit 2" "$O/ccc.log" 2>/dev/null; }
 
-start_solver() {   # non-blocking; the worker's pid is kept so a start in progress is not repeated
-  local T=$1 O=$2 wave J
-  wave=${A_SW[$T]:-m${T:1:2}e5}; [ -f "$R/ckpt/$wave.jsonl.xz" ] || wave=m${T:1:2}sv
-  J=$W/jobs/$T/$wave; mkdir -p "$J" "$O" || return 1; echo "$T" > "$J/h01.txt" || return 1
-  echo "$O" > "$W/run/$T.out"; echo "$VER" > "$W/run/$T.ver"; date +%s > "$W/run/$T.t0"; rm -f "$W/run/$T.killed"
-  grep -c "^$T ccc exit " "$O/ccc.log" 2>/dev/null > "$W/run/$T.nexit" || echo 0 > "$W/run/$T.nexit"
-  ( cd "$R" && exec setsid nohup env FORMULAS_FILE="${A_FF[$T]}" CUBE_DEPTH="${A_D[$T]}" EXT_TIMEOUT="${A_E[$T]}" \
-      PYSAT_CAP="${A_P[$T]}" PAR=1 WINDOW="$WINDOW" PREV="$BASE/none" bash worker.sh ccc "$J/h01.txt" "$O" \
+start_solver() {   # KEY OUTDIR: non-blocking; the worker's pid is kept so a start in progress is not repeated
+  local K=$1 T=${A_TAG[$1]} O=$2 wave J EN=${A_ENC[$1]:-cegar90c}
+  wave=${A_SW[$K]:-m${T:1:2}e5}; [ -f "$R/ckpt/$wave.jsonl.xz" ] || wave=m${T:1:2}sv
+  J=$W/jobs/$K/$wave; mkdir -p "$J" "$O" || return 1; echo "$T" > "$J/h01.txt" || return 1
+  echo "$O" > "$W/run/$K.out"; echo "$VER" > "$W/run/$K.ver"; date +%s > "$W/run/$K.t0"; rm -f "$W/run/$K.killed"
+  enclab "$EN" > "$W/run/$K.enc"
+  grep -c "^$T ccc exit " "$O/ccc.log" 2>/dev/null > "$W/run/$K.nexit" || echo 0 > "$W/run/$K.nexit"
+  ( cd "$R" && exec setsid nohup env ENCODER="$EN" FORMULAS_FILE="${A_FF[$K]}" CUBE_DEPTH="${A_D[$K]}" EXT_TIMEOUT="${A_E[$K]}" \
+      PYSAT_CAP="${A_P[$K]}" PAR=1 WINDOW="$WINDOW" PREV="$BASE/none" bash worker.sh ccc "$J/h01.txt" "$O" \
       >> "$O.sv_$T.nohup" 2>&1 < /dev/null ) &
-  echo "$!" > "$W/run/$T.wpid"
-  say "started $T in $O (depth ${A_D[$T]}, ext ${A_E[$T]}, cap ${A_P[$T]}, seeds $wave, version $VER, worker pid $!)"
+  echo "$!" > "$W/run/$K.wpid"
+  say "started $T in $O (encoder $EN, depth ${A_D[$K]}, ext ${A_E[$K]}, cap ${A_P[$K]}, seeds $wave, version $VER, worker pid $!)"
 }
-other_start_in() {   # TAG OUTDIR: another assigned tag's worker is still starting in the same OUTDIR (worker.sh todo.txt race)
+other_start_in() {   # KEY OUTDIR: another assigned tag's worker is still starting in the same OUTDIR (worker.sh todo.txt race)
   local x; for x in "${A_TAGS[@]}"; do [ "$x" != "$1" ] && starting "$x" && [ "$(head -1 "$W/run/$x.out" 2>/dev/null)" = "$2" ] && return 0; done; return 1; }
-starting() {   # TAG: true while the worker we started is alive (it may not have reached ccc90.py yet)
+starting() {   # KEY: true while the worker we started is alive (it may not have reached ccc90.py yet)
   local w; w=$(num "$W/run/$1.wpid" ""); [ -n "$w" ] && tr '\0' ' ' 2>/dev/null < "/proc/$w/cmdline" | grep -qF "worker.sh ccc $W/jobs/$1/"; }
 
 # ---- one tick
@@ -438,15 +469,15 @@ tick() {
   while read -r lp lt ls ll; do [ -n "${lp:-}" ] || continue; LRUN[$lt]="${LRUN[$lt]:-}$lp "
     [ "${ll:-0}" = 1 ] || { NOTES+=("pid $lp has $lt in its arguments but is not a ccc90.py solver: blocks starts of $lt, never touched"); continue; }
     [[ $ls == */cube/$lt ]] && echo "${ls%/cube/*} $lt" >> "$W/run/seen_pairs"; done <<< "$LP"
-  for f in "$W"/run/*.out; do [ -f "$f" ] || continue; ot=$(basename "$f" .out); [[ $ot =~ $TAGRE ]] || continue
+  for f in "$W"/run/*.out; do [ -f "$f" ] || continue; ot=$(basename "$f" .out); ot=${ot%.v9}; [[ $ot =~ $TAGRE ]] || continue
     e=$(head -1 "$f"); okpath "$e" && echo "$(rpath "$e") $ot" >> "$W/run/seen_pairs"; done 2>/dev/null
-  for t in "${A_TAGS[@]}"; do [ "${A_OUT[$t]}" != - ] && echo "$(rpath "${A_OUT[$t]}") $t" >> "$W/run/seen_pairs"; done 2>/dev/null
+  for t in "${A_TAGS[@]}"; do [ "${A_OUT[$t]}" != - ] && echo "$(rpath "${A_OUT[$t]}") ${A_TAG[$t]}" >> "$W/run/seen_pairs"; done 2>/dev/null
   [ -f "$W/run/seen_pairs" ] && { sort -u "$W/run/seen_pairs" > "$W/run/seen_pairs.new" 2>/dev/null && mv -f "$W/run/seen_pairs.new" "$W/run/seen_pairs"; }
   declare -A ELIG=()
   while read -r e et; do [ -n "${et:-}" ] && ELIG["$e $et"]=1; done < <(cat "$W/run/seen_pairs" 2>/dev/null)
-  declare -A REC=(); while read -r t od; do [ -n "${t:-}" ] || continue
-      if [ -z "${REC[$t]:-}" ] || { [ -z "${ELIG["$(rpath "${REC[$t]}") $t"]:-}" ] && [ -n "${ELIG["$(rpath "$od") $t"]:-}" ]; }; then REC[$t]=$od; fi
-    done <<< "$(python3 -I -c "$PY_RECS" "$W/rescache.json" $KO 2>/dev/null)"
+  declare -A REC=() RECENC=(); local re; while read -r t od re; do [ -n "${t:-}" ] || continue
+      if [ -z "${REC[$t]:-}" ] || { [ -z "${ELIG["$(rpath "${REC[$t]}") $t"]:-}" ] && [ -n "${ELIG["$(rpath "$od") $t"]:-}" ]; }; then REC[$t]=$od; RECENC[$t]=${re:-v7}; fi
+    done <<< "$(python3 -I -c "$PY_RECS" "$W/rescache2.json" $KO 2>/dev/null)"
   # 4. solvers
   local P; P=$(procs); local O info c o sz pid
   declare -A RUN=(); while read -r pid t st od; do [ -n "${pid:-}" ] && [ -n "${t:-}" ] && RUN[$t]="${RUN[$t]:-}$pid "; done <<< "$P"
@@ -458,9 +489,9 @@ tick() {
     { date -u +%FT%TZ; echo "$LP" | awk -v s="$s" '$3 == s'; } >> "$s/DUPLICATE_WRITERS" 2>/dev/null
     grp=$(echo "$LP" | awk -v s="$s" '$3 == s && $4 == 1 {print $1}' | while read -r q; do echo "$(ps -o etimes= -p "$q" 2>/dev/null | tr -d ' ') $q"; done | sort -rn | awk '{print $2}')
     others=$(echo "$grp" | tail -n +2); allstrict=1; for q in $others; do [ -n "${STRICTP[$q]:-}" ] || allstrict=0; done
-    if [ $allstrict = 1 ]; then for pid in $others; do kill_tree "$pid"; mark_killed "$(echo "$LP" | awk -v p="$pid" '$1 == p {print $2}')"; say "killed duplicate solver $pid on $s"; NOTES+=("killed a duplicate solver on $s"); done
+    if [ $allstrict = 1 ]; then for pid in $others; do mark_killed "$(pbof "$pid" "$(echo "$LP" | awk -v p="$pid" '$1 == p {print $2}')" "$s")"; kill_tree "$pid"; say "killed duplicate solver $pid on $s"; NOTES+=("killed a duplicate solver on $s"); done
     else
-      for pid in $grp; do [ -n "${STRICTP[$pid]:-}" ] && { kill_tree "$pid"; mark_killed "$(echo "$LP" | awk -v p="$pid" '$1 == p {print $2}')"; say "killed our solver $pid on $s: a newer solver outside scope writes the same folder"; NOTES+=("killed our solver on $s (a newer solver outside scope writes it)"); }; done
+      for pid in $grp; do [ -n "${STRICTP[$pid]:-}" ] && { mark_killed "$(pbof "$pid" "$(echo "$LP" | awk -v p="$pid" '$1 == p {print $2}')" "$s")"; kill_tree "$pid"; say "killed our solver $pid on $s: a newer solver outside scope writes the same folder"; NOTES+=("killed our solver on $s (a newer solver outside scope writes it)"); }; done
       nout=0; for q in $grp; do [ -n "${STRICTP[$q]:-}" ] || nout=$((nout+1)); done
       [ $nout -gt 1 ] && ALERTS+=("$nout solvers outside scope write $s: stop all but one by hand")
     fi; done
@@ -469,89 +500,111 @@ tick() {
   local running; running=$(alive "$LP")   # slots: loose solvers with a real state folder
   LRUN=(); while read -r lp lt ls ll; do [ -n "${lp:-}" ] && LRUN[$lt]="${LRUN[$lt]:-}$lp "; done <<< "$LP"
   local can=1; [ $SHAOK = 1 ] || can=0; [ -f "$W/HALT_OMF" ] && can=0
-  declare -A ISA=(); for t in "${A_TAGS[@]}"; do ISA[$t]=1; done
+  # per-pair view of the strict solvers: RUNK[KEY] pids (KEY = TAG for v7, TAG.v9 for v9), their folder and encoder
+  declare -A RUNK=() KST=() KOD=() KENC=() RUNT=(); local pp pt pst pod pk pe
+  while read -r pp pt pst pod; do [ -n "${pp:-}" ] && [ -n "${pt:-}" ] || continue; pe=$(penc "$pp" "$pst"); pk=$pt; [ "$pe" = v9 ] && pk=$pt.v9
+    RUNK[$pk]="${RUNK[$pk]:-}$pp "; KST[$pk]=$pst; KOD[$pk]=$pod; KENC[$pk]=$pe; RUNT[$pt]=1; done <<< "$P"
+  declare -A ISA=() ISAP=(); local k; for k in "${A_TAGS[@]}"; do ISA[${A_TAG[$k]}]=1; ISAP[$k]=1; done
   declare -A STARTOUT=()
   STATUS_LINES=()
-  # 4a. unassigned running solvers
-  for t in "${!RUN[@]}"; do [ -n "${ISA[$t]:-}" ] && continue
-    st=$(echo "$P" | awk -v t="$t" '$2 == t {print $3; exit}'); od=$(echo "$P" | awk -v t="$t" '$2 == t {print $4; exit}')
-    info=$(echo "$t $st" | python3 -I -c "$PY_INFO"); read -r _ c o sz <<< "$info"
-    local base_l="$t run=running closed=$c open=$o recorded=$([ -n "${REC[$t]:-}" ] && echo yes || echo no) pid=$(echo ${RUN[$t]} | tr ' ' ,) state=$od UNASSIGNED"
-    if [ "$MODE" = run ] && [ $can = 1 ]; then
-      [ -f "$W/run/$t.stop" ] || { echo "unassigned $now ${sz:-0}" > "$W/run/$t.stop"; say "stop requested: $t (unassigned)"; }
-      STATUS_LINES+=("$base_l stopping")
+  # STOP TAG [ENCODER] (every mode, the only way MODE fill stops a solver): stop at a cube boundary, never a stitching tree
+  local stopnote
+  stop_req() {   # KEY WHY -> sets stopnote
+    local K=$1 xs=${KST[$1]} xp; xp=$(echo ${RUNK[$1]} | awk '{print $1}')
+    if [ "$(tree_open "$xs")" = 0 ]; then stopnote="($2 waits: pid $xp is stitching)"; return 1; fi
+    [ -f "$W/run/$K.stop" ] || { echo "$2 $now $(stat -c %s "$xs/log.jsonl" 2>/dev/null || echo 0) $xp $xs" > "$W/run/$K.stop"; say "$2: stop requested for ${K%.v9} pid $xp (${KENC[$K]}), at its next cube boundary"; }
+    stopnote="($2: stops at its next cube boundary)"; return 0; }
+  # 4a. running solvers whose (tag, encoder) pair is not listed
+  for pk in "${!RUNK[@]}"; do [ -n "${ISAP[$pk]:-}" ] && continue; pt=${pk%.v9}
+    info=$(echo "$pt ${KST[$pk]}" | python3 -I -c "$PY_INFO"); read -r _ c o sz _ <<< "$info"
+    local base_l="$pt run=running enc=${KENC[$pk]} closed=$c open=$o recorded=$([ -n "${REC[$pt]:-}" ] && echo yes || echo no) pid=$(echo ${RUNK[$pk]} | tr ' ' ,) state=${KOD[$pk]} UNASSIGNED"
+    if stopped_by "$pt" "${KENC[$pk]}"; then stop_req "$pk" STOP && base_l=${base_l/run=running/run=stopping}; STATUS_LINES+=("$base_l $stopnote")
+    elif [ "$MODE" = run ] && [ $can = 1 ]; then stop_req "$pk" unassigned && base_l=${base_l/run=running/run=stopping}; STATUS_LINES+=("$base_l $stopnote")
     else STATUS_LINES+=("$base_l kept(mode $MODE)"); fi
   done
-  for t in "${!LRUN[@]}"; do [ -n "${ISA[$t]:-}" ] || [ -n "${RUN[$t]:-}" ] && continue
+  for t in "${!LRUN[@]}"; do [ -n "${ISA[$t]:-}" ] || [ -n "${RUNT[$t]:-}" ] && continue
     STATUS_LINES+=("$t run=running-outside-scope running outside scope (pid $(echo ${LRUN[$t]} | tr ' ' ,)) UNASSIGNED, not touched"); done
-  # 4b. assigned tags in file order
-  for t in "${A_TAGS[@]}"; do
-    [ -f "$W/run/$t.stop" ] && grep -q '^unassigned' "$W/run/$t.stop" && { rm -f "$W/run/$t.stop"; say "stop cancelled: $t assigned again"; }
-    O=$(outdir_for "$t"); st=$O/cube/$t
-    info=$(echo "$t $st" | python3 -I -c "$PY_INFO"); read -r _ c o sz <<< "$info"
-    local pids=${RUN[$t]:-} ver; ver=$(head -c 64 "$W/run/$t.ver" 2>/dev/null | tr -dc 'A-Za-z0-9._-'); ver=${ver:-adopted}
+  # 4b. listed pairs: stitch-ready ones (tree with no open cube) first, then file order
+  declare -A KOUT=(); local ORDER=() RDY=()
+  for k in "${A_TAGS[@]}"; do KOUT[$k]=$(outdir_for "$k")
+    if [ -z "${RUNK[$k]:-}" ] && [ "$(tree_open "${KOUT[$k]}/cube/${A_TAG[$k]}")" = 0 ]; then RDY+=("$k"); else ORDER+=("$k"); fi; done
+  for k in "${RDY[@]}" "${ORDER[@]}"; do
+    t=${A_TAG[$k]}; local WL; WL=$(enclab "${A_ENC[$k]:-cegar90c}")
+    [ -f "$W/run/$k.stop" ] && grep -q '^unassigned' "$W/run/$k.stop" && { rm -f "$W/run/$k.stop"; say "stop cancelled: $k listed again"; }
+    O=${KOUT[$k]}; [ -n "${RUNK[$k]:-}" ] && O=${KOD[$k]}; st=$O/cube/$t
+    info=$(echo "$t $st" | python3 -I -c "$PY_INFO"); read -r _ c o sz tenc <<< "$info"
+    local pids=${RUNK[$k]:-} ver; ver=$(head -c 64 "$W/run/$k.ver" 2>/dev/null | tr -dc 'A-Za-z0-9._-'); ver=${ver:-adopted}
     local rec=no; [ -n "${REC[$t]:-}" ] && rec=yes
     local line="$t closed=$c open=$o recorded=$rec pid=$(echo ${pids:--} | tr ' ' ,) state=$O" RS=stopped
+    # outside-scope solvers of this tag that may use this encoder (unknown counts as this one): block the start
+    local LX="" x xe; for x in ${LRUN[$t]:-}; do [[ " ${pids} " == *" $x "* ]] && continue
+      xe=$(enclab "$(tr '\0' '\n' 2>/dev/null < "/proc/$x/environ" | sed -n 's/^ENCODER=//p' | head -1)"); { [ "$xe" = "$WL" ] || [ "$xe" = "?" ]; } && LX="$LX$x "; done
     if [ -n "$pids" ]; then
-      [ -f "$W/run/$t.ver" ] || { echo "$VER" > "$W/run/$t.ver"; echo "$O" > "$W/run/$t.out"; ver=$VER; say "adopted running $t (pid $pids) in $O at version $VER"; }
-      [ -f "$W/run/$t.nexit" ] || { grep -c "^$t ccc exit " "$O/ccc.log" 2>/dev/null > "$W/run/$t.nexit" || echo 0 > "$W/run/$t.nexit"; }
-      if [ "$ver" != "$VER" ]; then
-        if [ "$MODE" = run ] && [ $can = 1 ] && [ ! -f "$W/run/$t.stop" ]; then echo "upgrade $now ${sz:-0}" > "$W/run/$t.stop"; say "restart requested: $t ($ver -> $VER)"; fi
-        [ "$MODE" = fill ] && line="$line upgrade pending ($ver -> $VER; mode fill restarts nothing)"
+      [ -f "$W/run/$k.ver" ] || { echo "$VER" > "$W/run/$k.ver"; echo "$O" > "$W/run/$k.out"; echo "$WL" > "$W/run/$k.enc"; ver=$VER; say "adopted running $t (pid $pids, $WL) in $O at version $VER"; }
+      [ -f "$W/run/$k.nexit" ] || { grep -c "^$t ccc exit " "$O/ccc.log" 2>/dev/null > "$W/run/$k.nexit" || echo 0 > "$W/run/$k.nexit"; }
+      RS=running; line="$line ver=$ver"
+      if stopped_by "$t" "$WL"; then stop_req "$k" STOP && RS=stopping; line="$line $stopnote"
+      elif [ "$ver" != "$VER" ]; then
+        if [ "$MODE" = run ] && [ $can = 1 ]; then stop_req "$k" upgrade && RS=stopping; line="$line $stopnote"
+        else line="$line upgrade pending ($ver -> $VER; mode $MODE restarts nothing)"; fi
       fi
-      line="$line ver=$ver"; RS=running; [ -f "$W/run/$t.stop" ] && { line="$line restarting"; RS=stopping; }
-    elif [ -n "${LRUN[$t]:-}" ]; then RS=running-outside-scope; line="$line running outside scope (pid $(echo ${LRUN[$t]} | tr ' ' ,)): not started, not touched"
+    elif stopped_by "$t" "$WL"; then line="$line (STOP)"
+    elif [ -n "$LX" ]; then RS=running-outside-scope; line="$line running outside scope (pid $(echo $LX | tr ' ' ,)): not started, not touched"
     elif [ "$rec" = yes ]; then :   # reported with the records below
-    elif starting "$t"; then RS=starting; line="$line starting (worker $(num "$W/run/$t.wpid"))"
+    elif starting "$k"; then RS=starting; line="$line starting (worker $(num "$W/run/$k.wpid"))"
     else
       # a solver this run started or adopted has gone: judge how it ended (ccc.log 'TAG ccc exit N' lines since then)
-      if [ -f "$W/run/$t.nexit" ]; then
-        local n0 n1 code; n0=$(num "$W/run/$t.nexit"); n1=$(grep -c "^$t ccc exit " "$O/ccc.log" 2>/dev/null); isnum "$n1" || n1=0
+      if [ -f "$W/run/$k.nexit" ]; then
+        local n0 n1 code; n0=$(num "$W/run/$k.nexit"); n1=$(grep -c "^$t ccc exit " "$O/ccc.log" 2>/dev/null); isnum "$n1" || n1=0
         code=none; [ "$n1" -gt "$n0" ] && code=$(grep "^$t ccc exit " "$O/ccc.log" | tail -1 | awk '{print $4}')
-        rm -f "$W/run/$t.nexit" "$W/run/$t.wpid"
-        if [ -f "$W/run/$t.killed" ]; then rm -f "$W/run/$t.killed"
-        elif [ "$code" = 0 ] || [ "$code" = 3 ]; then rm -f "$W/run/$t.fails"
+        rm -f "$W/run/$k.nexit" "$W/run/$k.wpid"
+        if [ -f "$W/run/$k.killed" ]; then rm -f "$W/run/$k.killed"
+        elif [ "$code" = 0 ] || [ "$code" = 3 ]; then rm -f "$W/run/$k.fails"
         else
-          local fl; fl=$(( $(num "$W/run/$t.fails") + 1 )); echo $fl > "$W/run/$t.fails"
-          local t0; t0=$(num "$W/run/$t.t0" 0); say "$t ended badly (exit $code, $((now - t0)) s after start; $fl in a row)"
-          [ $fl -ge "$MAXFAIL" ] && { echo $((now + HOLD)) > "$W/run/$t.hold"; say "$t: $fl bad exits in a row: held for $HOLD s"; }
+          local fl; fl=$(( $(num "$W/run/$k.fails") + 1 )); echo $fl > "$W/run/$k.fails"
+          local t0; t0=$(num "$W/run/$k.t0" 0); say "$t ($WL) ended badly (exit $code, $((now - t0)) s after start; $fl in a row)"
+          [ $fl -ge "$MAXFAIL" ] && { echo $((now + HOLD)) > "$W/run/$k.hold"; say "$t ($WL): $fl bad exits in a row: held for $HOLD s"; }
         fi
       fi
-      local held; held=$(num "$W/run/$t.hold" 0)
+      local held; held=$(num "$W/run/$k.hold" 0)
       if [ -n "${OMFT[$t]:-}" ] || has_omf "$t" "$O"; then line="$line NOT STARTED (ORIGINAL_MODEL_FOUND evidence for this tag)"
       elif [ "$held" -gt "$now" ]; then
-        line="$line HELD($(num "$W/run/$t.fails") bad exits; retry in $((held - now)) s): $(tail -n 2 "$O/cube/$t.log" 2>/dev/null | tr '\n' ' ' | cut -c1-160)"
+        line="$line HELD($(num "$W/run/$k.fails") bad exits; retry in $((held - now)) s): $(tail -n 2 "$O/cube/$t.log" 2>/dev/null | tr '\n' ' ' | cut -c1-160)"
       elif [ $can = 0 ]; then line="$line NOT STARTED (halted)"
+      elif [ "$tenc" != - ] && [ "$tenc" != "$WL" ]; then line="$line NOT STARTED (state folder $st holds an encoder $tenc state; listed as $WL: give another OUTDIR)"
+      elif [ "$WL" = v7 ] && [ "$V7FRESH" = no ] && [ "$tenc" != v7 ]; then
+        line="$line skipped (no v7 folder; V7_FRESH=no: a v7 pair only resumes)"; NOTES+=("$t (v7): no v7 state folder to resume, pair skipped (V7_FRESH=no)")
       elif [ "$running" -ge "$MAXS" ]; then line="$line waiting for a free slot ($running/$MAXS running)"
-      elif [ -n "${STARTOUT[$O]:-}" ] || other_start_in "$t" "$O"; then
+      elif [ -n "${STARTOUT[$O]:-}" ] || other_start_in "$k" "$O"; then
         line="$line waiting (another start in $O)"
       else
-        rm -f "$W/run/$t.hold"; start_solver "$t" "$O"; running=$((running+1)); STARTOUT[$O]=1; FORCEBEAT=1
+        rm -f "$W/run/$k.hold"; start_solver "$k" "$O"; running=$((running+1)); STARTOUT[$O]=1; FORCEBEAT=1
         line="$line STARTED ver=$VER"; RS=starting
       fi
     fi
     if [ -f "$O/failed_attempts.jsonl" ] && grep -qF "\"$t\"" "$O/failed_attempts.jsonl"; then
       ALERTS+=("$t: $(grep -cF "\"$t\"" "$O/failed_attempts.jsonl") cake_lpr-rejected stitch(es) in $O/failed_attempts.jsonl"); fi
-    line="$t run=$RS ${line#"$t "}"   # run=running|stopping|starting|running-outside-scope|stopped (recorded tags: below)
+    line="$t run=$RS enc=$WL ${line#"$t "}"   # run=running|stopping|starting|running-outside-scope|stopped (recorded tags: below)
     [ "$rec" = yes ] || STATUS_LINES+=("$line")
   done
+  for t in "${!A_STOP[@]}"; do [ -n "${ISA[$t]:-}" ] || [ -n "${RUNT[$t]:-}" ] || [ -n "${REC[$t]:-}" ] || STATUS_LINES+=("$t run=stopped enc=- (STOP)"); done
   # 4c. records (assigned or not) and their publication
   local old=""
   for t in "${!REC[@]}"; do
     od=${REC[$t]}; local br=${A_PUB[$t]:-${A_BR[$t]:-codex-m${t:1:2}-lane$N}} pl
     if [ ! -f "$W/pub/$t.done" ] && [ -z "${ELIG["$(rpath "$od") $t"]:-}" ] && [ -z "${A_PUB[$t]:-}" ]; then   # old record (F2/G1)
-      old="$old $t"; [ -n "${ISA[$t]:-}" ] && STATUS_LINES+=("$t run=recorded recorded=yes published=no (old record in $od, not published automatically) state=$od"); continue; fi
+      old="$old $t"; [ -n "${ISA[$t]:-}" ] && STATUS_LINES+=("$t run=recorded enc=${RECENC[$t]:-v7} recorded=yes published=no (old record in $od, not published automatically) state=$od"); continue; fi
     if [ ! -f "$W/pub/$t.done" ]; then
       if [ -f "$od/proofs/$t.lrat.xz" ]; then publish "$t" "$od" "$od/cube/$t" "$br" && { echo "$br" > "$W/pub/$t.done"; FORCEBEAT=1; }
       else NOTES+=("$t recorded in $od but $od/proofs/$t.lrat.xz is missing"); fi
     fi
     if [ -f "$W/pub/$t.done" ]; then pl="published=$(head -1 "$W/pub/$t.done" | tr -dc 'A-Za-z0-9._-')"
-      [ -n "${ISA[$t]:-}" ] && { STATUS_LINES+=("$t run=recorded recorded=yes $pl state=$od"); NOTES+=("$t recorded: take it out of lanes/assign/$N.txt"); }
-    else STATUS_LINES+=("$t run=recorded recorded=yes published=no (to $br) state=$od$([ -n "${ISA[$t]:-}" ] || echo ' UNASSIGNED')"); fi
+      [ -n "${ISA[$t]:-}" ] && { STATUS_LINES+=("$t run=recorded enc=${RECENC[$t]:-v7} recorded=yes $pl state=$od"); NOTES+=("$t recorded: take it out of lanes/assign/$N.txt"); }
+    else STATUS_LINES+=("$t run=recorded enc=${RECENC[$t]:-v7} recorded=yes published=no (to $br) state=$od$([ -n "${ISA[$t]:-}" ] || echo ' UNASSIGNED')"); fi
   done
   [ -n "$PUBNOTE" ] && NOTES+=("$PUBNOTE")
   [ -n "$old" ] && NOTES+=("$(echo $old | wc -w) old records not published (found only by the $BASE/*/ scan):$old; add 'PUBLISH TAG' to lanes/assign/$N.txt to publish one")
-  [ ${#A_TAGS[@]} -gt "$MAXS" ] && NOTES+=("${#A_TAGS[@]} tags assigned, $MAXS slots: the extra tags wait")
+  [ ${#A_TAGS[@]} -gt "$MAXS" ] && NOTES+=("${#A_TAGS[@]} (tag, encoder) pairs listed, $MAXS slots: fill order = stitch-ready first, then file order")
   for f in $(for d in $KO; do ls "$d"/cube/*/DUPLICATE_WRITERS 2>/dev/null; done); do
     ALERTS+=("DUPLICATE_WRITERS in ${f%/DUPLICATE_WRITERS}: two solvers wrote this state; check it before trusting a stitch, then delete the file"); done
   [ "${OTHERWRITER:-0}" = 1 ] && ALERTS+=("another writer pushes lane-status-$N (an old heartbeat loop still running?)")
@@ -570,16 +623,17 @@ tick() {
 }
 
 # ---- between ticks: gentle stops (poll every 5 s)
-soft_stops() {
-  local f T why t0 sz0 st sz P
+soft_stops() {   # stop files run/KEY.stop: "WHY T0 LOGSIZE PID STATEDIR"; only that pid (a strict match) is killed
+  local f K why t0 sz0 xp xs sz P
   P=$(procs)
-  for f in "$W"/run/*.stop; do [ -f "$f" ] || continue; T=$(basename "$f" .stop); read -r why t0 sz0 < "$f"
+  for f in "$W"/run/*.stop; do [ -f "$f" ] || continue; K=$(basename "$f" .stop); read -r why t0 sz0 xp xs < "$f"
     isnum "${t0:-}" || t0=$(date +%s); isnum "${sz0:-}" || sz0=0
-    st=$(echo "$P" | awk -v t="$T" '$2 == t {print $3; exit}'); [ -z "$st" ] && { rm -f "$f"; continue; }
-    [ "$(tree_open "$st")" = 0 ] && continue                       # stitching the final proof: never interrupted for this
-    sz=$(stat -c %s "$st/log.jsonl" 2>/dev/null || echo 0)
-    if [ "$sz" != "$sz0" ]; then sleep 1; [ "$(tree_open "$st")" = 0 ] && continue; hard_stop "$T" "$why, at a cube boundary"
-    elif [ $(( $(date +%s) - t0 )) -ge "$SOFT_MAX" ]; then hard_stop "$T" "$why, no cube boundary within $SOFT_MAX s"; fi
+    echo "$P" | awk -v p="${xp:-x}" '$1 == p {f=1} END {exit !f}' || { rm -f "$f"; continue; }
+    [ "$(tree_open "$xs")" = 0 ] && continue                       # stitching the final proof: never interrupted
+    sz=$(stat -c %s "$xs/log.jsonl" 2>/dev/null || echo 0)
+    if [ "$sz" != "$sz0" ] || [ $(( $(date +%s) - t0 )) -ge "$SOFT_MAX" ]; then
+      [ "$sz" != "$sz0" ] && { sleep 1; [ "$(tree_open "$xs")" = 0 ] && continue; }
+      mark_killed "$K"; kill_tree "$xp"; rm -f "$f"; say "stopped ${K%.v9} pid $xp ($why, $([ "$sz" != "$sz0" ] && echo "at a cube boundary" || echo "no cube boundary within $SOFT_MAX s"))"; fi
   done
 }
 
