@@ -409,41 +409,59 @@ def main():
         par, gp = key(cube[:-1]), key(cube[:-2])
         if par in predicted: return None                       # children of a predicted split always get a real attempt
         o = [t for g, t in PRED['votes'].get(key(cube), []) if g != own]
-        x = [int(par in timed_out), int(gp in timed_out), len(cube), dt, used / max(1.0, dt), (sum(o) / len(o)) if o else -1.0, min(len(o), 20)]
+        v = [(sum(o) / len(o)) if o else -1.0, min(len(o), 20)]
+        if PRED.get('stage') == 'pre': return pred_p([int(par in timed_out), int(gp in timed_out), len(cube)] + v)
+        x = [int(par in timed_out), int(gp in timed_out), len(cube), dt, used / max(1.0, dt)] + v
         return pred_p(x)
+    PRE = PRED is not None and PRED.get('stage') == 'pre'          # version 1.4: decide before any attempt, no PySAT probe
     while True:
         idx = next((j for j, c in enumerate(tree['open']) if is_mine(c)), None)
         if idx is None: break
         cube = tree['open'][idx]; k = key(cube); conf = tree['conf'].get(k, CONF0)
         if left() < MARGIN + 60: stop('deadline')
+        if PRE:
+            # version 1.4: the PySAT probe never shortened a proof (a cube it refuted still needs CaDiCaL's LRAT segment), so with a
+            # pre-attempt model it is skipped; predicted-hard cubes are split at once, all others go straight to CaDiCaL
+            hp = hard_p(cube, 0.0, 0)
+            if hp is not None and hp >= PRED['th']:
+                x = lookahead(cnf.clauses, cube, cand)
+                if x is not None:
+                    tree['splits'][k] = x; tree['open'][idx:idx + 1] = [cube + [x], cube + [-x]]
+                    for c2 in tree['open'][idx:idx + 2]: tree['conf'][key(c2)] = conf
+                    tree['conf'].pop(k, None); jsave(treep, tree); predicted.add(k)
+                    append_line(logp, {'event': 'split', 'cube': k, 'var': x, 'seconds': 0, 'predicted': round(hp, 3)})
+                    say(f'cube [{k}] split on {x} (predicted hard before any attempt, p = {hp:.2f})')
+                    continue
+            ans = None; hp = None
         # a. PySAT under the cube's assumptions. PySAT's CaDiCaL cannot be interrupted, so the time cap is a conflict
         #    cap from the measured conflict rate
-        rate = tree.get('rate', 1000.0); cap = min(PYSAT_CAP, left() - MARGIN)
-        budget = max(1000, min(conf, int(rate * cap)))
-        c0 = sol.accum_stats().get('conflicts', 0); t0 = time.time()
-        sol.conf_budget(budget); ans = sol.solve_limited(assumptions=cube)
-        dt = time.time() - t0; used = sol.accum_stats().get('conflicts', 0) - c0
-        if dt > 5 and used > 0: tree['rate'] = round(0.6 * rate + 0.4 * used / dt, 1)
-        if ans is True:
-            new, edges = violated(E, M, set(l for l in sol.get_model() if l > 0))
-            if not new: original(cube, edges)
-            add(new, f'pysat, cube [{k}]')
-            append_line(logp, {'event': 'model', 'how': 'pysat', 'cube': k, 'seconds': round(dt, 1), 'conflicts': used,
-                               'new': len(new), 'items': len(items)})
-            continue
-        append_line(logp, {'event': 'pysat', 'cube': k, 'result': 'UNSAT' if ans is False else 'budget', 'budget': budget,
-                           'conflicts': used, 'seconds': round(dt, 1)})
-        if ans is None and left() < MARGIN + 60: stop('deadline')
-        hp = hard_p(cube, dt, used) if ans is None else None
-        if hp is not None and hp >= PRED['th']:
-            x = lookahead(cnf.clauses, cube, cand)
-            if x is not None:
-                tree['splits'][k] = x; tree['open'][idx:idx + 1] = [cube + [x], cube + [-x]]
-                for c2 in tree['open'][idx:idx + 2]: tree['conf'][key(c2)] = conf
-                tree['conf'].pop(k, None); jsave(treep, tree); predicted.add(k)
-                append_line(logp, {'event': 'split', 'cube': k, 'var': x, 'seconds': 0, 'predicted': round(hp, 3)})
-                say(f'cube [{k}] split on {x} (predicted hard, p = {hp:.2f})')
-                continue
+        if not PRE:
+          rate = tree.get('rate', 1000.0); cap = min(PYSAT_CAP, left() - MARGIN)
+          budget = max(1000, min(conf, int(rate * cap)))
+          c0 = sol.accum_stats().get('conflicts', 0); t0 = time.time()
+          sol.conf_budget(budget); ans = sol.solve_limited(assumptions=cube)
+          dt = time.time() - t0; used = sol.accum_stats().get('conflicts', 0) - c0
+          if dt > 5 and used > 0: tree['rate'] = round(0.6 * rate + 0.4 * used / dt, 1)
+          if ans is True:
+              new, edges = violated(E, M, set(l for l in sol.get_model() if l > 0))
+              if not new: original(cube, edges)
+              add(new, f'pysat, cube [{k}]')
+              append_line(logp, {'event': 'model', 'how': 'pysat', 'cube': k, 'seconds': round(dt, 1), 'conflicts': used,
+                                 'new': len(new), 'items': len(items)})
+              continue
+          append_line(logp, {'event': 'pysat', 'cube': k, 'result': 'UNSAT' if ans is False else 'budget', 'budget': budget,
+                             'conflicts': used, 'seconds': round(dt, 1)})
+          if ans is None and left() < MARGIN + 60: stop('deadline')
+          hp = hard_p(cube, dt, used) if ans is None else None
+          if hp is not None and hp >= PRED['th']:
+              x = lookahead(cnf.clauses, cube, cand)
+              if x is not None:
+                  tree['splits'][k] = x; tree['open'][idx:idx + 1] = [cube + [x], cube + [-x]]
+                  for c2 in tree['open'][idx:idx + 2]: tree['conf'][key(c2)] = conf
+                  tree['conf'].pop(k, None); jsave(treep, tree); predicted.add(k)
+                  append_line(logp, {'event': 'split', 'cube': k, 'var': x, 'seconds': 0, 'predicted': round(hp, 3)})
+                  say(f'cube [{k}] split on {x} (predicted hard, p = {hp:.2f})')
+                  continue
         # b. the external proof-writing CaDiCaL on F_c
         to = min(EXT_TIMEOUT, left() - MARGIN)
         if to < min(60, EXT_TIMEOUT): stop('deadline')
@@ -451,7 +469,7 @@ def main():
         st, val = ext_cube(cnf.clauses, pool.top, cube, work, to, os.path.join(state, seg))
         dt = time.time() - t0
         if st == 'UNSAT':
-            val.update({'seg': seg, 'pysat': 'UNSAT' if ans is False else 'budget'})
+            val.update({'seg': seg, 'pysat': 'skipped' if PRE else ('UNSAT' if ans is False else 'budget')})
             tree['seq'] += 1; tree['done'][k] = val; tree['open'].pop(idx); jsave(treep, tree)
             append_line(logp, {'event': 'closed', 'cube': k, 'seconds': round(dt, 1), **val})
             say(f'cube [{k}] closed: {val["n"]} clauses, CaDiCaL {val["cad_seconds"]} s; {len(tree["done"])} closed, {len(tree["open"])} open')
