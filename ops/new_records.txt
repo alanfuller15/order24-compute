@@ -1,3 +1,4 @@
 # tag	layer	run	artifact	first_seen (written by refill; the manager fetches, audits and records; refill never removes lines)
 L84_s10a4b18c62_0001	L84	44257942449	m84e5s4m-h02a	2026-11-18T08:27:52Z
 L85_s10a4b18c63_0000	L85	44284487422	m85f9s4m-h01	2026-11-18T10:27:38Z
+L83_s10a4b18c61_0000	L83	44367413581	m83f9s4m-h01	2026-11-18T18:35:18Z
