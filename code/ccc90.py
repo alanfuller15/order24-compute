@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""ccc90.py, version 1.7 (telemetry: per-event UTC times and model/vote/encoder digests in log.jsonl, see "Version 1.7" below;
+"""ccc90.py, version 1.8 (cost/host telemetry, see "Version 1.8" below; TELEMETRY2=0 = 1.7) / 1.7 (telemetry: per-event UTC times and model/vote/encoder digests in log.jsonl, see "Version 1.7" below;
 TELEMETRY=0 = 1.6) / 1.6 (pred4: richer pre-attempt model data/pred_model4.json, see "Version 1.6" below; PRED4=0 = 1.5) / 1.5 (on-line calibration of the hard-cube model, see "Version 1.5" below; PRED_ONLINE=0 = 1.4) / 1.1 (R90D should-fix 3-5: ORIGINAL_MODEL_FOUND also goes to OUTDIR/results.jsonl; a seed line may
 hold its items under "lazy" (lazy_ckpt.jsonl); the tree keeps the depth it was made with) (producer-side; not trusted, not part of any check): cube-and-conquer CEGAR for one hard layer-90
 formula, ending in ONE ordinary record with ONE LRAT proof, so that the assembler, gcert90c.py and cake_lpr are used
@@ -119,6 +119,144 @@ def _tel_start():
                 'pred_th': PRED['th'] if PRED is not None else None}
     except Exception:
         return {'telemetry': 1, 'ccc90_version': '1.7', 'telemetry_error': 1}
+# Version 1.8 (research/telemetry/v18, producer-side only, log fields only): cost and host telemetry for the v8 shadow engine and the
+# cost-per-verified-cube metric. start: 'telemetry2', host facts, runner env, python/pysat versions, solver binary sha256, the run's
+# configuration, a process nonce. Attempt outcomes (closed, timeout split, external model, predicted split): this visit's CPU seconds
+# of this process and of its waited children (CaDiCaL + lrat-trim), the time limit given to CaDiCaL, CaDiCaL's raw proof bytes, the
+# segment's xz bytes, and the 25 pred4 inputs when pred4 made the decision. PySAT probe lines: PySAT decisions/propagations used.
+# At most once per 60 s (on a cube line that is written anyway) and on stop/shard_done/ORIGINAL_MODEL_FOUND/recorded lines: peak RSS,
+# free disk of OUTDIR, process wall/CPU totals and per-process counters; the recorded line also gets the cake_lpr CPU and proof sizes.
+# No telemetry value is read by any decision; every helper returns {} on error; no line is added or removed. TELEMETRY2=0 gives
+# version 1.7's log exactly (TELEMETRY=0 still gives 1.6). CaDiCaL runs with -q (no statistics on its output) and its call is not
+# changed, so its conflicts/decisions are not available; its CPU seconds stand in as the effort measure.
+TEL2 = TELEMETRY and os.environ.get('TELEMETRY2', '1') != '0'
+_T2 = {'t0': time.time() if TEL2 else None, 'last': 0.0, 'out': None, 'ext': {}, 'x4': None,
+       'n': {'att': 0, 'unsat': 0, 'tmo': 0, 'pred': 0, 'sat': 0, 'seg_bytes': 0}}   # (no key equal to an event name)
+_T2_ENV = ('GITHUB_RUN_ID', 'GITHUB_RUN_ATTEMPT', 'GITHUB_JOB', 'GITHUB_WORKFLOW', 'RUNNER_NAME', 'RUNNER_OS', 'RUNNER_ARCH',
+           'CODESPACE_NAME', 'CHUNK', 'WAVE', 'LANE', 'LANE_ID', 'LANE_NUMBER', 'CUBE_SHARD')
+def _t2clean(o):
+    """drop keys/strings that the resume scans ('"split"', '"pp"') could see"""
+    if isinstance(o, dict): return {k: _t2clean(v) for k, v in o.items() if k not in ('split', 'pp') and not (isinstance(v, str) and v in ('split', 'pp'))}
+    if isinstance(o, list): return [_t2clean(v) for v in o if not (isinstance(v, str) and v in ('split', 'pp'))]
+    return o
+def _t2ru():
+    import resource
+    s = resource.getrusage(resource.RUSAGE_SELF); c = resource.getrusage(resource.RUSAGE_CHILDREN)
+    return s.ru_utime + s.ru_stime, c.ru_utime + c.ru_stime, s.ru_maxrss, c.ru_maxrss
+def _t2_mark():
+    """at the decision instant: (self CPU, children CPU) so far; None with TELEMETRY2=0 or on error"""
+    if not TEL2: return None
+    try: _T2['x4'] = None; _T2['ext'] = {}; return _t2ru()[:2]
+    except Exception: return None
+def _t2_x4(f4):
+    try:
+        if TEL2: _T2['x4'] = [(int(v) if v.is_integer() else round(v, 4)) if v == v and abs(v) != float('inf') else None
+                              for v in (float(u) for u in f4)]       # (strict JSON: no NaN / Infinity)
+    except Exception: pass
+def _t2_lrat(pr):
+    try:
+        if TEL2 and os.path.exists(pr): _T2['ext']['lrat_bytes'] = os.path.getsize(pr)
+    except Exception: pass
+def _t2_snap(force=False):
+    """resources, at most once per 60 s unless force"""
+    if not TEL2: return {}
+    try:
+        now = time.time()
+        if not force and now - _T2['last'] < 60: return {}
+        _T2['last'] = now; r = _t2ru()
+        d = {'rss_mb': round(r[2] / 1024, 1), 'rss_child_mb': round(r[3] / 1024, 1), 'wall_tot': round(now - _T2['t0'], 1),
+             'cpu_self_tot': round(r[0], 2), 'cpu_child_tot': round(r[1], 2)}
+        try:
+            if _T2['out']: v = os.statvfs(_T2['out']); d['disk_free_mb'] = v.f_bavail * v.f_frsize // 2 ** 20
+        except Exception: pass
+        return d
+    except Exception: return {}
+def _t2_att(mark, kind, extra=None):
+    """an attempt outcome's fields: this visit's CPU, extra (non-None values), the periodic snapshot; counters"""
+    if not TEL2 or mark is None: return {}
+    try:
+        r = _t2ru(); d = {'cpu_self': round(r[0] - mark[0], 2), 'cpu_child': round(r[1] - mark[1], 2)}
+        for k2, v in (extra or {}).items():
+            if v is not None: d[k2] = v
+        if _T2['x4'] is not None: d['x4'] = _T2['x4']
+        n = _T2['n']; n[kind] += 1
+        if kind != 'pred': n['att'] += 1
+        if d.get('seg_bytes'): n['seg_bytes'] += d['seg_bytes']
+        d.update(_t2_snap()); return _t2clean(d)
+    except Exception: return {}
+def _t2_ps(sol, s0):
+    """PySAT probe effort (decisions, propagations) since s0 = sol.accum_stats() before the call"""
+    if not TEL2 or s0 is None: return {}
+    try:
+        s1 = sol.accum_stats(); d = {'ps_dec': s1.get('decisions', 0) - s0.get('decisions', 0), 'ps_prop': s1.get('propagations', 0) - s0.get('propagations', 0)}
+        d.update(_t2_snap()); return d
+    except Exception: return {}
+def _t2_end(extra=None):
+    """stop / shard_done / ORIGINAL_MODEL_FOUND / recorded: totals of this process and its counters"""
+    if not TEL2: return {}
+    try:
+        d = _t2_snap(True); d['n_proc'] = dict(_T2['n'])
+        for k2, v in (extra or {}).items():
+            if v is not None: d[k2] = v
+        return _t2clean(d)
+    except Exception: return {}
+def _t2_ext(to, segpath):
+    """the CaDiCaL attempt's limit, raw proof bytes and segment xz bytes"""
+    if not TEL2: return {}
+    try:
+        d = {'ext_to': round(float(to), 1), 'lrat_bytes': _T2['ext'].get('lrat_bytes')}
+        if segpath and os.path.exists(segpath): d['seg_bytes'] = os.path.getsize(segpath)
+        return d
+    except Exception: return {}
+def _t2_rec(cmark, ncubes, rawb, trimb, tree, state):
+    """the recorded line: cake_lpr CPU, the verified proof's sizes, all segments' bytes, totals"""
+    if not TEL2: return {}
+    try:
+        e = {'n_cubes': ncubes, 'proof_raw_bytes': rawb, 'proof_trim_bytes': trimb if trimb is not None else rawb}
+        try: e['cake_cpu'] = round(_t2ru()[1] - cmark[1], 2)
+        except Exception: pass
+        try: e['seg_bytes_tree'] = sum(os.path.getsize(os.path.join(state, v['seg'])) for v in tree['done'].values())
+        except Exception: pass
+        return _t2_end(e)
+    except Exception: return {}
+def _t2_start(outdir):
+    """the start event's version 1.8 fields; {} with TELEMETRY2=0, partial on errors"""
+    if not TEL2: return {}
+    d = {'telemetry2': 1, 'ccc90_version': '1.8'}
+    try: _T2['out'] = outdir
+    except Exception: pass
+    try: import uuid; d['proc_uid'] = uuid.uuid4().hex[:16]; d['t_proc0'] = round(_T2['t0'], 3)
+    except Exception: pass
+    try:
+        h = {'nproc': os.cpu_count()}
+        try: h['nproc_avail'] = len(os.sched_getaffinity(0))
+        except Exception: pass
+        try: h['node'] = os.uname().nodename[:64]
+        except Exception: pass
+        try:
+            with open('/proc/cpuinfo') as fi: h['cpu'] = next((l.split(':', 1)[1].strip()[:80] for l in fi if l.startswith('model name')), None)
+        except Exception: pass
+        try:
+            with open('/proc/meminfo') as fi: h['mem_mb'] = next((int(l.split()[1]) // 1024 for l in fi if l.startswith('MemTotal:')), None)
+        except Exception: pass
+        d['host'] = h
+    except Exception: pass
+    try: d['runner_env'] = {k2: os.environ[k2][:100] for k2 in _T2_ENV if os.environ.get(k2)}
+    except Exception: pass
+    try: import platform; d['python_version'] = platform.python_version(); d['pysat_version'] = pysat.__version__
+    except Exception: pass
+    for name, path in (('cadical_sha256', CAD), ('trim_sha256', TRIM), ('cake_sha256', CAKE)):
+        try: d[name] = _sha_file(path)
+        except Exception: d[name] = None
+    try:
+        d['cfg'] = {'ext_timeout': EXT_TIMEOUT, 'pysat_cap': PYSAT_CAP, 'conf0': CONF0, 'grow': GROW, 'cube_depth': DEPTH0,
+                    'cad_opts': ' '.join(CAD_OPTS), 'trim_max': TRIM_MAX, 'margin': MARGIN, 'cake_heaps': os.environ.get('CAKE_HEAPS', '2000,4000'),
+                    'predict': os.environ.get('PREDICT', '1'), 'pred4': os.environ.get('PRED4', '1'), 'pred_online': int(ONLINE)}
+    except Exception: pass
+    try: d.update(_t2_snap(True))
+    except Exception: pass
+    try: return _t2clean(d)
+    except Exception: return {'telemetry2': 1, 'ccc90_version': '1.8', 'telemetry_error': 2}
 PRED_W = int(os.environ.get('PRED_W', '40')); PRED_A = float(os.environ.get('PRED_A', '10'))
 PRED_B = float(os.environ.get('PRED_B', '3')); PRED_M = float(os.environ.get('PRED_M', '0.1'))
 def _load_pred():
@@ -337,6 +475,7 @@ def ext_cube(clauses, nv, cube, work, timeout, segpath):
         cp = subprocess.run([CAD, '-q', '--lrat=true', '--binary=true'] + CAD_OPTS + [fc, pr], capture_output=True, text=True,
                             env={}, timeout=timeout)
     except subprocess.TimeoutExpired:
+        _t2_lrat(pr)                                                   # version 1.8: log field only
         for x in (fc, pr):
             if os.path.exists(x): os.remove(x)
         return 'TIMEOUT', None
@@ -349,7 +488,7 @@ def ext_cube(clauses, nv, cube, work, timeout, segpath):
             if os.path.exists(x): os.remove(x)
         return 'SAT', mdl
     C.need(cp.returncode == 20, ('external CaDiCaL failed', cp.returncode, cp.stderr[-200:]))
-    os.remove(fc)
+    os.remove(fc); _t2_lrat(pr)                                        # version 1.8: log field only
     tp = subprocess.run([TRIM, '-q', '--no-check', pr, tr], capture_output=True, env={})
     C.need(tp.returncode == 0 and os.path.exists(tr), ('lrat-trim failed', tp.returncode))
     os.remove(pr); b = open(tr, 'rb').read(); os.remove(tr)
@@ -467,7 +606,7 @@ def main():
     tree = json.load(open(treep)) if os.path.exists(treep) else None
     cand, d8 = candidates(f, cnf, E)
     append_line(logp, {'event': 'start', 'time': round(time.time()), 'pid': os.getpid(), 'items': len(items),
-                       'clauses': len(cnf.clauses), 'deadline': DEADLINE, **_tel_start()})
+                       'clauses': len(cnf.clauses), 'deadline': DEADLINE, **_tel_start(), **_t2_start(outdir)})
     if tree is None:
         t0 = time.time(); leaves, splits = initial_tree(cnf.clauses, cand, DEPTH0)
         tree = {'tag': tag, 'encoder': ENC_LABEL, 'open': leaves, 'splits': splits, 'done': {}, 'conf': {}, 'seq': 0, 'depth0': DEPTH0}
@@ -496,11 +635,11 @@ def main():
         items.extend(new); append_line(os.path.join(state, 'items.jsonl'), {'items': new, 'from': note, 'time': round(time.time())})
     def stop(why):
         append_line(logp, {'event': 'stop', 'why': why, 'time': round(time.time()), 'items': len(items),
-                           'open': len(tree['open']), 'done': len(tree['done'])})
+                           'open': len(tree['open']), 'done': len(tree['done']), **_t2_end()})
         say(f'stopped ({why}); {len(tree["done"])} cubes closed, {len(tree["open"])} open, {len(items)} items'); sys.exit(3)
     def original(cube, edges):
         jsave(os.path.join(state, 'ORIGINAL_MODEL_FOUND.json'), {'tag': tag, 'cube': cube, 'edges': edges})
-        append_line(logp, {'event': 'ORIGINAL_MODEL_FOUND', 'cube': key(cube), 'time': round(time.time())})
+        append_line(logp, {'event': 'ORIGINAL_MODEL_FOUND', 'cube': key(cube), 'time': round(time.time()), **_t2_end()})
         append_line(os.path.join(outdir, 'results.jsonl'), {'status': 'ORIGINAL_MODEL_FOUND', 'tag': tag, 'edges': edges, 'cube': cube,
                     's': f['s'], 'a': f['a'], 'b': f['b'], 'c': f['c'], 'h_index': f['h_index'], 'encoder': ENC_LABEL})
         say('ORIGINAL_MODEL_FOUND'); sys.exit(2)
@@ -543,8 +682,9 @@ def main():
                 try:
                     import math
                     o4 = o if (not P4_GATE or PRED4.get('votes_encoder') in (None, ENC_LABEL)) else []
-                    q4 = _pred_p(PRED4, p4_feats(tag, cube, EXT_TIMEOUT, timed_out, seen4, o4))
-                    if 0.0 <= q4 <= 1.0 and math.isfinite(q4): return q4
+                    f4 = p4_feats(tag, cube, EXT_TIMEOUT, timed_out, seen4, o4)
+                    q4 = _pred_p(PRED4, f4)
+                    if 0.0 <= q4 <= 1.0 and math.isfinite(q4): _t2_x4(f4); return q4
                 except Exception: pass
             return pred_p([int(par in timed_out), int(gp in timed_out), len(cube)] + v)
         x = [int(par in timed_out), int(gp in timed_out), len(cube), dt, used / max(1.0, dt)] + v
@@ -557,6 +697,7 @@ def main():
         if left() < MARGIN + 60: stop('deadline')
         pfx = {}
         tdec = time.time() if TELEMETRY else None                # version 1.7: decision time of this visit (log field only)
+        mark = _t2_mark()                                        # version 1.8: CPU so far (log fields only)
         if PRE:
             # version 1.4: the PySAT probe never shortened a proof (a cube it refuted still needs CaDiCaL's LRAT segment), so with a
             # pre-attempt model it is skipped; predicted-hard cubes are split at once, all others go straight to CaDiCaL
@@ -574,7 +715,7 @@ def main():
                     tree['conf'].pop(k, None); jsave(treep, tree); predicted.add(k)
                     ev = {'event': 'split', 'cube': k, 'var': x, 'seconds': 0, 'predicted': round(hq, 3)}
                     if ONLINE: ev.update({'p0': round(hp, 3), 'b': round(hb, 3)})
-                    ev.update(_tt()); ev.update(_td(tdec))
+                    ev.update(_tt()); ev.update(_td(tdec)); ev.update(_t2_att(mark, 'pred'))
                     append_line(logp, ev)
                     say(f'cube [{k}] split on {x} (predicted hard before any attempt, p = {hq:.2f})')
                     continue
@@ -586,7 +727,7 @@ def main():
         if not PRE:
           rate = tree.get('rate', 1000.0); cap = min(PYSAT_CAP, left() - MARGIN)
           budget = max(1000, min(conf, int(rate * cap)))
-          c0 = sol.accum_stats().get('conflicts', 0); t0 = time.time()
+          c0 = sol.accum_stats().get('conflicts', 0); ps0 = sol.accum_stats() if TEL2 else None; t0 = time.time()
           sol.conf_budget(budget); ans = sol.solve_limited(assumptions=cube)
           dt = time.time() - t0; used = sol.accum_stats().get('conflicts', 0) - c0
           if dt > 5 and used > 0: tree['rate'] = round(0.6 * rate + 0.4 * used / dt, 1)
@@ -595,10 +736,10 @@ def main():
               if not new: original(cube, edges)
               add(new, f'pysat, cube [{k}]')
               append_line(logp, {'event': 'model', 'how': 'pysat', 'cube': k, 'seconds': round(dt, 1), 'conflicts': used,
-                                 'new': len(new), 'items': len(items), **_tt()})
+                                 'new': len(new), 'items': len(items), **_tt(), **_t2_ps(sol, ps0)})
               continue
           append_line(logp, {'event': 'pysat', 'cube': k, 'result': 'UNSAT' if ans is False else 'budget', 'budget': budget,
-                             'conflicts': used, 'seconds': round(dt, 1), **_tt()})
+                             'conflicts': used, 'seconds': round(dt, 1), **_tt(), **_t2_ps(sol, ps0)})
           if ans is None and left() < MARGIN + 60: stop('deadline')
           hp = hard_p(cube, dt, used) if ans is None else None
           if hp is not None and hp >= PRED['th']:
@@ -607,7 +748,7 @@ def main():
                   tree['splits'][k] = x; tree['open'][idx:idx + 1] = [cube + [x], cube + [-x]]
                   for c2 in tree['open'][idx:idx + 2]: tree['conf'][key(c2)] = conf
                   tree['conf'].pop(k, None); jsave(treep, tree); predicted.add(k)
-                  append_line(logp, {'event': 'split', 'cube': k, 'var': x, 'seconds': 0, 'predicted': round(hp, 3), **_tt(), **_td(tdec)})
+                  append_line(logp, {'event': 'split', 'cube': k, 'var': x, 'seconds': 0, 'predicted': round(hp, 3), **_tt(), **_td(tdec), **_t2_att(mark, 'pred')})
                   say(f'cube [{k}] split on {x} (predicted hard, p = {hp:.2f})')
                   continue
         # b. the external proof-writing CaDiCaL on F_c
@@ -619,7 +760,8 @@ def main():
         if st == 'UNSAT':
             val.update({'seg': seg, 'pysat': 'skipped' if PRE else ('UNSAT' if ans is False else 'budget')})
             tree['seq'] += 1; tree['done'][k] = val; tree['open'].pop(idx); jsave(treep, tree)
-            append_line(logp, {'event': 'closed', 'cube': k, 'seconds': round(dt, 1), **val, **pfx, **_tt(), **_td(tdec)})
+            append_line(logp, {'event': 'closed', 'cube': k, 'seconds': round(dt, 1), **val, **pfx, **_tt(), **_td(tdec),
+                               **_t2_att(mark, 'unsat', _t2_ext(to, os.path.join(state, seg)))})
             note4(k, False, val.get('cad_seconds') or 0)
             if pfx: hist.append((pfx['pp'], False, pfx['pq']))
             say(f'cube [{k}] closed: {val["n"]} clauses, CaDiCaL {val["cad_seconds"]} s; {len(tree["done"])} closed, {len(tree["open"])} open')
@@ -628,7 +770,7 @@ def main():
             if not new: original(cube, edges)
             add(new, f'external, cube [{k}]'); tree['conf'][k] = conf * GROW; jsave(treep, tree)
             append_line(logp, {'event': 'model', 'how': 'external', 'cube': k, 'seconds': round(dt, 1), 'new': len(new), 'items': len(items),
-                               **_tt(), **_td(tdec)})
+                               **_tt(), **_td(tdec), **_t2_att(mark, 'sat', _t2_ext(to, None))})
         else:
             if to < EXT_TIMEOUT: stop('deadline')
             x = lookahead(cnf.clauses, cube, cand)
@@ -636,13 +778,15 @@ def main():
             tree['splits'][k] = x; tree['open'][idx:idx + 1] = [cube + [x], cube + [-x]]
             for c2 in tree['open'][idx:idx + 2]: tree['conf'][key(c2)] = conf
             tree['conf'].pop(k, None); jsave(treep, tree)
-            append_line(logp, {'event': 'split', 'cube': k, 'var': x, 'seconds': round(dt, 1), **pfx, **_tt(), **_td(tdec)})
+            append_line(logp, {'event': 'split', 'cube': k, 'var': x, 'seconds': round(dt, 1), **pfx, **_tt(), **_td(tdec),
+                               **_t2_att(mark, 'tmo', _t2_ext(to, None))})
             timed_out.add(k); note4(k, True, round(dt, 1))
             if pfx: hist.append((pfx['pp'], True, pfx['pq']))
             say(f'cube [{k}] split on {x} after {dt:.0f} s')
     sol.delete()
     if mine is not None:
-        append_line(logp, {'event': 'shard_done', 'time': round(time.time()), 'done': len(tree['done']), 'open': len(tree['open']), 'items': len(items)})
+        append_line(logp, {'event': 'shard_done', 'time': round(time.time()), 'done': len(tree['done']), 'open': len(tree['open']), 'items': len(items),
+                           **_t2_end()})
         say(f'shard {shard} done: {len(tree["done"])} cubes closed in this state, {len(tree["open"])} open (other shards)'); sys.exit(4)
     # 3. stitch, check, record
     if left() < MARGIN + 600: stop('deadline before the stitch')
@@ -663,7 +807,7 @@ def main():
     dst = os.path.join(proofs, tag + '.lrat.xz')
     with open(dst + '.tmp', 'wb') as fo: fo.write(xz); fo.flush(); os.fsync(fo.fileno())
     os.replace(dst + '.tmp', dst); psha = hashlib.sha256(xz).hexdigest(); pxz = len(xz); del xz
-    t1 = time.time()
+    t1 = time.time(); cmark = _t2_mark()                         # version 1.8: children CPU before cake_lpr (log field only)
     for heap in os.environ.get('CAKE_HEAPS', '2000,4000').split(','):
         lk = cake_slot(os.environ.get('CAKE_LOCK', os.path.join(outdir, '.cake.lock')))
         try:
@@ -686,7 +830,7 @@ def main():
         append_line(os.path.join(outdir, 'results.jsonl'), r)
         for x in (cnfp, raw, tb):
             if os.path.exists(x): os.remove(x)
-        append_line(logp, {'event': 'recorded', 'time': round(time.time()), 'proof_xz_bytes': pxz})
+        append_line(logp, {'event': 'recorded', 'time': round(time.time()), 'proof_xz_bytes': pxz, **_t2_rec(cmark, ncubes, rawb, trimb, tree, state)})
         say(f'{tag} recorded: {ncubes} cubes, stitched proof verified by cake_lpr ({pxz} bytes xz)')
     else:
         append_line(os.path.join(outdir, 'failed_attempts.jsonl'), {k2: v for k2, v in r.items() if k2 != 'lazy'})
