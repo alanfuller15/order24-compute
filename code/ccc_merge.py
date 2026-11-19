@@ -12,6 +12,14 @@ clause position is mapped to the merged one (item by item: same item -> same enc
 segments are rewritten. Nothing here is trusted: the final stitched proof is checked by cake_lpr in ccc90.py and later by
 the independent auditor (gcert<m>.py) against the CNF rebuilt from the merged lazy list.
 
+Open list (with ccc90 1.10; OPEN_NORMALIZE=0 = the join before it). A shard whose tree names no roots (more shards than open
+cubes) owns nothing; it used to be read as owning every cube, so its whole stale open list was appended once per such shard. The
+joined open list is then normalised by ccc90.normalize_open: one entry per cube, none on or under a closed cube, no split cube
+whose sub-cubes are accounted for. Before the fix the joined lists grew wave by wave (9 -> 45 -> 5184 entries for 36 cubes) and
+ccc90's 'every N-th' root choice gave all shards the same cubes. MERGE_HISTORY=1 (default off) also copies the shards' closed /
+split attempt lines into the joined log once per (event, cube), marked history_from_merge, so that a resumed ccc90 rebuilds its
+prediction history; it stays off until every log reader skips those lines.
+
 Usage: ENCODER=cegar90c|cegar90e MASKS12=... python3 -I -B ccc_merge.py FORMULAS.json TAG OUTSTATE SHARDSTATE [SHARDSTATE ...]"""
 import sys, os, json, lzma, bisect, importlib, time
 HERE = os.path.dirname(os.path.abspath(__file__)); sys.path.insert(0, HERE)
@@ -93,7 +101,8 @@ def main():
         var, cls = mapper(layout(f, its), dst)
         for k, x in t['splits'].items():
             assert splits.get(k, x) == x, ('shards split one cube differently', k); splits[k] = x
-        roots = set(t.get('shard', {}).get('roots', [])) or None
+        if K.OPEN_NORMALIZE: roots = set(t['shard'].get('roots') or []) if 'shard' in t else None   # no roots -> owns nothing
+        else: roots = set(t.get('shard', {}).get('roots', [])) or None                                # before ccc90 1.10
         def mine(c, roots=roots):
             return roots is None or any(K.key(c[:n]) in roots for n in range(len(c) + 1))
         opn += [c for c in t['open'] if mine(c)]
@@ -103,13 +112,31 @@ def main():
             nb = rewrite(b, var, cls); name = f'seg_{seq:04d}.xz'; seq += 1
             with open(os.path.join(out, name), 'wb') as fo: fo.write(lzma.compress(nb, preset=1))
             v2 = dict(val); v2['seg'] = name; v2['F_clauses'] = len(dst[0].clauses); done[k] = v2
+    n_raw = len(opn)
+    if K.OPEN_NORMALIZE: opn = K.normalize_open(opn, splits, done)
     tree = {'tag': tag, 'encoder': trees[0]['encoder'], 'open': opn, 'splits': splits, 'done': done, 'conf': {}, 'seq': seq,
             'depth0': trees[0].get('depth0'), 'merged_from': len(shards)}
     K.jsave(os.path.join(out, 'tree.json'), tree)
     K.append_line(os.path.join(out, 'items.jsonl'), {'items': merged_items, 'from': f'merge of {len(shards)} shards', 'time': round(time.time())})
+    hk = set(); hist = []
+    for s in (shards if os.environ.get('MERGE_HISTORY', '0') == '1' else []):   # opt-in until every log reader skips history_from_merge
+        try: L = open(os.path.join(s, 'log.jsonl')).read().splitlines()
+        except OSError: continue
+        for l in L:
+            try: e = json.loads(l)
+            except ValueError: continue
+            if e.get('event') not in ('closed', 'split') or 'cube' not in e: continue
+            hkey = (e['event'], e['cube'], 'predicted' in e)
+            if hkey in hk: continue
+            hk.add(hkey)
+            h = {k: e[k] for k in ('event', 'cube', 'var', 'seconds', 'cad_seconds', 'predicted', 'pp', 'pq', 'time') if k in e}
+            h['history_from_merge'] = 1; hist.append(h)
+    hist.sort(key=lambda h: h.get('time') or 0)
+    for h in hist: K.append_line(os.path.join(out, 'log.jsonl'), h)
     K.append_line(os.path.join(out, 'log.jsonl'), {'event': 'merged', 'shards': len(shards), 'done': len(done), 'open': len(opn),
-                                                    'items': len(merged_items), 'time': round(time.time())})
-    print(f'{tag}: merged {len(shards)} shards: {len(done)} closed cubes, {len(opn)} open, {len(merged_items)} items')
+                                                    'items': len(merged_items), 'time': round(time.time()),
+                                                    **({'open_raw': n_raw} if K.OPEN_NORMALIZE else {})})
+    print(f'{tag}: merged {len(shards)} shards: {len(done)} closed cubes, {len(opn)} open' + (f' ({n_raw} before normalising)' if K.OPEN_NORMALIZE else '') + f', {len(merged_items)} items')
 
 if __name__ == '__main__':
     main()

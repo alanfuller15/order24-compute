@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
-"""ccc90.py, version 1.9 (PRED4_MODEL: per-job choice of the pred4 model file, sha256-pinned, falls back to data/pred_model4.json; see
+"""ccc90.py, version 1.10 (open-list normalisation before shard roots are chosen, see "Version 1.10" below; OPEN_NORMALIZE=0 = 1.9) /
+1.9 (PRED4_MODEL: per-job choice of the pred4 model file, sha256-pinned, falls back to data/pred_model4.json; see
 "Version 1.9" below; unset = 1.8) / 1.8 (cost/host telemetry, see "Version 1.8" below; TELEMETRY2=0 = 1.7) / 1.7 (telemetry: per-event UTC times and model/vote/encoder digests in log.jsonl, see "Version 1.7" below;
 TELEMETRY=0 = 1.6) / 1.6 (pred4: richer pre-attempt model data/pred_model4.json, see "Version 1.6" below; PRED4=0 = 1.5) / 1.5 (on-line calibration of the hard-cube model, see "Version 1.5" below; PRED_ONLINE=0 = 1.4) / 1.1 (R90D should-fix 3-5: ORIGINAL_MODEL_FOUND also goes to OUTDIR/results.jsonl; a seed line may
 hold its items under "lazy" (lazy_ckpt.jsonl); the tree keeps the depth it was made with) (producer-side; not trusted, not part of any check): cube-and-conquer CEGAR for one hard layer-90
@@ -223,7 +224,7 @@ def _t2_rec(cmark, ncubes, rawb, trimb, tree, state):
 def _t2_start(outdir):
     """the start event's version 1.8 fields; {} with TELEMETRY2=0, partial on errors"""
     if not TEL2: return {}
-    d = {'telemetry2': 1, 'ccc90_version': '1.9'}
+    d = {'telemetry2': 1, 'ccc90_version': '1.10'}
     try: _T2['out'] = outdir
     except Exception: pass
     try: d.update({'pred4_model_path': _P4_INFO['path'], 'pred4_model_override': bool(_P4_INFO['override']),   # version 1.9
@@ -260,7 +261,7 @@ def _t2_start(outdir):
     try: d.update(_t2_snap(True))
     except Exception: pass
     try: return _t2clean(d)
-    except Exception: return {'telemetry2': 1, 'ccc90_version': '1.9', 'telemetry_error': 2}
+    except Exception: return {'telemetry2': 1, 'ccc90_version': '1.10', 'telemetry_error': 2}
 PRED_W = int(os.environ.get('PRED_W', '40')); PRED_A = float(os.environ.get('PRED_A', '10'))
 PRED_B = float(os.environ.get('PRED_B', '3')); PRED_M = float(os.environ.get('PRED_M', '0.1'))
 def _load_pred():
@@ -407,6 +408,34 @@ TRIM_MAX = int(os.environ.get('TRIM_MAX', str(3 << 30))); MARGIN = 90
 def say(*a): print(time.strftime('%H:%M:%S'), *a, flush=True)
 def left(): return (DEADLINE - time.time()) if DEADLINE else 1e18
 def key(cube): return ' '.join(map(str, cube))
+# Version 1.10 (producer-side only; nothing here is trusted): a state joined by ccc_merge.py before its fix could list one open cube
+# many times (a shard that owned no roots was read as owning every cube, and the joined open list was never de-duplicated), or list a
+# cube that a shard had already split or closed. 'Every N-th of the sorted open list' then gave every shard the same roots, and all
+# N shards attempted the same cubes. At start the open list is normalised: one entry per cube (the first, order kept), no cube that
+# lies on or under a closed cube (the stitch stops at a closed cube), and no split cube whose two sub-cubes are both accounted for
+# (open, closed, under a closed cube, or split with both of theirs accounted for). A split cube whose sub-cubes are not all
+# accounted for stays on the list, so the run re-attempts it exactly as 1.9 would and the stitch never meets a hole that 1.9 would
+# not have met. A list that changes is saved and logged as {'event': 'open_normalized', 'before', 'after'}; an unchanged list is
+# not touched (no log line, no save), so a run without such entries is 1.9 byte for byte. OPEN_NORMALIZE=0 skips the step (= 1.9).
+OPEN_NORMALIZE = os.environ.get('OPEN_NORMALIZE', '1') != '0'
+def normalize_open(opn, splits, done):
+    """version 1.10: the open list without repeats, without cubes on or under a closed cube, and without split cubes whose
+    sub-cubes are accounted for (see above)"""
+    ks = {key(c) for c in opn}; memo = {}
+    def under_done(c): return any(key(c[:n]) in done for n in range(len(c) + 1))
+    def ok(c):                                                     # cube c is settled even if it is not itself kept on the list
+        k = key(c)
+        if k not in memo:
+            memo[k] = False                                        # (a cube cannot lie below itself; guard only)
+            memo[k] = under_done(c) or k in ks or (k in splits and sub(c))
+        return memo[k]
+    def sub(c): x = splits[key(c)]; return ok(c + [x]) and ok(c + [-x])
+    out, seen = [], set()
+    for c in opn:
+        k = key(c)
+        if k in seen or under_done(c) or (k in splits and sub(c)): continue
+        seen.add(k); out.append(c)
+    return out
 def rv(b, p):
     x = 0; s = 0
     while True:
@@ -687,6 +716,11 @@ def main():
     # CUBE_SHARD=i/N (version 1.2): work only on the open cubes this shard owns (every N-th of the open list sorted by key
     # when the shard first started, and all their sub-cubes), then exit 4 without stitching; ccc_merge.py joins the shards.
     shard = os.environ.get('CUBE_SHARD', ''); mine = None
+    if OPEN_NORMALIZE:                                             # version 1.10 (see "Version 1.10" above)
+        _o = normalize_open(tree['open'], tree['splits'], tree['done'])
+        if len(_o) != len(tree['open']):
+            append_line(logp, {'event': 'open_normalized', 'before': len(tree['open']), 'after': len(_o), 'time': round(time.time())})
+            say(f'{tag}: open list normalised: {len(tree["open"])} -> {len(_o)} entries'); tree['open'] = _o; jsave(treep, tree)
     if shard:
         si, sn = map(int, shard.split('/')); C.need(0 <= si < sn, ('bad CUBE_SHARD', shard))
         if 'shard' not in tree:
