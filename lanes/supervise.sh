@@ -204,11 +204,24 @@ gh_setref() {   # BRANCH SHA EXISTS(0/1) FORCE(true/false)
   local j=$W/run/ref.json
   if [ "$3" = 1 ]; then jbody "{\"sha\": \"$2\", \"force\": $4}" "$j"; ghapi -X PATCH "repos/$GHREPO/git/refs/heads/$1" --input "$j" > /dev/null
   else jbody "{\"ref\": \"refs/heads/$1\", \"sha\": \"$2\"}" "$j"; ghapi -X POST "repos/$GHREPO/git/refs" --input "$j" > /dev/null; fi; }
-beat_push() {   # one-commit branch lane-status-N holding status.txt
-  local b t c rt e
+tel_files() {   # 2026-11-19 telemetry: snapshot each running pair's cube log -> "FILE NAME" lines (NAME tel_TAG[.v9].log.jsonl, sorted)
+  # Read by the manager's opt/telemetry_collect.py (gh api, read-only). Off: SV_TEL=0. Logs above SV_TEL_MAX bytes are left out.
+  [ "${SV_TEL:-$([ "$N" = 4 ] && echo 1 || echo 0)}" = 0 ] && return 0   # canary: default on for lane 4 only (2026-11-19)
+  local T=$W/run/tel; mkdir -p "$T" && rm -f "$T"/tel_* 2>/dev/null
+  sed -n 's/^\(L[0-9][0-9]_[A-Za-z0-9]*_[0-9][0-9][0-9][0-9]\) run=running enc=\(v[79]\) .* state=\(\/[^ ]*\).*/\1 \2 \3/p' "$W/status.txt" | sort -u |
+  while read -r t e d; do
+    f=$d/cube/$t/log.jsonl; [ -f "$f" ] || continue
+    [ "$(stat -c %s "$f" 2>/dev/null || echo 0)" -le "${SV_TEL_MAX:-3000000}" ] || continue
+    n=tel_$t$([ "$e" = v9 ] && echo .v9).log.jsonl
+    python3 -I -c 'import sys; b=open(sys.argv[1],"rb").read(); open(sys.argv[2],"wb").write(b[:b.rfind(b"\n")+1])' "$f" "$T/$n" 2>/dev/null || continue
+    echo "$T/$n $n"
+  done | LC_ALL=C sort -k2; }
+beat_push() {   # one-commit branch lane-status-N holding status.txt (+ tel_TAG*.log.jsonl, see tel_files)
+  local b t c rt e tf
+  tf=$W/run/tel.ents; tel_files > "$tf" 2>/dev/null || : > "$tf"
   if [ "$PM" = git ]; then
     b=$(git -C "$R" hash-object -w "$W/status.txt") || return 1
-    t=$(printf '100644 blob %s\tstatus.txt\n' "$b" | git -C "$R" mktree) || return 1
+    t=$( { printf '100644 blob %s\tstatus.txt\n' "$b"; while read -r f n; do x=$(git -C "$R" hash-object -w "$f") && printf '100644 blob %s\t%s\n' "$x" "$n"; done < "$tf"; } | git -C "$R" mktree) || return 1
     c=$(echo "lane $N status $(date -u +%FT%TZ)" | gid -C "$R" commit-tree "$t") || return 1
     rt=$(timeout 60 git -C "$R" ls-remote "$(URL)" "refs/heads/lane-status-$N" 2>/dev/null | awk '{print $1}')
     if [ -n "${LASTPUSHED:-}" ] && [ -n "$rt" ] && [ "$rt" != "$LASTPUSHED" ]; then OTHERWRITER=1; say "lane-status-$N moved by another writer"; fi
@@ -218,6 +231,7 @@ beat_push() {   # one-commit branch lane-status-N holding status.txt
   rt=$(gh_tip "lane-status-$N")
   if [ -n "${LASTPUSHED:-}" ] && [ -n "$rt" ] && [ "$rt" != "$LASTPUSHED" ]; then OTHERWRITER=1; say "lane-status-$N moved by another writer"; fi
   b=$(gh_blob "$W/status.txt") || return 1; e=$W/run/beat.ents; echo "$b status.txt" > "$e"
+  while read -r f n; do x=$(gh_blob "$f") && echo "$x $n" >> "$e"; done < "$tf"
   c=$(gh_commit - "$e" - "lane $N status $(date -u +%FT%TZ)") || return 1
   gh_setref "lane-status-$N" "$c" "$([ -n "$rt" ] && echo 1 || echo 0)" true && LASTPUSHED=$c
 }
