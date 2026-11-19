@@ -6,7 +6,8 @@
 # (V7_FRESH=no; no folder -> skipped with a NOTE). EXT_TIMEOUT/PYSAT_CAP: this lane's values, unchanged.
 # 2026-11-18 20:55Z: resume this lane's own v7 tree of L83_s10a4b18c61_0001 (the slowest of the 7 formulas still without a
 # certificate; a GitHub tree runs it too: whichever finishes first is recorded and audited). All other tags stay STOPped.
-MODE fill
+# 2026-11-19 04:55Z: MODE run for one restart (VERSION 3) to pick up ccc90 1.8 telemetry; back to fill after.
+MODE run
 ENV CUBE_DEPTH=9 EXT_TIMEOUT=1800 PYSAT_CAP=60 V7_FRESH=no
 STOP L83_s10a4b18c61_0000
 STOP L84_s10a4b18c62_0001

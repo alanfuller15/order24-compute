@@ -206,7 +206,7 @@ gh_setref() {   # BRANCH SHA EXISTS(0/1) FORCE(true/false)
   else jbody "{\"ref\": \"refs/heads/$1\", \"sha\": \"$2\"}" "$j"; ghapi -X POST "repos/$GHREPO/git/refs" --input "$j" > /dev/null; fi; }
 tel_files() {   # 2026-11-19 telemetry: snapshot each running pair's cube log -> "FILE NAME" lines (NAME tel_TAG[.v9].log.jsonl, sorted)
   # Read by the manager's opt/telemetry_collect.py (gh api, read-only). Off: SV_TEL=0. Logs above SV_TEL_MAX bytes are left out.
-  [ "${SV_TEL:-$([ "$N" = 4 ] && echo 1 || echo 0)}" = 0 ] && return 0   # canary: default on for lane 4 only (2026-11-19)
+  [ "${SV_TEL:-1}" = 0 ] && return 0   # default on for all lanes (canary lane 4 OK 2026-11-19 04:47Z)
   local T=$W/run/tel; mkdir -p "$T" && rm -f "$T"/tel_* 2>/dev/null
   sed -n 's/^\(L[0-9][0-9]_[A-Za-z0-9]*_[0-9][0-9][0-9][0-9]\) run=running enc=\(v[79]\) .* state=\(\/[^ ]*\).*/\1 \2 \3/p' "$W/status.txt" | sort -u |
   while read -r t e d; do
