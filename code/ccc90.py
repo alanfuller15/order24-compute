@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
-"""ccc90.py, version 1.8 (cost/host telemetry, see "Version 1.8" below; TELEMETRY2=0 = 1.7) / 1.7 (telemetry: per-event UTC times and model/vote/encoder digests in log.jsonl, see "Version 1.7" below;
+"""ccc90.py, version 1.9 (PRED4_MODEL: per-job choice of the pred4 model file, sha256-pinned, falls back to data/pred_model4.json; see
+"Version 1.9" below; unset = 1.8) / 1.8 (cost/host telemetry, see "Version 1.8" below; TELEMETRY2=0 = 1.7) / 1.7 (telemetry: per-event UTC times and model/vote/encoder digests in log.jsonl, see "Version 1.7" below;
 TELEMETRY=0 = 1.6) / 1.6 (pred4: richer pre-attempt model data/pred_model4.json, see "Version 1.6" below; PRED4=0 = 1.5) / 1.5 (on-line calibration of the hard-cube model, see "Version 1.5" below; PRED_ONLINE=0 = 1.4) / 1.1 (R90D should-fix 3-5: ORIGINAL_MODEL_FOUND also goes to OUTDIR/results.jsonl; a seed line may
 hold its items under "lazy" (lazy_ckpt.jsonl); the tree keeps the depth it was made with) (producer-side; not trusted, not part of any check): cube-and-conquer CEGAR for one hard layer-90
 formula, ending in ONE ordinary record with ONE LRAT proof, so that the assembler, gcert90c.py and cake_lpr are used
@@ -222,8 +223,11 @@ def _t2_rec(cmark, ncubes, rawb, trimb, tree, state):
 def _t2_start(outdir):
     """the start event's version 1.8 fields; {} with TELEMETRY2=0, partial on errors"""
     if not TEL2: return {}
-    d = {'telemetry2': 1, 'ccc90_version': '1.8'}
+    d = {'telemetry2': 1, 'ccc90_version': '1.9'}
     try: _T2['out'] = outdir
+    except Exception: pass
+    try: d.update({'pred4_model_path': _P4_INFO['path'], 'pred4_model_override': bool(_P4_INFO['override']),   # version 1.9
+                   'pred4_model_fallback_reason': _P4_INFO['reason']})
     except Exception: pass
     try: import uuid; d['proc_uid'] = uuid.uuid4().hex[:16]; d['t_proc0'] = round(_T2['t0'], 3)
     except Exception: pass
@@ -256,7 +260,7 @@ def _t2_start(outdir):
     try: d.update(_t2_snap(True))
     except Exception: pass
     try: return _t2clean(d)
-    except Exception: return {'telemetry2': 1, 'ccc90_version': '1.8', 'telemetry_error': 2}
+    except Exception: return {'telemetry2': 1, 'ccc90_version': '1.9', 'telemetry_error': 2}
 PRED_W = int(os.environ.get('PRED_W', '40')); PRED_A = float(os.environ.get('PRED_A', '10'))
 PRED_B = float(os.environ.get('PRED_B', '3')); PRED_M = float(os.environ.get('PRED_M', '0.1'))
 def _load_pred():
@@ -307,8 +311,71 @@ def p4_feats(tag, cube, T, timed_out, seen, o):
             float(s_ is not None), float(s_[0]) if s_ else 0.0, s_[1] if s_ else 1.0, float(u_ is not None), float(u_[0]) if u_ else 0.0, u_[1] if u_ else 1.0,
             math.log10(1 + len(cous)), (sum(c[0] for c in cous) + 0.26) / (len(cous) + 2), (sum(c[1] for c in cous) / len(cous)) if cous else 1.0,
             p_[1] if p_ else (logT if pto else 1.0)]
+# Version 1.9 (research/ccc90_v19, producer-side only): PRED4_MODEL=<path> (relative to the repository root, or absolute) names
+# another file in pred_model4.json's format: the same tree format over the same 25 inputs (P4_NAMES), computed by the same p4_feats
+# and evaluated by the same _pred_p; only the file changes. PRED4_MODEL_SHA256=<64 hex> is required with it and must equal the
+# sha256 of the file's bytes. A missing or invalid pin, an unreadable file, a sha256 mismatch, malformed JSON, features != P4_NAMES,
+# stage != 'pre', a malformed tree (checked node by node: children after their parent, feature index in range, finite thresholds
+# and leaf values, |init| + |lr| * sum of max |leaf| <= 700, so that no input can make _pred_p fail later) or a failed probe ->
+# a warning on stderr and in the start line, and data/pred_model4.json is loaded exactly as in 1.8 (if that fails too, the 1.5
+# model decides, as in 1.8). PRED4_MODEL unset or empty -> 1.8's code path. The start line (with TELEMETRY2) gets pred4_model_path
+# (the file pred4 uses; null when pred4 is not in use), pred4_model_override (true only when the named file is in use) and
+# pred4_model_fallback_reason (null, or why the named file is not used); pred_model4_sha256 is the sha256 of the bytes in use.
+_P4_INFO = {'path': None, 'override': False, 'reason': None}
+class _P4Bad(Exception): pass
+def _p4_tree_ok(m):
+    """raise _P4Bad unless every tree of m can be walked by _pred_p for every input vector of 25 numbers"""
+    import math
+    fin = lambda v: type(v) in (int, float) and math.isfinite(v)
+    if not (fin(m.get('init')) and fin(m.get('lr')) and isinstance(m.get('trees'), list) and m['trees']):
+        raise _P4Bad('init / lr / trees missing or not finite')
+    bound = abs(m['init'])
+    for j, t in enumerate(m['trees']):
+        if not (isinstance(t, list) and len(t) == 5 and all(isinstance(a, list) for a in t)): raise _P4Bad(f'tree {j}: not [L, R, F, Th, V]')
+        L, R, F, Th, V = t; n = len(L)
+        if n == 0 or any(len(a) != n for a in t): raise _P4Bad(f'tree {j}: list lengths differ')
+        vmax = 0.0
+        for i in range(n):
+            if type(L[i]) is int and L[i] == -1:
+                if not fin(V[i]): raise _P4Bad(f'tree {j} node {i}: leaf value not finite')
+                vmax = max(vmax, abs(V[i]))
+            elif not (type(L[i]) is int and type(R[i]) is int and i < L[i] < n and i < R[i] < n and type(F[i]) is int
+                      and 0 <= F[i] < len(P4_NAMES) and fin(Th[i])):
+                raise _P4Bad(f'tree {j} node {i}: bad split node')
+        bound += abs(m['lr']) * vmax
+    if not bound <= 700: raise _P4Bad('score bound > 700')
+def _p4_override(alt):
+    """version 1.9: the model PRED4_MODEL names, or None (after a warning) when it must not be used"""
+    import math, re
+    try:
+        want = os.environ.get('PRED4_MODEL_SHA256', '').strip().lower()
+        if not re.fullmatch(r'[0-9a-f]{64}', want): raise _P4Bad('PRED4_MODEL_SHA256 missing or not 64 hex digits')
+        try:
+            with open(alt if os.path.isabs(alt) else os.path.join(_HERE, '..', alt), 'rb') as fb: raw = fb.read()
+        except Exception as ex: raise _P4Bad(f'file unreadable ({type(ex).__name__})')
+        h = hashlib.sha256(raw).hexdigest()
+        if h != want: raise _P4Bad(f'sha256 mismatch (file {h}, pinned {want})')
+        try: m = json.loads(io.TextIOWrapper(io.BytesIO(raw)).read())   # same decoding as _jload / json.load(open(path))
+        except Exception: raise _P4Bad('malformed JSON')
+        if not isinstance(m, dict): raise _P4Bad('not a JSON object')
+        if m.get('features') != P4_NAMES: raise _P4Bad('features != the 25 pred4 inputs (missing, extra or reordered)')
+        if m.get('stage') != 'pre': raise _P4Bad("stage != 'pre'")
+        _p4_tree_ok(m)
+        q = _pred_p(m, p4_feats('L87_s10a4b18c65_0000', [8, -22, 36], 1500.0, {'8 -22'}, {'8 -22': (True, 3.2), '8 -22 -36': (False, 1.0)}, [1, 0]))
+        if not (0.0 <= q <= 1.0 and math.isfinite(q)): raise _P4Bad('probe p not in [0, 1]')
+    except Exception as ex:
+        why = str(ex) if isinstance(ex, _P4Bad) else f'error ({type(ex).__name__})'
+        try: _P4_INFO['reason'] = why[:200]; print(f'ccc90 warning: PRED4_MODEL={alt[:200]} not used: {why}; falling back to data/pred_model4.json', file=sys.stderr, flush=True)
+        except Exception: pass
+        return None
+    _P4_INFO.update(path=alt, override=True)
+    if TELEMETRY: _TEL_SHA['pred_model4.json'] = h
+    return m
 def _load_pred4():
     if PRED is None or PRED.get('stage') != 'pre' or os.environ.get('PRED4', '1') == '0': return None
+    if os.environ.get('PRED4_MODEL', ''):                        # version 1.9; unset or empty -> 1.8 below
+        m = _p4_override(os.environ['PRED4_MODEL'])
+        if m is not None: return m
     try:
         import math
         m = _jload(os.path.join(_HERE, '..', 'data', 'pred_model4.json'))
@@ -318,6 +385,9 @@ def _load_pred4():
     except Exception:
         return None
 PRED4 = _load_pred4()
+if PRED4 is not None and not _P4_INFO['override']: _P4_INFO['path'] = 'data/pred_model4.json'   # version 1.9 (log field only)
+elif PRED4 is None and os.environ.get('PRED4_MODEL', '') and _P4_INFO['reason'] is None:
+    _P4_INFO['reason'] = 'pred4 not in use (PREDICT=0, PRED4=0 or no pre model)'
 P4_GATE = os.environ.get('PRED4_ENC_GATE', '1') != '0'
 def _lg(p): import math; p = min(max(p, 1e-6), 1 - 1e-6); return math.log(p / (1 - p))
 def _sg(z): import math; return 1 / (1 + math.exp(-max(-50.0, min(50.0, z))))
