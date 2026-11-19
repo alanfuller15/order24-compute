@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
-"""ccc90.py, version 1.6 (pred4: richer pre-attempt model data/pred_model4.json, see "Version 1.6" below; PRED4=0 = 1.5) / 1.5 (on-line calibration of the hard-cube model, see "Version 1.5" below; PRED_ONLINE=0 = 1.4) / 1.1 (R90D should-fix 3-5: ORIGINAL_MODEL_FOUND also goes to OUTDIR/results.jsonl; a seed line may
+"""ccc90.py, version 1.7 (telemetry: per-event UTC times and model/vote/encoder digests in log.jsonl, see "Version 1.7" below;
+TELEMETRY=0 = 1.6) / 1.6 (pred4: richer pre-attempt model data/pred_model4.json, see "Version 1.6" below; PRED4=0 = 1.5) / 1.5 (on-line calibration of the hard-cube model, see "Version 1.5" below; PRED_ONLINE=0 = 1.4) / 1.1 (R90D should-fix 3-5: ORIGINAL_MODEL_FOUND also goes to OUTDIR/results.jsonl; a seed line may
 hold its items under "lazy" (lazy_ckpt.jsonl); the tree keeps the depth it was made with) (producer-side; not trusted, not part of any check): cube-and-conquer CEGAR for one hard layer-90
 formula, ending in ONE ordinary record with ONE LRAT proof, so that the assembler, gcert90c.py and cake_lpr are used
 unchanged.
@@ -79,13 +80,52 @@ _HERE = os.path.dirname(os.path.abspath(__file__))
 # the model or the calibration -> plain behaviour for that cube. PRED_ONLINE=0 gives v1.4's decisions exactly (with PRED_TH as
 # v1.4 used it). Only which cubes are split before an attempt changes; formula, segments, stitch and checks are untouched.
 ONLINE = os.environ.get('PRED_ONLINE', '1') != '0'
+# Version 1.7 (research/telemetry, producer-side only, log fields only): every cube event of log.jsonl (pysat, model, closed, split,
+# predicted split) gets 'time' = UTC epoch seconds when the line is written, and every attempt outcome (closed, split, external
+# model, predicted split) gets 't_dec' = UTC epoch seconds when the loop picked the cube up and decided what to do with it (before
+# the PySAT probe or the model's prediction). The start event gets the sha256 of the bytes of data/pred_model.json,
+# data/pred_votes.json and data/pred_model4.json as they were parsed (null when not loaded / not in use), the encoder label,
+# module and sha256 of its source, and this file's sha256. Purely additive: no other field, line, file, decision, split, segment,
+# proof, record or exit code changes; any error in the telemetry code drops the telemetry fields, never the run.
+# TELEMETRY=0 gives version 1.6's log and code path exactly.
+TELEMETRY = os.environ.get('TELEMETRY', '1') != '0'
+_TEL_SHA = {}                                                    # file name -> sha256 of the bytes that were parsed
+def _jload(path):
+    """json.load(open(path)) (unchanged with TELEMETRY=0); with telemetry, the same text decoding of the same bytes, plus their sha256"""
+    if not TELEMETRY: return json.load(open(path))
+    with open(path, 'rb') as fb: raw = fb.read()
+    obj = json.loads(io.TextIOWrapper(io.BytesIO(raw)).read())  # same default encoding / newline handling as open(path)
+    try: _TEL_SHA[os.path.basename(path)] = hashlib.sha256(raw).hexdigest()
+    except Exception: pass
+    return obj
+def _tt():
+    try: return {'time': round(time.time(), 3)} if TELEMETRY else {}
+    except Exception: return {}
+def _td(t):
+    try: return {'t_dec': round(t, 3)} if (TELEMETRY and t is not None) else {}
+    except Exception: return {}
+def _sha_file(path):
+    with open(path, 'rb') as fb: return hashlib.sha256(fb.read()).hexdigest()
+def _tel_start():
+    """the start event's telemetry fields; {} with TELEMETRY=0 or on any error"""
+    if not TELEMETRY: return {}
+    try:
+        g = lambda name, on: _TEL_SHA.get(name) if on else None
+        return {'telemetry': 1, 'ccc90_version': '1.7', 'ccc90_sha256': _sha_file(os.path.abspath(__file__)),
+                'encoder': ENC_LABEL, 'encoder_module': ENCODER_MOD, 'encoder_sha256': _sha_file(C.__file__),
+                'pred_model_sha256': g('pred_model.json', PRED is not None), 'pred_votes_sha256': g('pred_votes.json', PRED is not None),
+                'pred_model4_sha256': g('pred_model4.json', PRED4 is not None),
+                'pred_active': 'pred4' if PRED4 is not None else ('pred' if PRED is not None else None),
+                'pred_th': PRED['th'] if PRED is not None else None}
+    except Exception:
+        return {'telemetry': 1, 'ccc90_version': '1.7', 'telemetry_error': 1}
 PRED_W = int(os.environ.get('PRED_W', '40')); PRED_A = float(os.environ.get('PRED_A', '10'))
 PRED_B = float(os.environ.get('PRED_B', '3')); PRED_M = float(os.environ.get('PRED_M', '0.1'))
 def _load_pred():
     if os.environ.get('PREDICT', '1') == '0': return None
     try:
-        m = json.load(open(os.path.join(_HERE, '..', 'data', 'pred_model.json')))
-        v = json.load(open(os.path.join(_HERE, '..', 'data', 'pred_votes.json')))
+        m = _jload(os.path.join(_HERE, '..', 'data', 'pred_model.json'))
+        v = _jload(os.path.join(_HERE, '..', 'data', 'pred_votes.json'))
         m['th'] = float(os.environ.get('PRED_TH', m.get('threshold', 0.2))); m['votes'] = v['votes']; m['tags'] = v['tags']
         import math
         q = _pred_p(m, [1, 1, 6, 0.5, 5])                        # version 1.5: a malformed model fails here, not mid-run
@@ -133,7 +173,7 @@ def _load_pred4():
     if PRED is None or PRED.get('stage') != 'pre' or os.environ.get('PRED4', '1') == '0': return None
     try:
         import math
-        m = json.load(open(os.path.join(_HERE, '..', 'data', 'pred_model4.json')))
+        m = _jload(os.path.join(_HERE, '..', 'data', 'pred_model4.json'))
         if m.get('features') != P4_NAMES or m.get('stage') != 'pre': return None
         q = _pred_p(m, p4_feats('L87_s10a4b18c65_0000', [8, -22, 36], 1500.0, {'8 -22'}, {'8 -22': (True, 3.2), '8 -22 -36': (False, 1.0)}, [1, 0]))
         return m if 0.0 <= q <= 1.0 and math.isfinite(q) else None
@@ -427,7 +467,7 @@ def main():
     tree = json.load(open(treep)) if os.path.exists(treep) else None
     cand, d8 = candidates(f, cnf, E)
     append_line(logp, {'event': 'start', 'time': round(time.time()), 'pid': os.getpid(), 'items': len(items),
-                       'clauses': len(cnf.clauses), 'deadline': DEADLINE})
+                       'clauses': len(cnf.clauses), 'deadline': DEADLINE, **_tel_start()})
     if tree is None:
         t0 = time.time(); leaves, splits = initial_tree(cnf.clauses, cand, DEPTH0)
         tree = {'tag': tag, 'encoder': ENC_LABEL, 'open': leaves, 'splits': splits, 'done': {}, 'conf': {}, 'seq': 0, 'depth0': DEPTH0}
@@ -516,6 +556,7 @@ def main():
         cube = tree['open'][idx]; k = key(cube); conf = tree['conf'].get(k, CONF0)
         if left() < MARGIN + 60: stop('deadline')
         pfx = {}
+        tdec = time.time() if TELEMETRY else None                # version 1.7: decision time of this visit (log field only)
         if PRE:
             # version 1.4: the PySAT probe never shortened a proof (a cube it refuted still needs CaDiCaL's LRAT segment), so with a
             # pre-attempt model it is skipped; predicted-hard cubes are split at once, all others go straight to CaDiCaL
@@ -533,6 +574,7 @@ def main():
                     tree['conf'].pop(k, None); jsave(treep, tree); predicted.add(k)
                     ev = {'event': 'split', 'cube': k, 'var': x, 'seconds': 0, 'predicted': round(hq, 3)}
                     if ONLINE: ev.update({'p0': round(hp, 3), 'b': round(hb, 3)})
+                    ev.update(_tt()); ev.update(_td(tdec))
                     append_line(logp, ev)
                     say(f'cube [{k}] split on {x} (predicted hard before any attempt, p = {hq:.2f})')
                     continue
@@ -553,10 +595,10 @@ def main():
               if not new: original(cube, edges)
               add(new, f'pysat, cube [{k}]')
               append_line(logp, {'event': 'model', 'how': 'pysat', 'cube': k, 'seconds': round(dt, 1), 'conflicts': used,
-                                 'new': len(new), 'items': len(items)})
+                                 'new': len(new), 'items': len(items), **_tt()})
               continue
           append_line(logp, {'event': 'pysat', 'cube': k, 'result': 'UNSAT' if ans is False else 'budget', 'budget': budget,
-                             'conflicts': used, 'seconds': round(dt, 1)})
+                             'conflicts': used, 'seconds': round(dt, 1), **_tt()})
           if ans is None and left() < MARGIN + 60: stop('deadline')
           hp = hard_p(cube, dt, used) if ans is None else None
           if hp is not None and hp >= PRED['th']:
@@ -565,7 +607,7 @@ def main():
                   tree['splits'][k] = x; tree['open'][idx:idx + 1] = [cube + [x], cube + [-x]]
                   for c2 in tree['open'][idx:idx + 2]: tree['conf'][key(c2)] = conf
                   tree['conf'].pop(k, None); jsave(treep, tree); predicted.add(k)
-                  append_line(logp, {'event': 'split', 'cube': k, 'var': x, 'seconds': 0, 'predicted': round(hp, 3)})
+                  append_line(logp, {'event': 'split', 'cube': k, 'var': x, 'seconds': 0, 'predicted': round(hp, 3), **_tt(), **_td(tdec)})
                   say(f'cube [{k}] split on {x} (predicted hard, p = {hp:.2f})')
                   continue
         # b. the external proof-writing CaDiCaL on F_c
@@ -577,7 +619,7 @@ def main():
         if st == 'UNSAT':
             val.update({'seg': seg, 'pysat': 'skipped' if PRE else ('UNSAT' if ans is False else 'budget')})
             tree['seq'] += 1; tree['done'][k] = val; tree['open'].pop(idx); jsave(treep, tree)
-            append_line(logp, {'event': 'closed', 'cube': k, 'seconds': round(dt, 1), **val, **pfx})
+            append_line(logp, {'event': 'closed', 'cube': k, 'seconds': round(dt, 1), **val, **pfx, **_tt(), **_td(tdec)})
             note4(k, False, val.get('cad_seconds') or 0)
             if pfx: hist.append((pfx['pp'], False, pfx['pq']))
             say(f'cube [{k}] closed: {val["n"]} clauses, CaDiCaL {val["cad_seconds"]} s; {len(tree["done"])} closed, {len(tree["open"])} open')
@@ -585,7 +627,8 @@ def main():
             new, edges = violated(E, M, val)
             if not new: original(cube, edges)
             add(new, f'external, cube [{k}]'); tree['conf'][k] = conf * GROW; jsave(treep, tree)
-            append_line(logp, {'event': 'model', 'how': 'external', 'cube': k, 'seconds': round(dt, 1), 'new': len(new), 'items': len(items)})
+            append_line(logp, {'event': 'model', 'how': 'external', 'cube': k, 'seconds': round(dt, 1), 'new': len(new), 'items': len(items),
+                               **_tt(), **_td(tdec)})
         else:
             if to < EXT_TIMEOUT: stop('deadline')
             x = lookahead(cnf.clauses, cube, cand)
@@ -593,7 +636,7 @@ def main():
             tree['splits'][k] = x; tree['open'][idx:idx + 1] = [cube + [x], cube + [-x]]
             for c2 in tree['open'][idx:idx + 2]: tree['conf'][key(c2)] = conf
             tree['conf'].pop(k, None); jsave(treep, tree)
-            append_line(logp, {'event': 'split', 'cube': k, 'var': x, 'seconds': round(dt, 1), **pfx})
+            append_line(logp, {'event': 'split', 'cube': k, 'var': x, 'seconds': round(dt, 1), **pfx, **_tt(), **_td(tdec)})
             timed_out.add(k); note4(k, True, round(dt, 1))
             if pfx: hist.append((pfx['pp'], True, pfx['pq']))
             say(f'cube [{k}] split on {x} after {dt:.0f} s')
