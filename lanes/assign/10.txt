@@ -4,8 +4,8 @@
 # own folder and slot; free slots are filled stitch-ready first, then in file order: both v9 trees (fresh, depth 10;
 # hedge: lanes 1-9 depth 8, lanes 10-12 depth 10), then the v7 trees, which only resume an existing v7 folder
 # (V7_FRESH=no; no folder -> skipped with a NOTE). EXT_TIMEOUT/PYSAT_CAP: this lane's values, unchanged.
-# 2026-11-19 04:55Z: MODE run for one restart (VERSION 3) to pick up ccc90 1.8 telemetry; back to fill after.
-MODE run
+# 2026-11-19 04:55Z: was MODE run for one restart (VERSION 3, done by 05:33Z) to pick up ccc90 1.8 telemetry; back to fill after.
+MODE fill
 ENV CUBE_DEPTH=9 EXT_TIMEOUT=1800 PYSAT_CAP=60 V7_FRESH=no
 STOP L83_s10a4b18c61_0000
 STOP L83_s10a4b18c61_0001
