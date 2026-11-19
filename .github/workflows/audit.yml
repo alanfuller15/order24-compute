@@ -2,6 +2,9 @@ name: audit
 # Runs the PINNED checker audit_kit/l<layer>/code/gcert<layer>.py (unmodified) on records + proofs of one producer
 # artifact, on a 16 GB runner (for proofs too big for the auditors' machine), plus two negative controls. The outputs
 # (aout/) are reviewed by an independent auditor; this workflow approves nothing by itself.
+# Optional (both empty = the original behaviour, run_audit.sh run as is): cake_heaps runs audit_kit/with_heaps.sh, i.e.
+# run_audit.sh with CAKE_HEAPS=<list> added to the checker's env (one logged line, aout/run_audit_heaps.diff); swap_gb adds
+# a swap file for proofs whose decompressed bytes (held in RAM by the checker) plus the cake_lpr heap exceed the runner.
 on:
   workflow_dispatch:
     inputs:
@@ -9,6 +12,8 @@ on:
       run_id:     {description: 'producer run id holding the artifact', required: true}
       artifact:   {description: 'producer artifact name, e.g. m87d2-h01', required: true}
       tags_regex: {description: 'full-match regex of the record tags to check', required: true}
+      cake_heaps: {description: 'optional cake_lpr heap list in MB, e.g. 12000 (empty = checker default 2000,4000)', required: false, default: ''}
+      swap_gb:    {description: 'optional extra swap file in GB, 1..48 (empty = none)', required: false, default: ''}
 permissions:
   contents: read
   actions: read
@@ -26,6 +31,16 @@ jobs:
           mkdir -p ~/tools/cake_lpr && cp bin/cake_lpr ~/tools/cake_lpr/cake_lpr && chmod +x ~/tools/cake_lpr/cake_lpr
           sudo pip3 install --break-system-packages -q "python-sat==1.9.dev21" numpy networkx
           python3 -I -c "import pysat; print(pysat.__version__)"; nproc; free -m; python3 --version
+      - name: Extra swap
+        if: inputs.swap_gb != ''
+        env:
+          SWAP_GB: ${{ inputs.swap_gb }}
+        run: |
+          [[ "$SWAP_GB" =~ ^[1-9][0-9]?$ ]] && [ "$SWAP_GB" -le 48 ] || { echo "swap_gb '$SWAP_GB' refused: need 1..48"; exit 1; }
+          D=/; for d in /mnt; do [ -d $d ] && [ "$(df -BG --output=avail $d | tail -1 | tr -dc 0-9)" -gt "$(df -BG --output=avail $D | tail -1 | tr -dc 0-9)" ] && D=$d; done
+          [ "$(df -BG --output=avail $D | tail -1 | tr -dc 0-9)" -ge $((SWAP_GB + 15)) ] || { echo "not enough disk on $D for ${SWAP_GB} GB swap + inputs"; df -h; exit 1; }
+          sudo fallocate -l ${SWAP_GB}G $D/audit.swap && sudo chmod 600 $D/audit.swap && sudo mkswap $D/audit.swap && sudo swapon $D/audit.swap
+          swapon --show; free -m; df -h / $D
       - uses: actions/download-artifact@v4
         with:
           name: ${{ inputs.artifact }}
@@ -36,8 +51,10 @@ jobs:
         env:
           LAYER: ${{ inputs.layer }}
           TAGS_REGEX: ${{ inputs.tags_regex }}
+          CAKE_HEAPS_IN: ${{ inputs.cake_heaps }}
         run: |
-          bash audit_kit/run_audit.sh "$LAYER" "$TAGS_REGEX"
+          if [ -z "$CAKE_HEAPS_IN" ]; then bash audit_kit/run_audit.sh "$LAYER" "$TAGS_REGEX"
+          else bash audit_kit/with_heaps.sh "$CAKE_HEAPS_IN" "$LAYER" "$TAGS_REGEX" || exit 1; fi
           [ "$(cat aout/main.exit)" = 3 ] || [ "$(cat aout/main.exit)" = 0 ]
           [ "$(cat aout/negA.exit)" = 1 ] && [ "$(cat aout/negB.exit)" = 1 ]
       - name: Upload
