@@ -253,8 +253,21 @@ def stop(M, what, run):
 # ---- 4-7. per run
 summary(f'## refill {NOW} ({"DRY RUN: no commit, no dispatch" if DRY else "live"})\n\njobs busy {busy}/{CAP}; {len(new)} new completed produce runs\n')
 errors = 0; free_known = not unknown
+import signal
+_CUR = {'run': None}
+def _slow_run(sig, frm):   # 2026-11-19: one oversized run (1.9-era bloated trees) stalled every pass at timeout-minutes for hours.
+    run = _CUR['run']      # Self-heal: a run that takes longer than per_run_minutes is marked handled (skipped) and the pass ends,
+    if run is None: done(0, 'pass time limit')   # so the next pass (10 min later) moves on to the other runs and keeps dispatching.
+    with open(f'{RD}/ops/handled_runs.txt', 'a') as fo: fo.write(run + '\n')
+    event(f'run {run}: SKIPPED, processing exceeded {CFG.get("per_run_minutes", 8)} min (marked handled; its tags continue elsewhere or need a manual wave)')
+    P['needs'].append(f'run {run} skipped as too slow to plan; check whether its tags need a manual continuation')
+    try: commit_push(['ops/handled_runs.txt'], f'refill: run {run} skipped (planning exceeded {CFG.get("per_run_minutes", 8)} min)')
+    except Exception as e: log(f'commit of skip failed: {e}')
+    done(0, 'slow run skipped')
+signal.signal(signal.SIGALRM, _slow_run)
 for r in new[:a.max_runs]:
     run = str(r['id']); arts = []; page = 1
+    _CUR['run'] = run; signal.alarm(int(60 * float(CFG.get('per_run_minutes', 8))))
     while True:
         d = gh(f'repos/{REPO}/actions/runs/{run}/artifacts?per_page=100&page={page}'); arts += d['artifacts']
         if len(d['artifacts']) < 100: break
@@ -338,6 +351,7 @@ for r in new[:a.max_runs]:
             busy += x['jobs']; event(f'dispatched {x["wave"]} ({x["jobs"]} jobs) from run {run}')
         except Exception as e:
             event(f'DISPATCH FAILED {x["wave"]} from run {run}: {e}'); P['needs'].append(f'dispatch of {x["wave"]} (run {run}) failed: dispatch it by hand: {x["body"]}'); errors += 1
+signal.alarm(0); _CUR['run'] = None
 if len(new) > a.max_runs: event(f'{len(new) - a.max_runs} more runs left for the next pass')
 P['jobs']['busy_after'] = busy
 done(1 if errors else 0, 'errors' if errors else None)
