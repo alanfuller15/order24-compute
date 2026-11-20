@@ -10,6 +10,7 @@ on:
 permissions:
   actions: read
   contents: write
+  issues: write
 concurrency:
   group: a9final_check
   cancel-in-progress: false
@@ -49,3 +50,9 @@ jobs:
           T=$(printf '100644 blob %s\tA9_FINAL.md\n' "$(git hash-object -w $S)" | git mktree)
           M=$(git -c user.name='github-actions[bot]' -c user.email='41898282+github-actions[bot]@users.noreply.github.com' commit-tree "$T" -m "a9 final status $(date -u +%Y-%m-%dT%H:%MZ)")
           git push -q -f origin "$M:refs/heads/a9-final-status" && echo pushed
+          # notify once: an issue (GitHub sends the owner a notification) when all 8 parts are in, or when any part failed
+          fin=$(grep -c "^- part .*completed" $S); bad=$(grep -c "GATE_FAIL\|completed failure" $S)
+          if [ $ok -eq 8 ] && [ $same -eq 1 ]; then TT="A9 final: all 8 parts COVERED AND VERIFIED (needs independent review)"
+          elif [ $fin -eq 8 ] || [ $bad -gt 0 ]; then TT="A9 final: attention ($ok/8 verified, $bad failed)"; else exit 0; fi
+          if [ -z "$(gh issue list -R $R --state all --search "$TT in:title" --json number -q '.[0].number')" ]; then
+            gh issue create -R $R --title "$TT" --body-file $S && echo "issue opened"; fi
