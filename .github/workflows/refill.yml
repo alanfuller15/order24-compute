@@ -76,3 +76,14 @@ jobs:
           C=$(git -c user.name='github-actions[bot]' -c user.email='41898282+github-actions[bot]@users.noreply.github.com' commit-tree "$T" -F "$RUNNER_TEMP/status_msg.txt")
           git push -q -f origin "$C:refs/heads/$BR"
           echo "pushed $BR"
+      - name: Chain the next pass
+        # 2026-11-19: GitHub throttles the 10-minute cron heavily (hours between fires), so each live pass schedules the next one
+        # itself. The cron stays as a backup. control/HOLD stops the chain; the refill concurrency group keeps at most one queued.
+        if: always() && steps.mode.outputs.dry == ''
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          if [ -e control/HOLD ]; then echo "control/HOLD present: chain stopped"; exit 0; fi
+          ELAPSED=$(( $(date +%s) - $(date -d "$(gh api repos/${{ github.repository }}/actions/runs/${{ github.run_id }} -q .run_started_at)" +%s) ))
+          W=$(( 480 - ELAPSED )); if [ $W -gt 0 ]; then echo "waiting ${W}s so passes are about 8 min apart"; sleep $W; fi
+          gh api -X POST repos/${{ github.repository }}/actions/workflows/refill.yml/dispatches -f ref=main -f 'inputs[dry_run]=false' && echo "next pass dispatched"
