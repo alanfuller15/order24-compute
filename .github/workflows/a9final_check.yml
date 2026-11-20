@@ -35,7 +35,7 @@ jobs:
             st=$(gh api repos/$R/actions/runs/$id -q '.status+" "+(.conclusion//"")')
             mkdir -p $O/$k; gh run download $id -R $R -n $n -D $O/$k >/dev/null 2>&1
             v=$(grep -rh "A9 FINAL VERDICT" $O/$k 2>/dev/null | tail -1)
-            c=$(cat $O/$k/code.sha256 2>/dev/null | sha256sum | cut -c1-16)
+            c=$(grep -o "code digest: [0-9a-f]*" $O/$k/code.sha256 2>/dev/null | awk "{print \$3}")
             d=$(echo "$v" | grep -o 'input digest [0-9a-f]*' | awk '{print $3}')
             gf=$( [ -e $O/$k/GATE_FAIL ] && echo " GATE_FAIL" )
             echo "- part $k: run $id ($st)$gf; code $c; ${v:-no verdict line}" >> $S
