@@ -1,0 +1,129 @@
+{
+ "updated": "2026-11-20 04:31Z",
+ "attention": [
+  "lane heartbeat stale: 1 (180 min), 3 (177 min), 4 (185 min), 5 (183 min), 6 (183 min), 8 (187 min), 10 (181 min), 11 (182 min), 12 (188 min)",
+  "GitHub jobs low: 25/40"
+ ],
+ "needs": [],
+ "events": [
+  "11-18 17:15Z DRY: would dispatch m83e3s3n6 (6 jobs) from run 44259614544",
+  "11-18 17:15Z DRY: would dispatch m83f9s4 (6 jobs) from run 44269476498",
+  "11-18 17:20Z DRY: would dispatch m80d6s4n3 (7 jobs) from run 44208157974",
+  "11-18 17:20Z DRY: would dispatch m82fs3n5 (6 jobs) from run 44208201378",
+  "11-18 17:21Z DRY: would dispatch m82e4s4n3 (6 jobs) from run 44208249060",
+  "11-18 17:21Z DRY: would dispatch m82d6s4n3 (2 jobs) from run 44208275638",
+  "11-20 04:31Z DRY: would dispatch m83e3s3n12 (20 jobs) from run 44585293113"
+ ],
+ "tags": {
+  "L83_s10a4b18c61_0000": {
+   "open": 56,
+   "cost_h": "6.7",
+   "wave": "m83f9s4",
+   "shards": 24,
+   "jobs": 6,
+   "run": "44269476498",
+   "time": "2026-11-18T17:14:55Z"
+  },
+  "L84_s10a4b18c62_0001": {},
+  "L85_s10a4b18c63_0000": {},
+  "L85_s10a4b18c63_0001": {},
+  "L86_s10a4b18c64_0000": {},
+  "L86_s10a4b18c64_0001": {},
+  "L86_s10a4b18c64_0002": {},
+  "L84_s10a4b18c62_0000": {},
+  "L81_s10a4b18c59_0002": {},
+  "L83_s10a4b18c61_0001": {
+   "open": 215244,
+   "cost_h": "43.6",
+   "wave": "m83e3s3n12",
+   "shards": 80,
+   "jobs": 20,
+   "run": "44585293113",
+   "time": "2026-11-20T04:30:20Z"
+  },
+  "L80_s10a4b18c58_0001": {
+   "open": 5,
+   "cost_h": "3.1",
+   "wave": "m80d6s4n3",
+   "shards": 5,
+   "jobs": 2,
+   "run": "44208157974",
+   "time": "2026-11-18T17:19:24Z"
+  },
+  "L81_s10a4b18c59_0001": {},
+  "L82_s10a4b18c60_0001": {
+   "open": 32,
+   "cost_h": "6.8",
+   "wave": "m82e4s4n3",
+   "shards": 24,
+   "jobs": 6,
+   "run": "44208249060",
+   "time": "2026-11-18T17:19:24Z"
+  },
+  "L84_s10a4b18c62_0003": {},
+  "L84_s10a4b18c62_0005": {},
+  "L84_s10a4b18c62_0006": {},
+  "L82_s10a4b18c60_0000": {
+   "open": 128,
+   "cost_h": "6.5",
+   "wave": "m82fs3n5",
+   "shards": 24,
+   "jobs": 6,
+   "run": "44208201378",
+   "time": "2026-11-18T17:19:24Z"
+  },
+  "L82_s10a4b18c60_0002": {
+   "open": 5,
+   "cost_h": "1.9",
+   "wave": "m82d6s4n3",
+   "shards": 5,
+   "jobs": 2,
+   "run": "44208275638",
+   "time": "2026-11-18T17:19:24Z"
+  },
+  "L80_s10a4b18c58_0000": {
+   "open": 18,
+   "cost_h": "4.0",
+   "wave": "m80d6s4n3",
+   "shards": 18,
+   "jobs": 5,
+   "run": "44208157974",
+   "time": "2026-11-18T17:19:24Z"
+  },
+  "L80_s10a4b18c58_0002": {},
+  "L80_s10a4b18c58_0003": {}
+ },
+ "last_pass": {
+  "time": "2026-11-20T04:30:20Z",
+  "result": "ok",
+  "dry": true,
+  "jobs": {
+   "busy": 5,
+   "cap": 40,
+   "runs": {
+    "44643920533": [
+     "exp",
+     1
+    ],
+    "44643916739": [
+     "exp",
+     1
+    ],
+    "44643913739": [
+     "exp",
+     1
+    ],
+    "44643910285": [
+     "exp",
+     1
+    ],
+    "44643902462": [
+     "exp",
+     1
+    ]
+   },
+   "busy_after": 25
+  },
+  "seconds": 63.1
+ }
+}
