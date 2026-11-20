@@ -1,0 +1,330 @@
+{"event": "start", "time": 1794879375, "pid": 720, "items": 2634, "clauses": 2696577, "deadline": 1794965466.0}
+{"event": "cubes", "n": 128, "depth": 7, "d8": [93961, 94107, 94253], "seconds": 1863.2}
+{"event": "pysat", "cube": "8 22 36 47 52 122 78", "result": "UNSAT", "budget": 20000, "conflicts": 3, "seconds": 0.5}
+{"event": "closed", "cube": "8 22 36 47 52 122 78", "seconds": 7.1, "n": 434, "D": 434, "F_clauses": 2696577, "cad_seconds": 2.3, "trim_bytes": 9574361, "seg": "seg_0000.xz", "pysat": "UNSAT"}
+{"event": "pysat", "cube": "8 22 36 47 52 122 -78", "result": "UNSAT", "budget": 20000, "conflicts": 5, "seconds": 0.5}
+{"event": "closed", "cube": "8 22 36 47 52 122 -78", "seconds": 8.1, "n": 503, "D": 503, "F_clauses": 2696577, "cad_seconds": 3.0, "trim_bytes": 9602737, "seg": "seg_0001.xz", "pysat": "UNSAT"}
+{"event": "pysat", "cube": "8 22 36 47 52 -122 121", "result": "UNSAT", "budget": 20000, "conflicts": 1, "seconds": 0.3}
+{"event": "closed", "cube": "8 22 36 47 52 -122 121", "seconds": 7.9, "n": 433, "D": 433, "F_clauses": 2696577, "cad_seconds": 2.9, "trim_bytes": 9601427, "seg": "seg_0002.xz", "pysat": "UNSAT"}
+{"event": "pysat", "cube": "8 22 36 47 52 -122 -121", "result": "UNSAT", "budget": 20000, "conflicts": 3, "seconds": 0.2}
+{"event": "closed", "cube": "8 22 36 47 52 -122 -121", "seconds": 7.8, "n": 431, "D": 431, "F_clauses": 2696577, "cad_seconds": 3.0, "trim_bytes": 9631562, "seg": "seg_0003.xz", "pysat": "UNSAT"}
+{"event": "pysat", "cube": "8 22 36 47 -52 132 203", "result": "UNSAT", "budget": 20000, "conflicts": 1, "seconds": 0.3}
+{"event": "closed", "cube": "8 22 36 47 -52 132 203", "seconds": 8.3, "n": 222, "D": 222, "F_clauses": 2696577, "cad_seconds": 3.3, "trim_bytes": 9598865, "seg": "seg_0004.xz", "pysat": "UNSAT"}
+{"event": "pysat", "cube": "8 22 36 47 -52 132 -203", "result": "UNSAT", "budget": 20000, "conflicts": 2, "seconds": 0.4}
+{"event": "closed", "cube": "8 22 36 47 -52 132 -203", "seconds": 8.7, "n": 332, "D": 332, "F_clauses": 2696577, "cad_seconds": 3.6, "trim_bytes": 9625297, "seg": "seg_0005.xz", "pysat": "UNSAT"}
+{"event": "pysat", "cube": "8 22 36 47 -52 -132 134", "result": "UNSAT", "budget": 20000, "conflicts": 1, "seconds": 0.3}
+{"event": "closed", "cube": "8 22 36 47 -52 -132 134", "seconds": 19.0, "n": 279, "D": 279, "F_clauses": 2696577, "cad_seconds": 12.2, "trim_bytes": 9625308, "seg": "seg_0006.xz", "pysat": "UNSAT"}
+{"event": "pysat", "cube": "8 22 36 47 -52 -132 -134", "result": "UNSAT", "budget": 20000, "conflicts": 0, "seconds": 0.1}
+{"event": "closed", "cube": "8 22 36 47 -52 -132 -134", "seconds": 16.4, "n": 382, "D": 382, "F_clauses": 2696577, "cad_seconds": 6.5, "trim_bytes": 9655837, "seg": "seg_0007.xz", "pysat": "UNSAT"}
+{"event": "pysat", "cube": "8 22 36 -47 55 175 62", "result": "UNSAT", "budget": 20000, "conflicts": 6, "seconds": 0.4}
+{"event": "closed", "cube": "8 22 36 -47 55 175 62", "seconds": 17.0, "n": 423, "D": 423, "F_clauses": 2696577, "cad_seconds": 6.6, "trim_bytes": 9592332, "seg": "seg_0008.xz", "pysat": "UNSAT"}
+{"event": "pysat", "cube": "8 22 36 -47 55 175 -62", "result": "UNSAT", "budget": 20000, "conflicts": 0, "seconds": 0.1}
+{"event": "closed", "cube": "8 22 36 -47 55 175 -62", "seconds": 15.8, "n": 292, "D": 292, "F_clauses": 2696577, "cad_seconds": 6.1, "trim_bytes": 9622348, "seg": "seg_0009.xz", "pysat": "UNSAT"}
+{"event": "pysat", "cube": "8 22 36 -47 55 -175 171", "result": "UNSAT", "budget": 20000, "conflicts": 1, "seconds": 0.1}
+{"event": "closed", "cube": "8 22 36 -47 55 -175 171", "seconds": 15.6, "n": 292, "D": 292, "F_clauses": 2696577, "cad_seconds": 5.7, "trim_bytes": 9625376, "seg": "seg_0010.xz", "pysat": "UNSAT"}
+{"event": "pysat", "cube": "8 22 36 -47 55 -175 -171", "result": "UNSAT", "budget": 20000, "conflicts": 1, "seconds": 0.1}
+{"event": "closed", "cube": "8 22 36 -47 55 -175 -171", "seconds": 15.5, "n": 292, "D": 292, "F_clauses": 2696577, "cad_seconds": 6.4, "trim_bytes": 9646636, "seg": "seg_0011.xz", "pysat": "UNSAT"}
+{"event": "pysat", "cube": "8 22 36 -47 -55 53 44", "result": "UNSAT", "budget": 20000, "conflicts": 19, "seconds": 0.2}
+{"event": "closed", "cube": "8 22 36 -47 -55 53 44", "seconds": 20.1, "n": 140, "D": 140, "F_clauses": 2696577, "cad_seconds": 9.0, "trim_bytes": 9629254, "seg": "seg_0012.xz", "pysat": "UNSAT"}
+{"event": "pysat", "cube": "8 22 36 -47 -55 53 -44", "result": "UNSAT", "budget": 20000, "conflicts": 2, "seconds": 0.2}
+{"event": "closed", "cube": "8 22 36 -47 -55 53 -44", "seconds": 16.3, "n": 140, "D": 140, "F_clauses": 2696577, "cad_seconds": 6.5, "trim_bytes": 9647754, "seg": "seg_0013.xz", "pysat": "UNSAT"}
+{"event": "pysat", "cube": "8 22 36 -47 -55 -53 46", "result": "UNSAT", "budget": 20000, "conflicts": 0, "seconds": 0.1}
+{"event": "closed", "cube": "8 22 36 -47 -55 -53 46", "seconds": 16.5, "n": 175, "D": 175, "F_clauses": 2696577, "cad_seconds": 5.9, "trim_bytes": 9652224, "seg": "seg_0014.xz", "pysat": "UNSAT"}
+{"event": "pysat", "cube": "8 22 36 -47 -55 -53 -46", "result": "UNSAT", "budget": 20000, "conflicts": 0, "seconds": 0.2}
+{"event": "closed", "cube": "8 22 36 -47 -55 -53 -46", "seconds": 16.1, "n": 322, "D": 322, "F_clauses": 2696577, "cad_seconds": 6.1, "trim_bytes": 9677741, "seg": "seg_0015.xz", "pysat": "UNSAT"}
+{"event": "pysat", "cube": "8 22 -36 32 40 53 192", "result": "UNSAT", "budget": 20000, "conflicts": 103, "seconds": 0.9}
+{"event": "closed", "cube": "8 22 -36 32 40 53 192", "seconds": 19.4, "n": 1227, "D": 1227, "F_clauses": 2696577, "cad_seconds": 9.6, "trim_bytes": 9635084, "seg": "seg_0016.xz", "pysat": "UNSAT"}
+{"event": "pysat", "cube": "8 22 -36 32 40 53 -192", "result": "UNSAT", "budget": 20000, "conflicts": 1, "seconds": 0.2}
+{"event": "closed", "cube": "8 22 -36 32 40 53 -192", "seconds": 15.3, "n": 1759, "D": 1759, "F_clauses": 2696577, "cad_seconds": 6.5, "trim_bytes": 9674844, "seg": "seg_0017.xz", "pysat": "UNSAT"}
+{"event": "pysat", "cube": "8 22 -36 32 40 -53 48", "result": "UNSAT", "budget": 20000, "conflicts": 95, "seconds": 1.0}
+{"event": "closed", "cube": "8 22 -36 32 40 -53 48", "seconds": 11.3, "n": 2722, "D": 2722, "F_clauses": 2696577, "cad_seconds": 5.9, "trim_bytes": 9717947, "seg": "seg_0018.xz", "pysat": "UNSAT"}
+{"event": "pysat", "cube": "8 22 -36 32 40 -53 -48", "result": "UNSAT", "budget": 20000, "conflicts": 248, "seconds": 2.7}
+{"event": "closed", "cube": "8 22 -36 32 40 -53 -48", "seconds": 9.5, "n": 2418, "D": 2418, "F_clauses": 2696577, "cad_seconds": 4.4, "trim_bytes": 9739130, "seg": "seg_0019.xz", "pysat": "UNSAT"}
+{"event": "pysat", "cube": "8 22 -36 32 -40 38 33", "result": "UNSAT", "budget": 20000, "conflicts": 87, "seconds": 1.0}
+{"event": "closed", "cube": "8 22 -36 32 -40 38 33", "seconds": 10.5, "n": 1150, "D": 1150, "F_clauses": 2696577, "cad_seconds": 5.2, "trim_bytes": 9654725, "seg": "seg_0020.xz", "pysat": "UNSAT"}
+{"event": "pysat", "cube": "8 22 -36 32 -40 38 -33", "result": "UNSAT", "budget": 20000, "conflicts": 384, "seconds": 2.6}
+{"event": "closed", "cube": "8 22 -36 32 -40 38 -33", "seconds": 13.1, "n": 3048, "D": 3048, "F_clauses": 2696577, "cad_seconds": 7.9, "trim_bytes": 9782638, "seg": "seg_0021.xz", "pysat": "UNSAT"}
+{"event": "pysat", "cube": "8 22 -36 32 -40 -38 55", "result": "UNSAT", "budget": 20000, "conflicts": 0, "seconds": 0.0}
+{"event": "closed", "cube": "8 22 -36 32 -40 -38 55", "seconds": 9.6, "n": 487, "D": 487, "F_clauses": 2696577, "cad_seconds": 4.4, "trim_bytes": 9651844, "seg": "seg_0022.xz", "pysat": "UNSAT"}
+{"event": "pysat", "cube": "8 22 -36 32 -40 -38 -55", "result": "UNSAT", "budget": 20000, "conflicts": 0, "seconds": 0.1}
+{"event": "closed", "cube": "8 22 -36 32 -40 -38 -55", "seconds": 9.8, "n": 138, "D": 138, "F_clauses": 2696577, "cad_seconds": 4.4, "trim_bytes": 9672565, "seg": "seg_0023.xz", "pysat": "UNSAT"}
+{"event": "pysat", "cube": "8 22 -36 -32 48 53 39", "result": "UNSAT", "budget": 20000, "conflicts": 41, "seconds": 0.3}
+{"event": "closed", "cube": "8 22 -36 -32 48 53 39", "seconds": 10.2, "n": 165, "D": 165, "F_clauses": 2696577, "cad_seconds": 5.2, "trim_bytes": 9606730, "seg": "seg_0024.xz", "pysat": "UNSAT"}
+{"event": "pysat", "cube": "8 22 -36 -32 48 53 -39", "result": "UNSAT", "budget": 20000, "conflicts": 2, "seconds": 0.1}
+{"event": "closed", "cube": "8 22 -36 -32 48 53 -39", "seconds": 9.0, "n": 344, "D": 344, "F_clauses": 2696577, "cad_seconds": 3.8, "trim_bytes": 9650521, "seg": "seg_0025.xz", "pysat": "UNSAT"}
+{"event": "pysat", "cube": "8 22 -36 -32 48 -53 41", "result": "UNSAT", "budget": 20000, "conflicts": 173, "seconds": 0.7}
+{"event": "closed", "cube": "8 22 -36 -32 48 -53 41", "seconds": 15.1, "n": 996, "D": 996, "F_clauses": 2696577, "cad_seconds": 9.8, "trim_bytes": 9665106, "seg": "seg_0026.xz", "pysat": "UNSAT"}
+{"event": "pysat", "cube": "8 22 -36 -32 48 -53 -41", "result": "UNSAT", "budget": 20000, "conflicts": 553, "seconds": 2.8}
+{"event": "closed", "cube": "8 22 -36 -32 48 -53 -41", "seconds": 12.6, "n": 3019, "D": 3019, "F_clauses": 2696577, "cad_seconds": 7.0, "trim_bytes": 9786706, "seg": "seg_0027.xz", "pysat": "UNSAT"}
+{"event": "pysat", "cube": "8 22 -36 -32 -48 130 140", "result": "UNSAT", "budget": 20000, "conflicts": 1069, "seconds": 27.9}
+{"event": "closed", "cube": "8 22 -36 -32 -48 130 140", "seconds": 15.4, "n": 3395, "D": 3395, "F_clauses": 2696577, "cad_seconds": 9.8, "trim_bytes": 9893089, "seg": "seg_0028.xz", "pysat": "UNSAT"}
+{"event": "pysat", "cube": "8 22 -36 -32 -48 130 -140", "result": "UNSAT", "budget": 20000, "conflicts": 80, "seconds": 0.3}
+{"event": "closed", "cube": "8 22 -36 -32 -48 130 -140", "seconds": 11.8, "n": 859, "D": 859, "F_clauses": 2696577, "cad_seconds": 6.6, "trim_bytes": 9698672, "seg": "seg_0029.xz", "pysat": "UNSAT"}
+{"event": "pysat", "cube": "8 22 -36 -32 -48 -130 39", "result": "UNSAT", "budget": 20000, "conflicts": 5452, "seconds": 39.6}
+{"event": "closed", "cube": "8 22 -36 -32 -48 -130 39", "seconds": 62.3, "n": 19473, "D": 19473, "F_clauses": 2696577, "cad_seconds": 54.9, "trim_bytes": 10796903, "seg": "seg_0030.xz", "pysat": "UNSAT"}
+{"event": "pysat", "cube": "8 22 -36 -32 -48 -130 -39", "result": "UNSAT", "budget": 20000, "conflicts": 4, "seconds": 0.7}
+{"event": "closed", "cube": "8 22 -36 -32 -48 -130 -39", "seconds": 12.7, "n": 600, "D": 600, "F_clauses": 2696577, "cad_seconds": 6.6, "trim_bytes": 9716965, "seg": "seg_0031.xz", "pysat": "UNSAT"}
+{"event": "pysat", "cube": "8 -22 18 26 140 186 129", "result": "UNSAT", "budget": 20000, "conflicts": 5, "seconds": 0.3}
+{"event": "closed", "cube": "8 -22 18 26 140 186 129", "seconds": 8.5, "n": 425, "D": 425, "F_clauses": 2696577, "cad_seconds": 3.5, "trim_bytes": 9592595, "seg": "seg_0032.xz", "pysat": "UNSAT"}
+{"event": "pysat", "cube": "8 -22 18 26 140 186 -129", "result": "UNSAT", "budget": 20000, "conflicts": 757, "seconds": 4.4}
+{"event": "closed", "cube": "8 -22 18 26 140 186 -129", "seconds": 23.2, "n": 5387, "D": 5387, "F_clauses": 2696577, "cad_seconds": 17.7, "trim_bytes": 9911540, "seg": "seg_0033.xz", "pysat": "UNSAT"}
+{"event": "pysat", "cube": "8 -22 18 26 140 -186 29", "result": "UNSAT", "budget": 20000, "conflicts": 0, "seconds": 0.1}
+{"event": "closed", "cube": "8 -22 18 26 140 -186 29", "seconds": 9.6, "n": 153, "D": 153, "F_clauses": 2696577, "cad_seconds": 4.2, "trim_bytes": 9611302, "seg": "seg_0034.xz", "pysat": "UNSAT"}
+{"event": "pysat", "cube": "8 -22 18 26 140 -186 -29", "result": "UNSAT", "budget": 20000, "conflicts": 1, "seconds": 0.1}
+{"event": "closed", "cube": "8 -22 18 26 140 -186 -29", "seconds": 10.4, "n": 406, "D": 406, "F_clauses": 2696577, "cad_seconds": 4.5, "trim_bytes": 9634569, "seg": "seg_0035.xz", "pysat": "UNSAT"}
+{"event": "pysat", "cube": "8 -22 18 26 -140 126 186", "result": "UNSAT", "budget": 20000, "conflicts": 2930, "seconds": 28.2}
+{"event": "closed", "cube": "8 -22 18 26 -140 126 186", "seconds": 29.5, "n": 7441, "D": 7441, "F_clauses": 2696577, "cad_seconds": 24.0, "trim_bytes": 10081253, "seg": "seg_0036.xz", "pysat": "UNSAT"}
+{"event": "pysat", "cube": "8 -22 18 26 -140 126 -186", "result": "UNSAT", "budget": 17760, "conflicts": 41, "seconds": 0.3}
+{"event": "closed", "cube": "8 -22 18 26 -140 126 -186", "seconds": 23.1, "n": 1114, "D": 1114, "F_clauses": 2696577, "cad_seconds": 13.8, "trim_bytes": 9665775, "seg": "seg_0037.xz", "pysat": "UNSAT"}
+{"event": "pysat", "cube": "8 -22 18 26 -140 -126 139", "result": "UNSAT", "budget": 17760, "conflicts": 79, "seconds": 1.2}
+{"event": "closed", "cube": "8 -22 18 26 -140 -126 139", "seconds": 17.9, "n": 1374, "D": 1374, "F_clauses": 2696577, "cad_seconds": 6.4, "trim_bytes": 9676546, "seg": "seg_0038.xz", "pysat": "UNSAT"}
+{"event": "pysat", "cube": "8 -22 18 26 -140 -126 -139", "result": "UNSAT", "budget": 17760, "conflicts": 1366, "seconds": 11.8}
+{"event": "closed", "cube": "8 -22 18 26 -140 -126 -139", "seconds": 45.7, "n": 7180, "D": 7180, "F_clauses": 2696577, "cad_seconds": 33.5, "trim_bytes": 10084897, "seg": "seg_0039.xz", "pysat": "UNSAT"}
+{"event": "pysat", "cube": "8 -22 18 -26 24 19 25", "result": "UNSAT", "budget": 13440, "conflicts": 7659, "seconds": 62.6}
+{"event": "closed", "cube": "8 -22 18 -26 24 19 25", "seconds": 102.0, "n": 32991, "D": 32991, "F_clauses": 2696577, "cad_seconds": 86.2, "trim_bytes": 11338129, "seg": "seg_0040.xz", "pysat": "UNSAT"}
+{"event": "pysat", "cube": "8 -22 18 -26 24 19 -25", "result": "budget", "budget": 10998, "conflicts": 11000, "seconds": 144.7}
+{"event": "closed", "cube": "8 -22 18 -26 24 19 -25", "seconds": 237.6, "n": 81091, "D": 81091, "F_clauses": 2696577, "cad_seconds": 221.4, "trim_bytes": 16006506, "seg": "seg_0041.xz", "pysat": "budget"}
+{"event": "pysat", "cube": "8 -22 18 -26 24 -19 25", "result": "budget", "budget": 8424, "conflicts": 8424, "seconds": 72.9}
+{"event": "closed", "cube": "8 -22 18 -26 24 -19 25", "seconds": 379.0, "n": 94390, "D": 94390, "F_clauses": 2696577, "cad_seconds": 365.4, "trim_bytes": 18626606, "seg": "seg_0042.xz", "pysat": "budget"}
+{"event": "pysat", "cube": "8 -22 18 -26 24 -19 -25", "result": "budget", "budget": 7830, "conflicts": 7830, "seconds": 59.8}
+{"event": "closed", "cube": "8 -22 18 -26 24 -19 -25", "seconds": 172.7, "n": 77223, "D": 77223, "F_clauses": 2696577, "cad_seconds": 162.7, "trim_bytes": 15195948, "seg": "seg_0043.xz", "pysat": "budget"}
+{"event": "pysat", "cube": "8 -22 18 -26 -24 37 33", "result": "UNSAT", "budget": 7841, "conflicts": 1, "seconds": 0.6}
+{"event": "closed", "cube": "8 -22 18 -26 -24 37 33", "seconds": 12.0, "n": 715, "D": 715, "F_clauses": 2696577, "cad_seconds": 5.6, "trim_bytes": 9662884, "seg": "seg_0044.xz", "pysat": "UNSAT"}
+{"event": "pysat", "cube": "8 -22 18 -26 -24 37 -33", "result": "UNSAT", "budget": 7841, "conflicts": 4049, "seconds": 29.6}
+{"event": "closed", "cube": "8 -22 18 -26 -24 37 -33", "seconds": 77.1, "n": 37748, "D": 37748, "F_clauses": 2696577, "cad_seconds": 69.5, "trim_bytes": 11644054, "seg": "seg_0045.xz", "pysat": "UNSAT"}
+{"event": "pysat", "cube": "8 -22 18 -26 -24 -37 216", "result": "UNSAT", "budget": 7986, "conflicts": 296, "seconds": 1.6}
+{"event": "closed", "cube": "8 -22 18 -26 -24 -37 216", "seconds": 17.2, "n": 2765, "D": 2765, "F_clauses": 2696577, "cad_seconds": 12.1, "trim_bytes": 9822540, "seg": "seg_0046.xz", "pysat": "UNSAT"}
+{"event": "pysat", "cube": "8 -22 18 -26 -24 -37 -216", "result": "UNSAT", "budget": 7986, "conflicts": 3944, "seconds": 29.1}
+{"event": "closed", "cube": "8 -22 18 -26 -24 -37 -216", "seconds": 59.1, "n": 24779, "D": 24779, "F_clauses": 2696577, "cad_seconds": 51.6, "trim_bytes": 10939195, "seg": "seg_0047.xz", "pysat": "UNSAT"}
+{"event": "pysat", "cube": "8 -22 -18 26 16 28 42", "result": "UNSAT", "budget": 8040, "conflicts": 470, "seconds": 2.1}
+{"event": "closed", "cube": "8 -22 -18 26 16 28 42", "seconds": 17.3, "n": 3791, "D": 3791, "F_clauses": 2696577, "cad_seconds": 11.3, "trim_bytes": 9780836, "seg": "seg_0048.xz", "pysat": "UNSAT"}
+{"event": "pysat", "cube": "8 -22 -18 26 16 28 -42", "result": "budget", "budget": 8040, "conflicts": 8041, "seconds": 52.3}
+{"event": "closed", "cube": "8 -22 -18 26 16 28 -42", "seconds": 70.1, "n": 29262, "D": 29262, "F_clauses": 2696577, "cad_seconds": 63.2, "trim_bytes": 11676691, "seg": "seg_0049.xz", "pysat": "budget"}
+{"event": "pysat", "cube": "8 -22 -18 26 16 -28 17", "result": "budget", "budget": 8514, "conflicts": 8516, "seconds": 57.7}
+{"event": "closed", "cube": "8 -22 -18 26 16 -28 17", "seconds": 345.3, "n": 66940, "D": 66940, "F_clauses": 2696577, "cad_seconds": 332.0, "trim_bytes": 15952468, "seg": "seg_0050.xz", "pysat": "budget"}
+{"event": "pysat", "cube": "8 -22 -18 26 16 -28 -17", "result": "budget", "budget": 8652, "conflicts": 8654, "seconds": 112.1}
+{"event": "closed", "cube": "8 -22 -18 26 16 -28 -17", "seconds": 658.1, "n": 104043, "D": 104043, "F_clauses": 2696577, "cad_seconds": 641.3, "trim_bytes": 21145381, "seg": "seg_0051.xz", "pysat": "budget"}
+{"event": "pysat", "cube": "8 -22 -18 26 -16 28 32", "result": "budget", "budget": 7044, "conflicts": 7046, "seconds": 52.1}
+{"event": "closed", "cube": "8 -22 -18 26 -16 28 32", "seconds": 93.8, "n": 33568, "D": 33568, "F_clauses": 2696577, "cad_seconds": 84.7, "trim_bytes": 12130651, "seg": "seg_0052.xz", "pysat": "budget"}
+{"event": "pysat", "cube": "8 -22 -18 26 -16 28 -32", "result": "UNSAT", "budget": 7476, "conflicts": 603, "seconds": 3.2}
+{"event": "closed", "cube": "8 -22 -18 26 -16 28 -32", "seconds": 28.3, "n": 4765, "D": 4765, "F_clauses": 2696577, "cad_seconds": 22.5, "trim_bytes": 9960557, "seg": "seg_0053.xz", "pysat": "UNSAT"}
+{"event": "pysat", "cube": "8 -22 -18 26 -16 -28 32", "result": "UNSAT", "budget": 7476, "conflicts": 3240, "seconds": 20.6}
+{"event": "closed", "cube": "8 -22 -18 26 -16 -28 32", "seconds": 96.5, "n": 22692, "D": 22692, "F_clauses": 2696577, "cad_seconds": 76.8, "trim_bytes": 11046388, "seg": "seg_0054.xz", "pysat": "UNSAT"}
+{"event": "pysat", "cube": "8 -22 -18 26 -16 -28 -32", "result": "UNSAT", "budget": 8256, "conflicts": 432, "seconds": 3.5}
+{"event": "closed", "cube": "8 -22 -18 26 -16 -28 -32", "seconds": 69.2, "n": 8746, "D": 8746, "F_clauses": 2696577, "cad_seconds": 56.6, "trim_bytes": 10275073, "seg": "seg_0055.xz", "pysat": "UNSAT"}
+{"event": "pysat", "cube": "8 -22 -18 -26 34 41 29", "result": "UNSAT", "budget": 8256, "conflicts": 2463, "seconds": 26.3}
+{"event": "closed", "cube": "8 -22 -18 -26 34 41 29", "seconds": 100.9, "n": 26621, "D": 26621, "F_clauses": 2696577, "cad_seconds": 86.5, "trim_bytes": 10931901, "seg": "seg_0056.xz", "pysat": "UNSAT"}
+{"event": "pysat", "cube": "8 -22 -18 -26 34 41 -29", "result": "UNSAT", "budget": 7206, "conflicts": 1, "seconds": 0.4}
+{"event": "closed", "cube": "8 -22 -18 -26 34 41 -29", "seconds": 19.0, "n": 190, "D": 190, "F_clauses": 2696577, "cad_seconds": 8.0, "trim_bytes": 9650296, "seg": "seg_0057.xz", "pysat": "UNSAT"}
+{"event": "pysat", "cube": "8 -22 -18 -26 34 -41 39", "result": "UNSAT", "budget": 7206, "conflicts": 1, "seconds": 0.3}
+{"event": "closed", "cube": "8 -22 -18 -26 34 -41 39", "seconds": 21.2, "n": 90, "D": 90, "F_clauses": 2696577, "cad_seconds": 10.2, "trim_bytes": 9645087, "seg": "seg_0058.xz", "pysat": "UNSAT"}
+{"event": "pysat", "cube": "8 -22 -18 -26 34 -41 -39", "result": "UNSAT", "budget": 7206, "conflicts": 1503, "seconds": 10.2}
+{"event": "closed", "cube": "8 -22 -18 -26 34 -41 -39", "seconds": 69.3, "n": 8963, "D": 8963, "F_clauses": 2696577, "cad_seconds": 57.9, "trim_bytes": 10202245, "seg": "seg_0059.xz", "pysat": "UNSAT"}
+{"event": "pysat", "cube": "8 -22 -18 -26 -34 132 140", "result": "UNSAT", "budget": 7871, "conflicts": 173, "seconds": 1.6}
+{"event": "closed", "cube": "8 -22 -18 -26 -34 132 140", "seconds": 31.6, "n": 2681, "D": 2681, "F_clauses": 2696577, "cad_seconds": 21.3, "trim_bytes": 9759120, "seg": "seg_0060.xz", "pysat": "UNSAT"}
+{"event": "pysat", "cube": "8 -22 -18 -26 -34 132 -140", "result": "UNSAT", "budget": 7871, "conflicts": 591, "seconds": 6.1}
+{"event": "closed", "cube": "8 -22 -18 -26 -34 132 -140", "seconds": 76.6, "n": 13050, "D": 13050, "F_clauses": 2696577, "cad_seconds": 65.3, "trim_bytes": 10434788, "seg": "seg_0061.xz", "pysat": "UNSAT"}
+{"event": "pysat", "cube": "8 -22 -18 -26 -34 -132 133", "result": "budget", "budget": 7044, "conflicts": 7046, "seconds": 108.4}
+{"event": "closed", "cube": "8 -22 -18 -26 -34 -132 133", "seconds": 171.2, "n": 30861, "D": 30861, "F_clauses": 2696577, "cad_seconds": 153.3, "trim_bytes": 11775064, "seg": "seg_0062.xz", "pysat": "budget"}
+{"event": "pysat", "cube": "8 -22 -18 -26 -34 -132 -133", "result": "budget", "budget": 5784, "conflicts": 5784, "seconds": 83.9}
+{"event": "closed", "cube": "8 -22 -18 -26 -34 -132 -133", "seconds": 252.2, "n": 42190, "D": 42190, "F_clauses": 2696577, "cad_seconds": 235.1, "trim_bytes": 13132355, "seg": "seg_0063.xz", "pysat": "budget"}
+{"event": "pysat", "cube": "-8 27 15 32 38 189 183", "result": "budget", "budget": 5124, "conflicts": 5124, "seconds": 85.2}
+{"event": "closed", "cube": "-8 27 15 32 38 189 183", "seconds": 133.2, "n": 49717, "D": 49717, "F_clauses": 2696577, "cad_seconds": 109.9, "trim_bytes": 12500869, "seg": "seg_0064.xz", "pysat": "budget"}
+{"event": "pysat", "cube": "-8 27 15 32 38 189 -183", "result": "UNSAT", "budget": 4518, "conflicts": 2547, "seconds": 17.8}
+{"event": "closed", "cube": "-8 27 15 32 38 189 -183", "seconds": 46.3, "n": 10507, "D": 10507, "F_clauses": 2696577, "cad_seconds": 39.6, "trim_bytes": 10298226, "seg": "seg_0065.xz", "pysat": "UNSAT"}
+{"event": "pysat", "cube": "-8 27 15 32 38 -189 197", "result": "budget", "budget": 6138, "conflicts": 6138, "seconds": 48.9}
+{"event": "closed", "cube": "-8 27 15 32 38 -189 197", "seconds": 155.1, "n": 48354, "D": 48354, "F_clauses": 2696577, "cad_seconds": 145.4, "trim_bytes": 12668222, "seg": "seg_0066.xz", "pysat": "budget"}
+{"event": "pysat", "cube": "-8 27 15 32 38 -189 -197", "result": "UNSAT", "budget": 6696, "conflicts": 3612, "seconds": 39.4}
+{"event": "closed", "cube": "-8 27 15 32 38 -189 -197", "seconds": 143.2, "n": 37833, "D": 37833, "F_clauses": 2696577, "cad_seconds": 127.8, "trim_bytes": 11809565, "seg": "seg_0067.xz", "pysat": "UNSAT"}
+{"event": "pysat", "cube": "-8 27 15 32 -38 36 34", "result": "budget", "budget": 6216, "conflicts": 6216, "seconds": 63.5}
+{"event": "closed", "cube": "-8 27 15 32 -38 36 34", "seconds": 188.4, "n": 62671, "D": 62671, "F_clauses": 2696577, "cad_seconds": 167.4, "trim_bytes": 14369392, "seg": "seg_0068.xz", "pysat": "budget"}
+{"event": "pysat", "cube": "-8 27 15 32 -38 36 -34", "result": "budget", "budget": 6078, "conflicts": 6078, "seconds": 83.2}
+{"event": "closed", "cube": "-8 27 15 32 -38 36 -34", "seconds": 1450.0, "n": 293293, "D": 293293, "F_clauses": 2696577, "cad_seconds": 1393.3, "trim_bytes": 46899685, "seg": "seg_0069.xz", "pysat": "budget"}
+{"event": "pysat", "cube": "-8 27 15 32 -38 -36 53", "result": "UNSAT", "budget": 5400, "conflicts": 333, "seconds": 4.1}
+{"event": "closed", "cube": "-8 27 15 32 -38 -36 53", "seconds": 39.3, "n": 3393, "D": 3393, "F_clauses": 2696577, "cad_seconds": 26.6, "trim_bytes": 9877093, "seg": "seg_0070.xz", "pysat": "UNSAT"}
+{"event": "pysat", "cube": "-8 27 15 32 -38 -36 -53", "result": "UNSAT", "budget": 5400, "conflicts": 986, "seconds": 6.8}
+{"event": "closed", "cube": "-8 27 15 32 -38 -36 -53", "seconds": 69.5, "n": 7599, "D": 7599, "F_clauses": 2696577, "cad_seconds": 56.5, "trim_bytes": 10179245, "seg": "seg_0071.xz", "pysat": "UNSAT"}
+{"event": "pysat", "cube": "-8 27 15 -32 48 50 56", "result": "budget", "budget": 6696, "conflicts": 6696, "seconds": 95.1}
+{"event": "closed", "cube": "-8 27 15 -32 48 50 56", "seconds": 212.8, "n": 65915, "D": 65915, "F_clauses": 2696577, "cad_seconds": 196.5, "trim_bytes": 14164676, "seg": "seg_0072.xz", "pysat": "budget"}
+{"event": "pysat", "cube": "-8 27 15 -32 48 50 -56", "result": "budget", "budget": 5706, "conflicts": 5708, "seconds": 61.6}
+{"event": "closed", "cube": "-8 27 15 -32 48 50 -56", "seconds": 179.9, "n": 50800, "D": 50800, "F_clauses": 2696577, "cad_seconds": 168.5, "trim_bytes": 13273715, "seg": "seg_0073.xz", "pysat": "budget"}
+{"event": "pysat", "cube": "-8 27 15 -32 48 -50 39", "result": "budget", "budget": 5652, "conflicts": 5652, "seconds": 38.8}
+{"event": "closed", "cube": "-8 27 15 -32 48 -50 39", "seconds": 67.4, "n": 22946, "D": 22946, "F_clauses": 2696577, "cad_seconds": 57.1, "trim_bytes": 10758983, "seg": "seg_0074.xz", "pysat": "budget"}
+{"event": "pysat", "cube": "-8 27 15 -32 48 -50 -39", "result": "budget", "budget": 6894, "conflicts": 6894, "seconds": 70.2}
+{"event": "closed", "cube": "-8 27 15 -32 48 -50 -39", "seconds": 728.8, "n": 232344, "D": 232344, "F_clauses": 2696577, "cad_seconds": 705.8, "trim_bytes": 33147631, "seg": "seg_0075.xz", "pysat": "budget"}
+{"event": "pysat", "cube": "-8 27 15 -32 -48 231 41", "result": "UNSAT", "budget": 6492, "conflicts": 975, "seconds": 5.0}
+{"event": "closed", "cube": "-8 27 15 -32 -48 231 41", "seconds": 30.3, "n": 4697, "D": 4697, "F_clauses": 2696577, "cad_seconds": 23.4, "trim_bytes": 10020807, "seg": "seg_0076.xz", "pysat": "UNSAT"}
+{"event": "pysat", "cube": "-8 27 15 -32 -48 231 -41", "result": "budget", "budget": 8538, "conflicts": 8540, "seconds": 76.9}
+{"event": "closed", "cube": "-8 27 15 -32 -48 231 -41", "seconds": 814.6, "n": 225236, "D": 225236, "F_clauses": 2696577, "cad_seconds": 789.0, "trim_bytes": 37449620, "seg": "seg_0077.xz", "pysat": "budget"}
+{"event": "pysat", "cube": "-8 27 15 -32 -48 -231 230", "result": "budget", "budget": 7788, "conflicts": 7788, "seconds": 81.2}
+{"event": "closed", "cube": "-8 27 15 -32 -48 -231 230", "seconds": 758.5, "n": 224635, "D": 224635, "F_clauses": 2696577, "cad_seconds": 736.6, "trim_bytes": 31284976, "seg": "seg_0078.xz", "pysat": "budget"}
+{"event": "pysat", "cube": "-8 27 15 -32 -48 -231 -230", "result": "budget", "budget": 6972, "conflicts": 6975, "seconds": 67.7}
+{"event": "closed", "cube": "-8 27 15 -32 -48 -231 -230", "seconds": 739.9, "n": 237862, "D": 237862, "F_clauses": 2696577, "cad_seconds": 716.7, "trim_bytes": 37185031, "seg": "seg_0079.xz", "pysat": "budget"}
+{"event": "pysat", "cube": "-8 27 -15 231 202 194 210", "result": "UNSAT", "budget": 6654, "conflicts": 1, "seconds": 0.7}
+{"event": "closed", "cube": "-8 27 -15 231 202 194 210", "seconds": 9.4, "n": 50, "D": 50, "F_clauses": 2696577, "cad_seconds": 3.6, "trim_bytes": 9628403, "seg": "seg_0080.xz", "pysat": "UNSAT"}
+{"event": "pysat", "cube": "-8 27 -15 231 202 194 -210", "result": "UNSAT", "budget": 6654, "conflicts": 0, "seconds": 0.4}
+{"event": "closed", "cube": "-8 27 -15 231 202 194 -210", "seconds": 8.2, "n": 50, "D": 50, "F_clauses": 2696577, "cad_seconds": 3.1, "trim_bytes": 9645791, "seg": "seg_0081.xz", "pysat": "UNSAT"}
+{"event": "pysat", "cube": "-8 27 -15 231 202 -194 185", "result": "UNSAT", "budget": 6654, "conflicts": 0, "seconds": 0.1}
+{"event": "closed", "cube": "-8 27 -15 231 202 -194 185", "seconds": 8.0, "n": 54, "D": 54, "F_clauses": 2696577, "cad_seconds": 2.7, "trim_bytes": 9643742, "seg": "seg_0082.xz", "pysat": "UNSAT"}
+{"event": "pysat", "cube": "-8 27 -15 231 202 -194 -185", "result": "UNSAT", "budget": 6654, "conflicts": 0, "seconds": 0.0}
+{"event": "closed", "cube": "-8 27 -15 231 202 -194 -185", "seconds": 7.6, "n": 55, "D": 55, "F_clauses": 2696577, "cad_seconds": 2.6, "trim_bytes": 9665428, "seg": "seg_0083.xz", "pysat": "UNSAT"}
+{"event": "pysat", "cube": "-8 27 -15 231 -202 194 200", "result": "UNSAT", "budget": 6654, "conflicts": 0, "seconds": 0.0}
+{"event": "closed", "cube": "-8 27 -15 231 -202 194 200", "seconds": 7.4, "n": 55, "D": 55, "F_clauses": 2696577, "cad_seconds": 2.5, "trim_bytes": 9643509, "seg": "seg_0084.xz", "pysat": "UNSAT"}
+{"event": "pysat", "cube": "-8 27 -15 231 -202 194 -200", "result": "UNSAT", "budget": 6654, "conflicts": 0, "seconds": 0.1}
+{"event": "closed", "cube": "-8 27 -15 231 -202 194 -200", "seconds": 7.9, "n": 55, "D": 55, "F_clauses": 2696577, "cad_seconds": 2.8, "trim_bytes": 9665789, "seg": "seg_0085.xz", "pysat": "UNSAT"}
+{"event": "pysat", "cube": "-8 27 -15 231 -202 -194 201", "result": "UNSAT", "budget": 6654, "conflicts": 0, "seconds": 0.0}
+{"event": "closed", "cube": "-8 27 -15 231 -202 -194 201", "seconds": 7.5, "n": 57, "D": 57, "F_clauses": 2696577, "cad_seconds": 2.6, "trim_bytes": 9666043, "seg": "seg_0086.xz", "pysat": "UNSAT"}
+{"event": "pysat", "cube": "-8 27 -15 231 -202 -194 -201", "result": "UNSAT", "budget": 6654, "conflicts": 0, "seconds": 0.0}
+{"event": "closed", "cube": "-8 27 -15 231 -202 -194 -201", "seconds": 7.5, "n": 56, "D": 56, "F_clauses": 2696577, "cad_seconds": 2.6, "trim_bytes": 9685347, "seg": "seg_0087.xz", "pysat": "UNSAT"}
+{"event": "pysat", "cube": "-8 27 -15 -231 230 201 193", "result": "UNSAT", "budget": 6654, "conflicts": 0, "seconds": 0.1}
+{"event": "closed", "cube": "-8 27 -15 -231 230 201 193", "seconds": 8.5, "n": 53, "D": 53, "F_clauses": 2696577, "cad_seconds": 2.7, "trim_bytes": 9642972, "seg": "seg_0088.xz", "pysat": "UNSAT"}
+{"event": "pysat", "cube": "-8 27 -15 -231 230 201 -193", "result": "UNSAT", "budget": 6654, "conflicts": 0, "seconds": 0.1}
+{"event": "closed", "cube": "-8 27 -15 -231 230 201 -193", "seconds": 7.7, "n": 57, "D": 57, "F_clauses": 2696577, "cad_seconds": 2.6, "trim_bytes": 9664275, "seg": "seg_0089.xz", "pysat": "UNSAT"}
+{"event": "pysat", "cube": "-8 27 -15 -231 230 -201 202", "result": "UNSAT", "budget": 6654, "conflicts": 0, "seconds": 0.0}
+{"event": "closed", "cube": "-8 27 -15 -231 230 -201 202", "seconds": 7.8, "n": 55, "D": 55, "F_clauses": 2696577, "cad_seconds": 2.6, "trim_bytes": 9663644, "seg": "seg_0090.xz", "pysat": "UNSAT"}
+{"event": "pysat", "cube": "-8 27 -15 -231 230 -201 -202", "result": "UNSAT", "budget": 6654, "conflicts": 0, "seconds": 0.0}
+{"event": "closed", "cube": "-8 27 -15 -231 230 -201 -202", "seconds": 7.5, "n": 56, "D": 56, "F_clauses": 2696577, "cad_seconds": 2.6, "trim_bytes": 9683587, "seg": "seg_0091.xz", "pysat": "UNSAT"}
+{"event": "pysat", "cube": "-8 27 -15 -231 -230 228 200", "result": "UNSAT", "budget": 6654, "conflicts": 0, "seconds": 0.1}
+{"event": "closed", "cube": "-8 27 -15 -231 -230 228 200", "seconds": 7.5, "n": 60, "D": 60, "F_clauses": 2696577, "cad_seconds": 2.6, "trim_bytes": 9658434, "seg": "seg_0092.xz", "pysat": "UNSAT"}
+{"event": "pysat", "cube": "-8 27 -15 -231 -230 228 -200", "result": "UNSAT", "budget": 6654, "conflicts": 0, "seconds": 0.1}
+{"event": "closed", "cube": "-8 27 -15 -231 -230 228 -200", "seconds": 9.8, "n": 56, "D": 56, "F_clauses": 2696577, "cad_seconds": 4.6, "trim_bytes": 9680643, "seg": "seg_0093.xz", "pysat": "UNSAT"}
+{"event": "pysat", "cube": "-8 27 -15 -231 -230 -228 225", "result": "UNSAT", "budget": 6654, "conflicts": 0, "seconds": 0.0}
+{"event": "closed", "cube": "-8 27 -15 -231 -230 -228 225", "seconds": 8.0, "n": 56, "D": 56, "F_clauses": 2696577, "cad_seconds": 2.8, "trim_bytes": 9676563, "seg": "seg_0094.xz", "pysat": "UNSAT"}
+{"event": "pysat", "cube": "-8 27 -15 -231 -230 -228 -225", "result": "UNSAT", "budget": 6654, "conflicts": 0, "seconds": 0.1}
+{"event": "closed", "cube": "-8 27 -15 -231 -230 -228 -225", "seconds": 7.8, "n": 56, "D": 56, "F_clauses": 2696577, "cad_seconds": 2.8, "trim_bytes": 9689439, "seg": "seg_0095.xz", "pysat": "UNSAT"}
+{"event": "pysat", "cube": "-8 -27 7 25 17 42 38", "result": "budget", "budget": 6654, "conflicts": 6654, "seconds": 51.7}
+{"event": "closed", "cube": "-8 -27 7 25 17 42 38", "seconds": 640.0, "n": 183140, "D": 183140, "F_clauses": 2696577, "cad_seconds": 621.8, "trim_bytes": 31294791, "seg": "seg_0096.xz", "pysat": "budget"}
+{"event": "pysat", "cube": "-8 -27 7 25 17 42 -38", "result": "budget", "budget": 7086, "conflicts": 7087, "seconds": 64.7}
+{"event": "split", "cube": "-8 -27 7 25 17 42 -38", "var": 34, "seconds": 3606.0}
+{"event": "pysat", "cube": "-8 -27 7 25 17 42 -38 34", "result": "budget", "budget": 6882, "conflicts": 6883, "seconds": 59.3}
+{"event": "closed", "cube": "-8 -27 7 25 17 42 -38 34", "seconds": 911.8, "n": 265286, "D": 265286, "F_clauses": 2696577, "cad_seconds": 868.3, "trim_bytes": 40917390, "seg": "seg_0097.xz", "pysat": "budget"}
+{"event": "pysat", "cube": "-8 -27 7 25 17 42 -38 -34", "result": "budget", "budget": 6918, "conflicts": 6920, "seconds": 203.6}
+{"event": "split", "cube": "-8 -27 7 25 17 42 -38 -34", "var": 30, "seconds": 3606.5}
+{"event": "pysat", "cube": "-8 -27 7 25 17 42 -38 -34 30", "result": "budget", "budget": 4968, "conflicts": 4968, "seconds": 101.0}
+{"event": "closed", "cube": "-8 -27 7 25 17 42 -38 -34 30", "seconds": 537.2, "n": 114165, "D": 114165, "F_clauses": 2696577, "cad_seconds": 518.9, "trim_bytes": 20100263, "seg": "seg_0098.xz", "pysat": "budget"}
+{"event": "pysat", "cube": "-8 -27 7 25 17 42 -38 -34 -30", "result": "budget", "budget": 4164, "conflicts": 4168, "seconds": 59.7}
+{"event": "split", "cube": "-8 -27 7 25 17 42 -38 -34 -30", "var": 36, "seconds": 3605.8}
+{"event": "pysat", "cube": "-8 -27 7 25 17 42 -38 -34 -30 36", "result": "budget", "budget": 4176, "conflicts": 4176, "seconds": 37.0}
+{"event": "split", "cube": "-8 -27 7 25 17 42 -38 -34 -30 36", "var": 32, "seconds": 3605.1}
+{"event": "pysat", "cube": "-8 -27 7 25 17 42 -38 -34 -30 36 32", "result": "budget", "budget": 5214, "conflicts": 5214, "seconds": 48.1}
+{"event": "closed", "cube": "-8 -27 7 25 17 42 -38 -34 -30 36 32", "seconds": 3034.2, "n": 533583, "D": 533583, "F_clauses": 2696577, "cad_seconds": 2941.8, "trim_bytes": 90754561, "seg": "seg_0099.xz", "pysat": "budget"}
+{"event": "pysat", "cube": "-8 -27 7 25 17 42 -38 -34 -30 36 -32", "result": "budget", "budget": 5730, "conflicts": 5731, "seconds": 88.5}
+{"event": "closed", "cube": "-8 -27 7 25 17 42 -38 -34 -30 36 -32", "seconds": 1194.0, "n": 266134, "D": 266134, "F_clauses": 2696577, "cad_seconds": 1149.3, "trim_bytes": 39519480, "seg": "seg_0100.xz", "pysat": "budget"}
+{"event": "pysat", "cube": "-8 -27 7 25 17 42 -38 -34 -30 -36", "result": "budget", "budget": 4992, "conflicts": 4992, "seconds": 90.1}
+{"event": "closed", "cube": "-8 -27 7 25 17 42 -38 -34 -30 -36", "seconds": 1059.1, "n": 235489, "D": 235489, "F_clauses": 2696577, "cad_seconds": 1022.8, "trim_bytes": 34505713, "seg": "seg_0101.xz", "pysat": "budget"}
+{"event": "pysat", "cube": "-8 -27 7 25 17 -42 41", "result": "budget", "budget": 4326, "conflicts": 4328, "seconds": 47.2}
+{"event": "split", "cube": "-8 -27 7 25 17 -42 41", "var": 38, "seconds": 3606.6}
+{"event": "pysat", "cube": "-8 -27 7 25 17 -42 41 38", "result": "budget", "budget": 4794, "conflicts": 4795, "seconds": 41.2}
+{"event": "closed", "cube": "-8 -27 7 25 17 -42 41 38", "seconds": 1158.0, "n": 256829, "D": 256829, "F_clauses": 2696577, "cad_seconds": 1114.0, "trim_bytes": 43517757, "seg": "seg_0102.xz", "pysat": "budget"}
+{"event": "pysat", "cube": "-8 -27 7 25 17 -42 41 -38", "result": "budget", "budget": 5670, "conflicts": 5672, "seconds": 96.5}
+{"event": "split", "cube": "-8 -27 7 25 17 -42 41 -38", "var": 34, "seconds": 3610.9}
+{"event": "pysat", "cube": "-8 -27 7 25 17 -42 41 -38 34", "result": "budget", "budget": 4812, "conflicts": 4813, "seconds": 68.7}
+{"event": "closed", "cube": "-8 -27 7 25 17 -42 41 -38 34", "seconds": 2083.7, "n": 376696, "D": 376696, "F_clauses": 2696577, "cad_seconds": 2038.1, "trim_bytes": 59427120, "seg": "seg_0103.xz", "pysat": "budget"}
+{"event": "pysat", "cube": "-8 -27 7 25 17 -42 41 -38 -34", "result": "budget", "budget": 4572, "conflicts": 4573, "seconds": 68.4}
+{"event": "start", "time": 1794929157, "pid": 843, "items": 2634, "clauses": 2696577, "deadline": 1795015241.0}
+{"event": "pysat", "cube": "-8 -27 7 25 17 -42 41 -38 -34", "result": "budget", "budget": 4572, "conflicts": 4574, "seconds": 134.3}
+{"event": "split", "cube": "-8 -27 7 25 17 -42 41 -38 -34", "var": 30, "seconds": 3608.4}
+{"event": "pysat", "cube": "-8 -27 7 25 17 -42 41 -38 -34 30", "result": "budget", "budget": 3558, "conflicts": 3558, "seconds": 70.0}
+{"event": "closed", "cube": "-8 -27 7 25 17 -42 41 -38 -34 30", "seconds": 1430.7, "n": 232830, "D": 232830, "F_clauses": 2696577, "cad_seconds": 1381.1, "trim_bytes": 39312095, "seg": "seg_0104.xz", "pysat": "budget"}
+{"event": "pysat", "cube": "-8 -27 7 25 17 -42 41 -38 -34 -30", "result": "budget", "budget": 3354, "conflicts": 3355, "seconds": 78.0}
+{"event": "split", "cube": "-8 -27 7 25 17 -42 41 -38 -34 -30", "var": 36, "seconds": 3612.0}
+{"event": "pysat", "cube": "-8 -27 7 25 17 -42 41 -38 -34 -30 36", "result": "budget", "budget": 3042, "conflicts": 3043, "seconds": 75.6}
+{"event": "closed", "cube": "-8 -27 7 25 17 -42 41 -38 -34 -30 36", "seconds": 3390.5, "n": 546078, "D": 546078, "F_clauses": 2696577, "cad_seconds": 3337.0, "trim_bytes": 95289627, "seg": "seg_0105.xz", "pysat": "budget"}
+{"event": "pysat", "cube": "-8 -27 7 25 17 -42 41 -38 -34 -30 -36", "result": "budget", "budget": 2790, "conflicts": 2792, "seconds": 28.1}
+{"event": "closed", "cube": "-8 -27 7 25 17 -42 41 -38 -34 -30 -36", "seconds": 231.6, "n": 102481, "D": 102481, "F_clauses": 2696577, "cad_seconds": 218.6, "trim_bytes": 17321731, "seg": "seg_0106.xz", "pysat": "budget"}
+{"event": "pysat", "cube": "-8 -27 7 25 17 -42 -41", "result": "budget", "budget": 4062, "conflicts": 4064, "seconds": 31.0}
+{"event": "closed", "cube": "-8 -27 7 25 17 -42 -41", "seconds": 1972.0, "n": 384932, "D": 384932, "F_clauses": 2696577, "cad_seconds": 1943.1, "trim_bytes": 52637894, "seg": "seg_0107.xz", "pysat": "budget"}
+{"event": "pysat", "cube": "-8 -27 7 25 -17 16 26", "result": "budget", "budget": 5580, "conflicts": 5580, "seconds": 47.7}
+{"event": "split", "cube": "-8 -27 7 25 -17 16 26", "var": 42, "seconds": 3605.7}
+{"event": "pysat", "cube": "-8 -27 7 25 -17 16 26 42", "result": "budget", "budget": 6156, "conflicts": 6157, "seconds": 43.3}
+{"event": "split", "cube": "-8 -27 7 25 -17 16 26 42", "var": 38, "seconds": 3612.6}
+{"event": "pysat", "cube": "-8 -27 7 25 -17 16 26 42 38", "result": "budget", "budget": 7104, "conflicts": 7105, "seconds": 99.9}
+{"event": "start", "time": 1794952217, "pid": 678, "items": 2634, "clauses": 2696577, "deadline": 1795038312.0}
+{"event": "pysat", "cube": "-8 -27 7 25 -17 16 26 42 38", "result": "budget", "budget": 7104, "conflicts": 7106, "seconds": 159.5}
+{"event": "closed", "cube": "-8 -27 7 25 -17 16 26 42 38", "seconds": 1101.5, "n": 234494, "D": 234494, "F_clauses": 2696577, "cad_seconds": 1059.3, "trim_bytes": 40783520, "seg": "seg_0108.xz", "pysat": "budget"}
+{"event": "pysat", "cube": "-8 -27 7 25 -17 16 26 42 -38", "result": "budget", "budget": 5334, "conflicts": 5334, "seconds": 84.4}
+{"event": "closed", "cube": "-8 -27 7 25 -17 16 26 42 -38", "seconds": 3176.1, "n": 569273, "D": 569273, "F_clauses": 2696577, "cad_seconds": 3061.7, "trim_bytes": 109961739, "seg": "seg_0109.xz", "pysat": "budget"}
+{"event": "pysat", "cube": "-8 -27 7 25 -17 16 26 -42", "result": "budget", "budget": 4716, "conflicts": 4716, "seconds": 67.5}
+{"event": "split", "cube": "-8 -27 7 25 -17 16 26 -42", "var": 33, "seconds": 3611.2}
+{"event": "pysat", "cube": "-8 -27 7 25 -17 16 26 -42 33", "result": "budget", "budget": 4506, "conflicts": 4506, "seconds": 56.7}
+{"event": "closed", "cube": "-8 -27 7 25 -17 16 26 -42 33", "seconds": 1294.4, "n": 210807, "D": 210807, "F_clauses": 2696577, "cad_seconds": 1247.1, "trim_bytes": 38485671, "seg": "seg_0110.xz", "pysat": "budget"}
+{"event": "pysat", "cube": "-8 -27 7 25 -17 16 26 -42 -33", "result": "budget", "budget": 4608, "conflicts": 4608, "seconds": 79.8}
+{"event": "start", "time": 1794963176, "pid": 4709, "items": 2634, "clauses": 2696577, "deadline": 1795049265.0}
+{"event": "pysat", "cube": "-8 -27 7 25 -17 16 26 -42 -33", "result": "budget", "budget": 4608, "conflicts": 4608, "seconds": 133.3}
+{"event": "split", "cube": "-8 -27 7 25 -17 16 26 -42 -33", "var": 48, "seconds": 0, "predicted": 0.528}
+{"event": "pysat", "cube": "-8 -27 7 25 -17 16 26 -42 -33 48", "result": "budget", "budget": 3594, "conflicts": 3594, "seconds": 64.6}
+{"event": "closed", "cube": "-8 -27 7 25 -17 16 26 -42 -33 48", "seconds": 1489.9, "n": 307981, "D": 307981, "F_clauses": 2696577, "cad_seconds": 1433.7, "trim_bytes": 46886656, "seg": "seg_0111.xz", "pysat": "budget"}
+{"event": "pysat", "cube": "-8 -27 7 25 -17 16 26 -42 -33 -48", "result": "budget", "budget": 3492, "conflicts": 3492, "seconds": 78.8}
+{"event": "closed", "cube": "-8 -27 7 25 -17 16 26 -42 -33 -48", "seconds": 1805.4, "n": 380835, "D": 380835, "F_clauses": 2696577, "cad_seconds": 1758.3, "trim_bytes": 65259154, "seg": "seg_0112.xz", "pysat": "budget"}
+{"event": "pysat", "cube": "-8 -27 7 25 -17 16 -26", "result": "budget", "budget": 3156, "conflicts": 3156, "seconds": 28.0}
+{"event": "split", "cube": "-8 -27 7 25 -17 16 -26", "var": 42, "seconds": 0, "predicted": 0.764}
+{"event": "pysat", "cube": "-8 -27 7 25 -17 16 -26 42", "result": "budget", "budget": 4596, "conflicts": 4596, "seconds": 38.2}
+{"event": "split", "cube": "-8 -27 7 25 -17 16 -26 42", "var": 37, "seconds": 3606.4}
+{"event": "pysat", "cube": "-8 -27 7 25 -17 16 -26 42 37", "result": "budget", "budget": 5646, "conflicts": 5647, "seconds": 83.6}
+{"event": "closed", "cube": "-8 -27 7 25 -17 16 -26 42 37", "seconds": 882.3, "n": 271299, "D": 271299, "F_clauses": 2696577, "cad_seconds": 825.3, "trim_bytes": 46529198, "seg": "seg_0113.xz", "pysat": "budget"}
+{"event": "pysat", "cube": "-8 -27 7 25 -17 16 -26 42 -37", "result": "budget", "budget": 5010, "conflicts": 5013, "seconds": 69.7}
+{"event": "split", "cube": "-8 -27 7 25 -17 16 -26 42 -37", "var": 32, "seconds": 0, "predicted": 0.706}
+{"event": "pysat", "cube": "-8 -27 7 25 -17 16 -26 42 -37 32", "result": "budget", "budget": 4734, "conflicts": 4735, "seconds": 69.0}
+{"event": "start", "time": 1794974676, "pid": 8407, "items": 2634, "clauses": 2696577, "deadline": 1795060769.0}
+{"event": "closed", "cube": "-8 -27 7 25 -17 16 -26 42 -37 32", "seconds": 3594.9, "n": 725567, "D": 725567, "F_clauses": 2696577, "cad_seconds": 3502.9, "trim_bytes": 132144214, "seg": "seg_0114.xz", "pysat": "skipped"}
+{"event": "closed", "cube": "-8 -27 7 25 -17 16 -26 42 -37 -32", "seconds": 1417.4, "n": 378994, "D": 378994, "F_clauses": 2696577, "cad_seconds": 1381.5, "trim_bytes": 63658360, "seg": "seg_0115.xz", "pysat": "skipped"}
+{"event": "split", "cube": "-8 -27 7 25 -17 16 -26 -42", "var": 41, "seconds": 3606.7}
+{"event": "split", "cube": "-8 -27 7 25 -17 16 -26 -42 41", "var": 33, "seconds": 0, "predicted": 0.372}
+{"event": "closed", "cube": "-8 -27 7 25 -17 16 -26 -42 41 33", "seconds": 2860.8, "n": 561560, "D": 561560, "F_clauses": 2696577, "cad_seconds": 2805.2, "trim_bytes": 96567956, "seg": "seg_0116.xz", "pysat": "skipped"}
+{"event": "split", "cube": "-8 -27 7 25 -17 16 -26 -42 41 -33", "var": 38, "seconds": 3607.2}
+{"event": "closed", "cube": "-8 -27 7 25 -17 16 -26 -42 41 -33 38", "seconds": 441.9, "n": 204230, "D": 204230, "F_clauses": 2696577, "cad_seconds": 423.7, "trim_bytes": 29352623, "seg": "seg_0117.xz", "pysat": "skipped"}
+{"event": "split", "cube": "-8 -27 7 25 -17 16 -26 -42 41 -33 -38", "var": 37, "seconds": 0, "predicted": 0.542}
+{"event": "closed", "cube": "-8 -27 7 25 -17 16 -26 -42 41 -33 -38 37", "seconds": 2682.2, "n": 494256, "D": 494256, "F_clauses": 2696577, "cad_seconds": 2632.4, "trim_bytes": 85113672, "seg": "seg_0118.xz", "pysat": "skipped"}
+{"event": "split", "cube": "-8 -27 7 25 -17 16 -26 -42 41 -33 -38 -37", "var": 29, "seconds": 3607.7}
+{"event": "start", "time": 1795035111, "pid": 865, "items": 2634, "clauses": 2696577, "deadline": 1795121207.0}
+{"event": "closed", "cube": "-8 -27 7 25 -17 16 -26 -42 41 -33 -38 -37 29", "seconds": 1385.6, "n": 522078, "D": 522078, "F_clauses": 2696577, "cad_seconds": 1352.2, "trim_bytes": 85917789, "seg": "seg_0119.xz", "pysat": "skipped", "pp": 0.2768, "pq": 0.2768}
+{"event": "closed", "cube": "-8 -27 7 25 -17 16 -26 -42 41 -33 -38 -37 -29", "seconds": 491.4, "n": 247022, "D": 247022, "F_clauses": 2696577, "cad_seconds": 477.3, "trim_bytes": 36192835, "seg": "seg_0120.xz", "pysat": "skipped", "pp": 0.2555, "pq": 0.2316}
+{"event": "closed", "cube": "-8 -27 7 25 -17 16 -26 -42 -41", "seconds": 1028.7, "n": 500949, "D": 500949, "F_clauses": 2696577, "cad_seconds": 1003.0, "trim_bytes": 64958805, "seg": "seg_0121.xz", "pysat": "skipped", "pp": 0.112, "pq": 0.0902}
+{"event": "closed", "cube": "-8 -27 7 25 -17 -16 42", "seconds": 1535.4, "n": 523646, "D": 523646, "F_clauses": 2696577, "cad_seconds": 1495.5, "trim_bytes": 91279111, "seg": "seg_0122.xz", "pysat": "skipped", "pp": 0.0842, "pq": 0.0624}
+{"event": "split", "cube": "-8 -27 7 25 -17 -16 -42", "var": 32, "seconds": 0, "predicted": 0.567, "p0": 0.661, "b": -0.398}
+{"event": "closed", "cube": "-8 -27 7 25 -17 -16 -42 32", "seconds": 748.0, "n": 375625, "D": 375625, "F_clauses": 2696577, "cad_seconds": 727.0, "trim_bytes": 56684415, "seg": "seg_0123.xz", "pysat": "skipped"}
+{"event": "closed", "cube": "-8 -27 7 25 -17 -16 -42 -32", "seconds": 453.4, "n": 293826, "D": 293826, "F_clauses": 2696577, "cad_seconds": 434.4, "trim_bytes": 41004871, "seg": "seg_0124.xz", "pysat": "skipped"}
+{"event": "closed", "cube": "-8 -27 7 -25 42 38 23", "seconds": 1308.4, "n": 595326, "D": 595326, "F_clauses": 2696577, "cad_seconds": 1271.6, "trim_bytes": 104237016, "seg": "seg_0125.xz", "pysat": "skipped", "pp": 0.0155, "pq": 0.0104}
+{"event": "closed", "cube": "-8 -27 7 -25 42 38 -23", "seconds": 23.0, "n": 10864, "D": 10864, "F_clauses": 2696577, "cad_seconds": 18.5, "trim_bytes": 10246130, "seg": "seg_0126.xz", "pysat": "skipped", "pp": 0.1439, "pq": 0.0957}
+{"event": "closed", "cube": "-8 -27 7 -25 42 -38 18", "seconds": 1816.0, "n": 688754, "D": 688754, "F_clauses": 2696577, "cad_seconds": 1771.6, "trim_bytes": 130915381, "seg": "seg_0127.xz", "pysat": "skipped", "pp": 0.0482, "pq": 0.0288}
+{"event": "closed", "cube": "-8 -27 7 -25 42 -38 -18", "seconds": 2274.4, "n": 802274, "D": 802274, "F_clauses": 2696577, "cad_seconds": 2226.9, "trim_bytes": 147684038, "seg": "seg_0128.xz", "pysat": "skipped", "pp": 0.058, "pq": 0.0329}
+{"event": "closed", "cube": "-8 -27 7 -25 -42 21 40", "seconds": 140.2, "n": 167666, "D": 167666, "F_clauses": 2696577, "cad_seconds": 132.1, "trim_bytes": 23156507, "seg": "seg_0129.xz", "pysat": "skipped", "pp": 0.0267, "pq": 0.0141}
+{"event": "closed", "cube": "-8 -27 7 -25 -42 21 -40", "seconds": 59.9, "n": 58082, "D": 58082, "F_clauses": 2696577, "cad_seconds": 55.0, "trim_bytes": 12674935, "seg": "seg_0130.xz", "pysat": "skipped", "pp": 0.0542, "pq": 0.0276}
+{"event": "split", "cube": "-8 -27 7 -25 -42 -21 41", "var": 38, "seconds": 0, "predicted": 0.677, "p0": 0.816, "b": -0.752}
+{"event": "split", "cube": "-8 -27 7 -25 -42 -21 41 38", "var": 24, "seconds": 3603.1}
+{"event": "closed", "cube": "-8 -27 7 -25 -42 -21 41 38 24", "seconds": 202.6, "n": 164375, "D": 164375, "F_clauses": 2696577, "cad_seconds": 193.1, "trim_bytes": 24479175, "seg": "seg_0131.xz", "pysat": "skipped", "pp": 0.1011, "pq": 0.0504}
+{"event": "split", "cube": "-8 -27 7 -25 -42 -21 41 38 -24", "var": 37, "seconds": 0, "predicted": 0.683, "p0": 0.828, "b": -0.803}
+{"event": "closed", "cube": "-8 -27 7 -25 -42 -21 41 38 -24 37", "seconds": 459.7, "n": 274980, "D": 274980, "F_clauses": 2696577, "cad_seconds": 443.8, "trim_bytes": 44989753, "seg": "seg_0132.xz", "pysat": "skipped"}
+{"event": "closed", "cube": "-8 -27 7 -25 -42 -21 41 38 -24 -37", "seconds": 2972.5, "n": 1106427, "D": 1106427, "F_clauses": 2696577, "cad_seconds": 2908.0, "trim_bytes": 208135027, "seg": "seg_0133.xz", "pysat": "skipped"}
+{"event": "split", "cube": "-8 -27 7 -25 -42 -21 41 -38", "var": 18, "seconds": 3603.0}
+{"event": "start", "time": 1795058174, "pid": 858, "items": 2634, "clauses": 2696577, "deadline": 1795144270.0}
+{"event": "closed", "cube": "-8 -27 7 -25 -42 -21 41 -38 18", "seconds": 1764.6, "n": 731707, "D": 731707, "F_clauses": 2696577, "cad_seconds": 1721.4, "trim_bytes": 136123458, "seg": "seg_0134.xz", "pysat": "skipped", "pp": 0.1963, "pq": 0.0987}
+{"event": "split", "cube": "-8 -27 7 -25 -42 -21 41 -38 -18", "var": 33, "seconds": 3603.0, "pp": 0.0726, "pq": 0.0322}
+{"event": "start", "time": 1795063611, "pid": 22441, "items": 2634, "clauses": 2696577, "deadline": 1795149706.0, "telemetry": 1, "ccc90_version": "1.8", "ccc90_sha256": "0c5ed72bd6f6a612ede53e9174eb57c0c103f540884305aac8e984796bf6a777", "encoder": "v7", "encoder_module": "cegar90c", "encoder_sha256": "7699f39b78d7703cfb65691f5d7e8cd5f149f6a587400596bbbfb6122ffa86b9", "pred_model_sha256": "d1de843d20e83f7ae21c922bf9e07ab042340361677276b13bf9924949342136", "pred_votes_sha256": "cefe6d1d1fd4e4adcdddefc6fac702329b08a59354643718ed49f47497ca5afa", "pred_model4_sha256": "86c27011802f22052fc2431ef9670785463e5c3d6d2ab5c804b2ac7c2cee93dd", "pred_active": "pred4", "pred_th": 0.3, "telemetry2": 1, "proc_uid": "6ce9a774063c4e32", "t_proc0": 1795063607.199, "host": {"nproc": 3, "nproc_avail": 3, "node": "a9e60cf272d0", "cpu": "INTEL(R) XEON(R) PLATINUM 8573C", "mem_mb": 9968}, "runner_env": {}, "python_version": "3.12.14", "pysat_version": "1.9.dev21", "cadical_sha256": "eae671d6fab57f7bf909e621adee2a2bd550a0ae0b561065c815f599c7696fe8", "trim_sha256": "179d041f645a98d51d3ca6dbbe4950806ad8eceb54c9a762f54e7acee154f8df", "cake_sha256": "29e02af756c1f0fc4ccac78e9a908e0d8ef01201786f257f1b27b26603390798", "cfg": {"ext_timeout": 3600.0, "pysat_cap": 60.0, "conf0": 20000, "grow": 16, "cube_depth": 7, "cad_opts": "", "trim_max": 3221225472, "margin": 90, "cake_heaps": "2000,4000", "predict": "1", "pred4": "1", "pred_online": 1}, "rss_mb": 403.0, "rss_child_mb": 0.0, "wall_tot": 4.1, "cpu_self_tot": 4.66, "cpu_child_tot": 0.0, "disk_free_mb": 1141}
+{"event": "closed", "cube": "-8 -27 7 -25 -42 -21 41 -38 -18 33", "seconds": 1258.3, "n": 634358, "D": 634358, "F_clauses": 2696577, "cad_seconds": 1221.1, "trim_bytes": 104783792, "seg": "seg_0135.xz", "pysat": "skipped", "pp": 0.1417, "pq": 0.1177, "time": 1795064872.555, "t_dec": 1795063614.206, "cpu_self": 31.32, "cpu_child": 1225.55, "ext_to": 3600.0, "lrat_bytes": 549972566, "seg_bytes": 37830320, "x4": [1, 1, 10, -1, 0, 83, 61, 1, 3.5563, 1, 33, 7, 0.7, 0, 18, 0, 0, 1, 1, 0, 3.2359, 0.4771, 0.315, 3.3963, 3.5567], "rss_mb": 1560.2, "rss_child_mb": 1253.8, "wall_tot": 1265.4, "cpu_self_tot": 38.87, "cpu_child_tot": 1225.55, "disk_free_mb": 1155}
+{"event": "closed", "cube": "-8 -27 7 -25 -42 -21 41 -38 -18 -33", "seconds": 2993.0, "n": 1103981, "D": 1103981, "F_clauses": 2696577, "cad_seconds": 2929.1, "trim_bytes": 200091937, "seg": "seg_0136.xz", "pysat": "skipped", "pp": 0.2686, "pq": 0.219, "time": 1795067865.524, "t_dec": 1795064872.559, "cpu_self": 57.1, "cpu_child": 2931.78, "ext_to": 3600.0, "lrat_bytes": 1069877025, "seg_bytes": 78454700, "x4": [1, 1, 10, -1, 0, 83, 61, 1, 3.5563, 0, 33, 8, 0.8, 0, 18, 1, 0, 3.0868, 1, 0, 3.2359, 0.6021, 0.252, 3.2931, 3.5567], "rss_mb": 1908.4, "rss_child_mb": 2384.5, "wall_tot": 4258.3, "cpu_self_tot": 95.96, "cpu_child_tot": 4157.32, "disk_free_mb": 1080}
+{"event": "split", "cube": "-8 -27 7 -25 -42 -21 -41", "var": 24, "seconds": 0, "predicted": 0.618, "p0": 0.699, "b": -0.362, "time": 1795067872.291, "t_dec": 1795067865.525, "cpu_self": 6.75, "cpu_child": 0.0, "x4": [0, 0, 7, 0.75, 8, 83, 61, 1, 3.5563, 0, 41, 6, 0.8571, 0, 21, 0, 0, 1, 0, 0, 1, 0.9031, 0.14, 2.7847, 1]}
+{"event": "closed", "cube": "-8 -27 7 -25 -42 -21 -41 24", "seconds": 1787.6, "n": 785529, "D": 785529, "F_clauses": 2696577, "cad_seconds": 1746.8, "trim_bytes": 114532869, "seg": "seg_0137.xz", "pysat": "skipped", "time": 1795069659.926, "t_dec": 1795067872.292, "cpu_self": 35.98, "cpu_child": 1748.67, "ext_to": 3600.0, "lrat_bytes": 603694565, "seg_bytes": 42099508, "rss_mb": 1908.4, "rss_child_mb": 2384.5, "wall_tot": 6052.7, "cpu_self_tot": 138.69, "cpu_child_tot": 5906.0, "disk_free_mb": 1039}
+{"event": "closed", "cube": "-8 -27 7 -25 -42 -21 -41 -24", "seconds": 1868.6, "n": 804853, "D": 804853, "F_clauses": 2696577, "cad_seconds": 1802.4, "trim_bytes": 139554619, "seg": "seg_0138.xz", "pysat": "skipped", "time": 1795071528.524, "t_dec": 1795069659.927, "cpu_self": 51.21, "cpu_child": 1813.61, "ext_to": 3600.0, "lrat_bytes": 656718493, "seg_bytes": 50790288, "rss_mb": 1908.4, "rss_child_mb": 2384.5, "wall_tot": 7921.3, "cpu_self_tot": 189.91, "cpu_child_tot": 7719.6, "disk_free_mb": 991}
+{"event": "closed", "cube": "-8 -27 -7 25 15 42 36", "seconds": 2843.8, "n": 836446, "D": 836446, "F_clauses": 2696577, "cad_seconds": 2776.2, "trim_bytes": 158673278, "seg": "seg_0139.xz", "pysat": "skipped", "pp": 0.1977, "pq": 0.1464, "time": 1795074372.296, "t_dec": 1795071528.526, "cpu_self": 59.08, "cpu_child": 2780.0, "ext_to": 3600.0, "lrat_bytes": 834656723, "seg_bytes": 60905364, "x4": [0, 0, 7, 0.5455, 11, 83, 61, 1, 3.5563, 1, 36, 3, 0.4286, 1, 42, 0, 0, 1, 0, 0, 1, 0, 0.13, 1, 1], "rss_mb": 1908.4, "rss_child_mb": 2384.5, "wall_tot": 10765.1, "cpu_self_tot": 248.99, "cpu_child_tot": 10499.6, "disk_free_mb": 932}
+{"event": "split", "cube": "-8 -27 -7 25 15 42 -36", "var": 31, "seconds": 0, "predicted": 0.382, "p0": 0.486, "b": -0.425, "time": 1795074385.175, "t_dec": 1795074372.299, "cpu_self": 12.84, "cpu_child": 0.0, "x4": [0, 0, 7, 0.4, 10, 83, 61, 1, 3.5563, 0, 36, 4, 0.5714, 1, 42, 1, 0, 3.4435, 0, 0, 1, 0.301, 0.0867, 3.4435, 1]}
+{"event": "model", "how": "external", "cube": "-8 -27 -7 25 15 42 -36 31", "seconds": 1610.8, "new": 64, "items": 2698, "time": 1795075996.279, "t_dec": 1795074385.178, "cpu_self": 5.13, "cpu_child": 1603.08, "ext_to": 3600.0, "rss_mb": 1908.4, "rss_child_mb": 2384.5, "wall_tot": 12389.1, "cpu_self_tot": 266.96, "cpu_child_tot": 12102.68, "disk_free_mb": 931}
+{"event": "closed", "cube": "-8 -27 -7 25 15 42 -36 31", "seconds": 2338.4, "n": 732184, "D": 732184, "F_clauses": 2753565, "cad_seconds": 2278.6, "trim_bytes": 142377849, "seg": "seg_0140.xz", "pysat": "skipped", "time": 1795078334.735, "t_dec": 1795075996.281, "cpu_self": 51.73, "cpu_child": 2282.9, "ext_to": 3600.0, "lrat_bytes": 746408984, "seg_bytes": 53936616, "rss_mb": 1908.4, "rss_child_mb": 2384.5, "wall_tot": 14727.5, "cpu_self_tot": 318.69, "cpu_child_tot": 14385.58, "disk_free_mb": 880}
+{"event": "closed", "cube": "-8 -27 -7 25 15 42 -36 -31", "seconds": 933.1, "n": 316373, "D": 316373, "F_clauses": 2753565, "cad_seconds": 907.2, "trim_bytes": 52201882, "seg": "seg_0141.xz", "pysat": "skipped", "time": 1795079267.819, "t_dec": 1795078334.738, "cpu_self": 20.95, "cpu_child": 910.86, "ext_to": 3600.0, "lrat_bytes": 324206755, "seg_bytes": 17036588, "rss_mb": 1908.4, "rss_child_mb": 2384.5, "wall_tot": 15660.6, "cpu_self_tot": 339.63, "cpu_child_tot": 15296.44, "disk_free_mb": 864}
+{"event": "split", "cube": "-8 -27 -7 25 15 -42 41", "var": 37, "seconds": 0, "predicted": 0.453, "p0": 0.559, "b": -0.425, "time": 1795079278.593, "t_dec": 1795079267.82, "cpu_self": 10.74, "cpu_child": 0.0, "x4": [0, 0, 7, 0.6875, 20, 83, 61, 1, 3.5563, 1, 41, 4, 0.5714, 0, 42, 0, 0, 1, 0, 0, 1, 0.301, 0.0867, 3.4435, 1]}
+{"event": "start", "time": 1795115977, "pid": 862, "items": 2698, "clauses": 2753565, "deadline": 1795202073.0, "telemetry": 1, "ccc90_version": "1.10", "ccc90_sha256": "00813b412c8f8765afec9dfb5f838b18e438ed35e7151dff91c36e269eaf5e4f", "encoder": "v7", "encoder_module": "cegar90c", "encoder_sha256": "7699f39b78d7703cfb65691f5d7e8cd5f149f6a587400596bbbfb6122ffa86b9", "pred_model_sha256": "3b42724e70efc3260144f40e1d7f90ac534a4159b769ccc7a4c32c6ff3f264d0", "pred_votes_sha256": "0df28ad00ec8f9019658b42b73c8881b0629771d5b26e996cbbe1745cbb4d02c", "pred_model4_sha256": "2a8cd228028e3fb8efaf46ea760eb9058fed29ad95351a90c10b6919cda6baf0", "pred_active": "pred4", "pred_th": 0.3, "telemetry2": 1, "pred4_model_path": "data/pred_model4.json", "pred4_model_override": false, "pred4_model_fallback_reason": null, "proc_uid": "43bac9195c80451d", "t_proc0": 1795115973.995, "host": {"nproc": 3, "nproc_avail": 3, "node": "d8819d30ba5c", "cpu": "INTEL(R) XEON(R) PLATINUM 8573C", "mem_mb": 9968}, "runner_env": {}, "python_version": "3.12.14", "pysat_version": "1.9.dev21", "cadical_sha256": "eae671d6fab57f7bf909e621adee2a2bd550a0ae0b561065c815f599c7696fe8", "trim_sha256": "179d041f645a98d51d3ca6dbbe4950806ad8eceb54c9a762f54e7acee154f8df", "cake_sha256": "29e02af756c1f0fc4ccac78e9a908e0d8ef01201786f257f1b27b26603390798", "cfg": {"ext_timeout": 3600.0, "pysat_cap": 60.0, "conf0": 20000, "grow": 16, "cube_depth": 7, "cad_opts": "", "trim_max": 3221225472, "margin": 90, "cake_heaps": "2000,4000", "predict": "1", "pred4": "1", "pred_online": 1}, "rss_mb": 411.1, "rss_child_mb": 0.0, "wall_tot": 3.1, "cpu_self_tot": 3.57, "cpu_child_tot": 0.0, "disk_free_mb": 427}
+{"event": "closed", "cube": "-8 -27 -7 25 15 -42 41 37", "seconds": 1341.9, "n": 657966, "D": 657966, "F_clauses": 2753565, "cad_seconds": 1298.0, "trim_bytes": 110358284, "seg": "seg_0142.xz", "pysat": "skipped", "time": 1795117320.544, "t_dec": 1795115978.667, "cpu_self": 38.15, "cpu_child": 1301.99, "ext_to": 3600.0, "lrat_bytes": 527398596, "seg_bytes": 41445940, "rss_mb": 1601.5, "rss_child_mb": 1255.0, "wall_tot": 1346.5, "cpu_self_tot": 43.26, "cpu_child_tot": 1301.99, "disk_free_mb": 822}
+{"event": "split", "cube": "-8 -27 -7 25 15 -42 41 -37", "var": 32, "seconds": 3604.6, "time": 1795120933.942, "t_dec": 1795117320.545, "cpu_self": 13.31, "cpu_child": 3595.86, "ext_to": 3600.0, "lrat_bytes": 1239396352, "rss_mb": 1601.5, "rss_child_mb": 1601.5, "wall_tot": 4959.9, "cpu_self_tot": 56.57, "cpu_child_tot": 4897.85, "disk_free_mb": 822}
+{"event": "closed", "cube": "-8 -27 -7 25 15 -42 41 -37 32", "seconds": 1061.6, "n": 673084, "D": 673084, "F_clauses": 2753565, "cad_seconds": 1021.5, "trim_bytes": 104613842, "seg": "seg_0143.xz", "pysat": "skipped", "pp": 0.2783, "pq": 0.2014, "time": 1795121995.556, "t_dec": 1795120933.944, "cpu_self": 30.85, "cpu_child": 1029.36, "ext_to": 3600.0, "lrat_bytes": 497490017, "seg_bytes": 39229936, "x4": [1, 0, 9, 0.0909, 11, 83, 61, 1, 3.5563, 1, 32, 5, 0.5556, 0, 37, 0, 0, 1, 0, 0, 1, 0, 0.13, 1, 3.5563], "rss_mb": 1640.6, "rss_child_mb": 1601.5, "wall_tot": 6021.6, "cpu_self_tot": 87.42, "cpu_child_tot": 5927.21, "disk_free_mb": 784}
+{"event": "split", "cube": "-8 -27 -7 25 15 -42 41 -37 -32", "var": 35, "seconds": 0, "predicted": 0.706, "p0": 0.799, "b": -0.501, "time": 1795122003.588, "t_dec": 1795121995.557, "cpu_self": 8.0, "cpu_child": 0.0, "x4": [1, 0, 9, 0.6, 10, 83, 61, 1, 3.5563, 0, 32, 6, 0.6667, 0, 37, 1, 0, 3.0092, 0, 0, 1, 0.301, 0.0867, 3.0092, 3.5563]}
+{"event": "start", "time": 1795125494, "pid": 36105, "items": 2698, "clauses": 2753565, "deadline": 1795211589.0, "telemetry": 1, "ccc90_version": "1.10", "ccc90_sha256": "00813b412c8f8765afec9dfb5f838b18e438ed35e7151dff91c36e269eaf5e4f", "encoder": "v7", "encoder_module": "cegar90c", "encoder_sha256": "7699f39b78d7703cfb65691f5d7e8cd5f149f6a587400596bbbfb6122ffa86b9", "pred_model_sha256": "3b42724e70efc3260144f40e1d7f90ac534a4159b769ccc7a4c32c6ff3f264d0", "pred_votes_sha256": "0df28ad00ec8f9019658b42b73c8881b0629771d5b26e996cbbe1745cbb4d02c", "pred_model4_sha256": "2a8cd228028e3fb8efaf46ea760eb9058fed29ad95351a90c10b6919cda6baf0", "pred_active": "pred4", "pred_th": 0.3, "telemetry2": 1, "pred4_model_path": "data/pred_model4.json", "pred4_model_override": false, "pred4_model_fallback_reason": null, "proc_uid": "6f9809134152412c", "t_proc0": 1795125489.798, "host": {"nproc": 3, "nproc_avail": 3, "node": "d8819d30ba5c", "cpu": "INTEL(R) XEON(R) PLATINUM 8573C", "mem_mb": 9968}, "runner_env": {}, "python_version": "3.12.14", "pysat_version": "1.9.dev21", "cadical_sha256": "eae671d6fab57f7bf909e621adee2a2bd550a0ae0b561065c815f599c7696fe8", "trim_sha256": "179d041f645a98d51d3ca6dbbe4950806ad8eceb54c9a762f54e7acee154f8df", "cake_sha256": "29e02af756c1f0fc4ccac78e9a908e0d8ef01201786f257f1b27b26603390798", "cfg": {"ext_timeout": 3600.0, "pysat_cap": 60.0, "conf0": 20000, "grow": 16, "cube_depth": 7, "cad_opts": "", "trim_max": 3221225472, "margin": 90, "cake_heaps": "2000,4000", "predict": "1", "pred4": "1", "pred_online": 1}, "rss_mb": 411.3, "rss_child_mb": 0.0, "wall_tot": 4.2, "cpu_self_tot": 4.77, "cpu_child_tot": 0.0, "disk_free_mb": 0}
+{"event": "split", "cube": "-8 -27 -7 25 15 -42 41 -37 -32 35", "var": 30, "seconds": 3603.5, "time": 1795129111.429, "t_dec": 1795125496.885, "cpu_self": 14.36, "cpu_child": 3593.96, "ext_to": 3600.0, "lrat_bytes": 1088270336, "rss_mb": 1266.3, "rss_child_mb": 1255.5, "wall_tot": 3621.6, "cpu_self_tot": 22.03, "cpu_child_tot": 3593.96, "disk_free_mb": 784}
+{"event": "split", "cube": "-8 -27 -7 25 15 -42 41 -37 -32 35 30", "var": 29, "seconds": 0, "predicted": 0.39, "p0": 0.513, "b": -0.501, "time": 1795129120.944, "t_dec": 1795129111.431, "cpu_self": 9.48, "cpu_child": 0.0, "x4": [1, 0, 11, 1, 3, 83, 61, 1, 3.5563, 1, 30, 6, 0.5455, 1, 35, 0, 0, 1, 0, 0, 1, 0, 0.13, 1, 3.5563]}
+{"event": "closed", "cube": "-8 -27 -7 25 15 -42 41 -37 -32 35 30 29", "seconds": 372.0, "n": 214787, "D": 214787, "F_clauses": 2753565, "cad_seconds": 358.1, "trim_bytes": 29658482, "seg": "seg_0144.xz", "pysat": "skipped", "time": 1795129492.928, "t_dec": 1795129120.944, "cpu_self": 11.86, "cpu_child": 359.54, "ext_to": 3600.0, "lrat_bytes": 192157298, "seg_bytes": 8037116, "rss_mb": 1403.4, "rss_child_mb": 1403.4, "wall_tot": 4003.1, "cpu_self_tot": 43.38, "cpu_child_tot": 3953.49, "disk_free_mb": 777}
+{"event": "split", "cube": "-8 -27 -7 25 15 -42 41 -37 -32 35 30 -29", "var": 36, "seconds": 3604.6, "time": 1795133108.596, "t_dec": 1795129492.939, "cpu_self": 15.49, "cpu_child": 3594.76, "ext_to": 3600.0, "lrat_bytes": 1033846784, "rss_mb": 1403.6, "rss_child_mb": 1403.6, "wall_tot": 7618.8, "cpu_self_tot": 58.87, "cpu_child_tot": 7548.25, "disk_free_mb": 777}
+{"event": "split", "cube": "-8 -27 -7 25 15 -42 41 -37 -32 35 30 -29 36", "var": 31, "seconds": 0, "predicted": 0.436, "p0": 0.561, "b": -0.501, "time": 1795133117.801, "t_dec": 1795133108.598, "cpu_self": 9.18, "cpu_child": 0.0, "x4": [1, 0, 13, 0.5, 2, 83, 61, 1, 3.5563, 1, 36, 7, 0.5385, 0, 29, 0, 0, 1, 0, 0, 1, 0, 0.13, 1, 3.5563]}
+{"event": "closed", "cube": "-8 -27 -7 25 15 -42 41 -37 -32 35 30 -29 36 31", "seconds": 2262.1, "n": 945112, "D": 945112, "F_clauses": 2753565, "cad_seconds": 2209.9, "trim_bytes": 155379826, "seg": "seg_0145.xz", "pysat": "skipped", "time": 1795135379.926, "t_dec": 1795133117.802, "cpu_self": 46.27, "cpu_child": 2212.91, "ext_to": 3600.0, "lrat_bytes": 824624401, "seg_bytes": 60441924, "rss_mb": 1918.1, "rss_child_mb": 1985.2, "wall_tot": 9890.1, "cpu_self_tot": 114.33, "cpu_child_tot": 9761.16, "disk_free_mb": 719}
+{"event": "closed", "cube": "-8 -27 -7 25 15 -42 41 -37 -32 35 30 -29 36 -31", "seconds": 602.6, "n": 362000, "D": 362000, "F_clauses": 2753565, "cad_seconds": 581.8, "trim_bytes": 48334444, "seg": "seg_0146.xz", "pysat": "skipped", "time": 1795135982.539, "t_dec": 1795135379.928, "cpu_self": 17.79, "cpu_child": 583.79, "ext_to": 3600.0, "lrat_bytes": 285554666, "seg_bytes": 15855360, "rss_mb": 1918.1, "rss_child_mb": 1985.2, "wall_tot": 10492.7, "cpu_self_tot": 132.12, "cpu_child_tot": 10344.95, "disk_free_mb": 704}
+{"event": "closed", "cube": "-8 -27 -7 25 15 -42 41 -37 -32 35 30 -29 -36", "seconds": 738.4, "n": 418691, "D": 418691, "F_clauses": 2753565, "cad_seconds": 715.6, "trim_bytes": 55867922, "seg": "seg_0147.xz", "pysat": "skipped", "pp": 0.1914, "pq": 0.1254, "time": 1795136720.964, "t_dec": 1795135982.541, "cpu_self": 19.38, "cpu_child": 717.74, "ext_to": 3600.0, "lrat_bytes": 328393545, "seg_bytes": 18992972, "x4": [1, 0, 13, 0, 2, 83, 61, 1, 3.5563, 0, 36, 8, 0.6154, 0, 29, 0, 0, 1, 0, 0, 1, 0, 0.13, 1, 3.5563], "rss_mb": 1918.1, "rss_child_mb": 1985.2, "wall_tot": 11231.2, "cpu_self_tot": 151.5, "cpu_child_tot": 11062.69, "disk_free_mb": 686}
+{"event": "closed", "cube": "-8 -27 -7 25 15 -42 41 -37 -32 35 -30", "seconds": 174.2, "n": 138698, "D": 138698, "F_clauses": 2753565, "cad_seconds": 164.3, "trim_bytes": 19610968, "seg": "seg_0148.xz", "pysat": "skipped", "pp": 0.2202, "pq": 0.1398, "time": 1795136895.173, "t_dec": 1795136720.966, "cpu_self": 8.61, "cpu_child": 165.38, "ext_to": 3600.0, "lrat_bytes": 144553754, "seg_bytes": 4040268, "x4": [1, 0, 11, 0, 3, 83, 61, 1, 3.5563, 0, 30, 7, 0.6364, 1, 35, 0, 0, 1, 0, 0, 1, 0.301, 0.0867, 2.8547, 3.5563], "rss_mb": 1918.1, "rss_child_mb": 1985.2, "wall_tot": 11405.4, "cpu_self_tot": 160.11, "cpu_child_tot": 11228.07, "disk_free_mb": 682}
+{"event": "closed", "cube": "-8 -27 -7 25 15 -42 41 -37 -32 -35", "seconds": 210.9, "n": 152560, "D": 152560, "F_clauses": 2753565, "cad_seconds": 201.6, "trim_bytes": 21108882, "seg": "seg_0149.xz", "pysat": "skipped", "time": 1795137106.1, "t_dec": 1795136895.174, "cpu_self": 8.43, "cpu_child": 201.97, "ext_to": 3600.0, "lrat_bytes": 170193776, "seg_bytes": 4677156, "rss_mb": 1918.1, "rss_child_mb": 1985.2, "wall_tot": 11616.3, "cpu_self_tot": 168.53, "cpu_child_tot": 11430.04, "disk_free_mb": 677}
