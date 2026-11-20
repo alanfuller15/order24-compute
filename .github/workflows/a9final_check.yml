@@ -1,7 +1,7 @@
 name: a9final_check
 # Collects the 8 parts of the A9 final claim (exp artifacts a9v3_final_p0..p7, from exp/a9final.sh) without anyone watching.
 # Writes A9_FINAL.md to the one-commit branch a9-final-status: per part, the VERDICT line, the input digest and code.sha256,
-# and an overall line. "ALL 8 PARTS AGREE" is a mechanical check of the job outputs only: the final claim still needs an
+# and an overall line. "ALL 16 PARTS AGREE" is a mechanical check of the job outputs only: the final claim still needs an
 # independent review (a reviewer that did not produce it) before it is stated anywhere.
 on:
   schedule:
@@ -28,8 +28,8 @@ jobs:
           set +e; R=${{ github.repository }}; O=$RUNNER_TEMP/a9; mkdir -p $O; S=$RUNNER_TEMP/A9_FINAL.md
           echo "# A9 final claim: mechanical collection ($(date -u +%Y-%m-%dT%H:%MZ))" > $S; echo >> $S
           ok=0; D=""; C=""; same=1
-          for k in 0 1 2 3 4 5 6 7; do
-            n=a9v3_final_p$k
+          for k in $(seq 0 15); do
+            n=a9v4_final_p$k
             id=$(gh api "repos/$R/actions/artifacts?name=$n&per_page=1" -q '.artifacts[0].workflow_run.id // empty')
             if [ -z "$id" ]; then echo "- part $k: no artifact yet" >> $S; continue; fi
             st=$(gh api repos/$R/actions/runs/$id -q '.status+" "+(.conclusion//"")')
@@ -44,15 +44,15 @@ jobs:
             { [ -n "$d" ] && [ "$d" != "$D" ]; } && same=0; [ "$c" != "$C" ] && same=0
           done
           echo >> $S
-          if [ $ok -eq 8 ] && [ $same -eq 1 ]; then echo "**ALL 8 PARTS AGREE: COVERED AND VERIFIED, one input digest ($D), one code digest ($C).** Needs independent review before it is claimed." >> $S
-          else echo "**Not complete:** $ok/8 parts COVERED AND VERIFIED; digests consistent: $same." >> $S; fi
+          if [ $ok -eq 16 ] && [ $same -eq 1 ]; then echo "**ALL 16 PARTS AGREE: COVERED AND VERIFIED, one input digest ($D), one code digest ($C).** Needs independent review before it is claimed." >> $S
+          else echo "**Not complete:** $ok/16 parts COVERED AND VERIFIED; digests consistent: $same." >> $S; fi
           cat $S >> "$GITHUB_STEP_SUMMARY"
           T=$(printf '100644 blob %s\tA9_FINAL.md\n' "$(git hash-object -w $S)" | git mktree)
           M=$(git -c user.name='github-actions[bot]' -c user.email='41898282+github-actions[bot]@users.noreply.github.com' commit-tree "$T" -m "a9 final status $(date -u +%Y-%m-%dT%H:%MZ)")
           git push -q -f origin "$M:refs/heads/a9-final-status" && echo pushed
           # notify once: an issue (GitHub sends the owner a notification) when all 8 parts are in, or when any part failed
-          fin=$(grep -c "^- part .*completed" $S); bad=$(grep -c "GATE_FAIL\|completed failure" $S)
-          if [ $ok -eq 8 ] && [ $same -eq 1 ]; then TT="A9 final: all 8 parts COVERED AND VERIFIED (needs independent review)"
-          elif [ $fin -eq 8 ] || [ $bad -gt 0 ]; then TT="A9 final: attention ($ok/8 verified, $bad failed)"; else exit 0; fi
+          fin=$(grep -c "^- part .*completed" $S); bad=$(grep -c "GATE_FAIL\|completed failure\|no verdict line" $S)
+          if [ $ok -eq 16 ] && [ $same -eq 1 ]; then TT="A9 final: all 16 parts COVERED AND VERIFIED (needs independent review)"
+          elif [ $fin -eq 16 ] || [ $bad -gt 0 ]; then TT="A9 final: attention ($ok/16 verified, $bad failed)"; else exit 0; fi
           if [ -z "$(gh issue list -R $R --state all --search "$TT in:title" --json number -q '.[0].number')" ]; then
             gh issue create -R $R --title "$TT" --body-file $S && echo "issue opened"; fi
