@@ -155,12 +155,7 @@ CNF/LRAT files; this chat has not independently replayed them. The label is MATH
 of a reviewed finite model (SAT/LRAT)**, separate from production, with the recorded checker trust retained.
 No lazy clauses were needed (all eight instances UNSAT at first solve). Controls at thresholds 0 and 8 were SAT
 in both encodings, decoded, checked and cross-fed; these are relaxed controls, not target-family examples.
-
-For Case B, [exp_B4](../research/alpha9/v2/exp_B4/README.md) records unconditional-model solver UNSAT for b=0..3,
-but no separately reviewed LRAT closure in this snapshot. T2b/RA9X20 is a remaining task. Its +4g.2 runs are
-conditional on 4f.1/4g.2; they cannot remove those dependencies. The unconditional-model route is intended to
-avoid them but must first pass encoding review, independent re-encoding, and certificate checks. No such result
-is supplied by T2a. Prior timeouts and killed/incomplete controls remain non-results.
+At T2a's source snapshot, [exp_B4](../research/alpha9/v2/exp_B4/README.md) supplied unconditional-model solver UNSAT for b=0..3, but T2a supplied no separate LRAT certification. The later lane-3 [RA9X20 packet](RA9X20/RESULTS.md) supplies two static CNFs and recorded pinned-cake checks for each of B16–B19; lane 4's [REVIEW_T2](REVIEW_T2.md) accepts that separate packet, including fresh replay of B16 in both encodings. This is SAT/LRAT certificate evidence plus a reviewed graph-to-CNF implication for these four profiles, without 4f.1/4g.2. It uses Theorem 1, Case-B M1, the b<=3 proof of N3, MAX and the target's degree/alpha/12-set hypotheses. It does not alter the historical conditional status of the +4g.2 runs or MATH.md 4j/4l, remove Case A's other finite dependencies, certify the 430-profile production run, or establish an order-24 theorem. Prior timeouts and killed/incomplete controls remain non-results.
 
 ## Review trace and limits of this bundle
 
@@ -183,5 +178,4 @@ record with its scope rather than reading the stale sentence as a new verdict.
 * No new proof replay, formalisation, or "reproduced" label for the full alpha-9 production run.
 * No credit to exploratory results, relaxed controls, missing artifacts, timeouts, killed runs, or UNKNOWN as
   exclusions; no changes to the certified profile list, CNF, checker, production run, or record lists.
-* No T2b/RA9X20 certification and no claim that all section-4 exclusions avoid 4f.1. Its removal from the complete
-  alternate route remains outstanding even though the reporting ledger reads 0/0.
+* T2a itself performed no T2b/RA9X20 certification. The separate RA9X20 packet, independently reviewed in REVIEW_T2, now supplies the four Case-B exclusions without 4f.1/4g.2. No claim is made that all section-4 exclusions avoid 4f.1: the cited Case-A and earlier finite dependencies remain, even though the reporting ledger reads 0/0.
