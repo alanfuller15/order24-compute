@@ -2,11 +2,18 @@
 No solver or proof checker is run; input ZIP and extracted bytes are SHA-256 hashed.
 Inputs are the standard exp.yml RUN_ID / ARTIFACT / GH_REPO / GH_TOKEN bindings.
 """
-import hashlib,json,os,pathlib,urllib.request,zipfile
-O=pathlib.Path('exp_out'); O.mkdir(exist_ok=True)
+import hashlib,json,os,pathlib,urllib.request,urllib.parse,zipfile
+O=pathlib.Path('exp_out'); O.mkdir(exist_ok=True); (O/'GATE_FAIL').write_text('record extraction incomplete')
 repo=os.environ['GH_REPO']; run=os.environ['RUN_ID']; name=os.environ['ARTIFACT']
 headers={'Authorization':'Bearer '+os.environ['GH_TOKEN'],'Accept':'application/vnd.github+json'}
-def get(url): return urllib.request.urlopen(urllib.request.Request(url,headers=headers))
+class StripCrossHostAuth(urllib.request.HTTPRedirectHandler):
+ def redirect_request(self,req,fp,code,msg,hdrs,newurl):
+  new=super().redirect_request(req,fp,code,msg,hdrs,newurl)
+  if urllib.parse.urlparse(req.full_url).netloc != urllib.parse.urlparse(newurl).netloc:
+   new.remove_header('Authorization')
+  return new
+opener=urllib.request.build_opener(StripCrossHostAuth)
+def get(url): return opener.open(urllib.request.Request(url,headers=headers))
 with get(f'https://api.github.com/repos/{repo}/actions/runs/{run}/artifacts?per_page=100') as response:
  artifacts=json.load(response)['artifacts']
 matching=[a for a in artifacts if a['name']==name and not a['expired']]
@@ -25,4 +32,4 @@ with zipfile.ZipFile(archive) as z:
            'job_run':os.environ.get('GITHUB_RUN_ID'),'script_commit':os.environ.get('GITHUB_SHA')}
  (O/'extraction.json').write_text(json.dumps(evidence,indent=2)+'\n')
  print(json.dumps({k:v for k,v in evidence.items() if k!='artifact'},indent=2))
-archive.unlink()
+archive.unlink(); (O/'GATE_FAIL').unlink()
