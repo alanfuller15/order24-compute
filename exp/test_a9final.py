@@ -113,6 +113,22 @@ class FinalPartitionTests(unittest.TestCase):
                 self.assertEqual(result['pass'],expected); self.assertEqual(proc.call_count,3)
                 self.assertEqual(proc.call_args_list[2].args[0][0],'CAKE')
 
+    def test_trim_that_changes_the_cnf_is_rejected(self):
+        # review fix: if the untrusted trimmer rewrites the CNF, the leaf must fail before cake_lpr is trusted
+        cnf = b'p cnf 1 2\n1 0\n-1 0\n'
+        with tempfile.TemporaryDirectory() as d:
+            r = dict(self.record([]), _label='gh', _file='records', _lazydir=d, cnf_sha256=hashlib.sha256(cnf).hexdigest())
+            with gzip.open(Path(d,r['tag']+'.json.gz'),'wt') as f: json.dump([],f)
+            def fake(cmd, **kw):
+                if cmd[0] == 'TRIM':
+                    Path(cmd[3]).write_bytes(b'p cnf 1 1\n1 0\n'); return subprocess.CompletedProcess(cmd, 20, b'', b'')
+                if cmd[0] == 'CAKE': return subprocess.CompletedProcess(cmd, 0, check.VER + '\n', '')
+                return subprocess.CompletedProcess(cmd, 20, b'', b'')
+            with patch.object(check,'rebuild',return_value=cnf), patch.object(check,'TRIM','TRIM'), \
+                 patch.object(check.subprocess,'run',side_effect=fake):
+                _, result = check.replay((0,r,d,'CAD','CAKE'))
+            self.assertFalse(result['pass']); self.assertIn('CNF changed', result.get('error',''))
+
     def test_wrapper_fails_closed_before_starting_any_work(self):
         script = Path(__file__).resolve().with_name('a9final.sh')
         with tempfile.TemporaryDirectory() as d:

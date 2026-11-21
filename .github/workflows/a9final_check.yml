@@ -27,7 +27,7 @@ jobs:
         run: |
           set +e; R=${{ github.repository }}; O=$RUNNER_TEMP/a9; mkdir -p $O; S=$RUNNER_TEMP/A9_FINAL.md
           echo "# A9 final claim: mechanical collection ($(date -u +%Y-%m-%dT%H:%MZ))" > $S; echo >> $S
-          ok=0; D=""; C=""; same=1
+          ok=0; D=""; C=""; same=1; NP=32
           for k in $(seq 0 31); do
             n=a9v6_final_p$k
             id=$(gh api "repos/$R/actions/artifacts?name=$n&per_page=1" -q '.artifacts[0].workflow_run.id // empty')
@@ -39,7 +39,10 @@ jobs:
             d=$(echo "$v" | grep -o 'input digest [0-9a-f]*' | awk '{print $3}')
             gf=$( [ -e $O/$k/GATE_FAIL ] && echo " GATE_FAIL" )
             echo "- part $k: run $id ($st)$gf; code $c; ${v:-no verdict line}" >> $S
-            if echo "$v" | grep -q "COVERED AND VERIFIED" && [ -z "$gf" ]; then ok=$((ok+1)); fi
+            gp=$(cat $O/$k/GATE_PASS 2>/dev/null)
+            # review fix: count a part only with a successful job, its own GATE_PASS marker, no GATE_FAIL and non-empty digests
+            if [ "$st" = "completed success" ] && [ "$gp" = "$k/$NP leaves-v1" ] && [ -z "$gf" ] && [ -n "$d" ] && [ -n "$c" ] \
+               && echo "$v" | grep -q "part $k/$NP,.*COVERED AND VERIFIED"; then ok=$((ok+1)); fi
             [ -z "$D" ] && D=$d; [ -z "$C" ] && C=$c
             { [ -n "$d" ] && [ "$d" != "$D" ]; } && same=0; [ "$c" != "$C" ] && same=0
           done

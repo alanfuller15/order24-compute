@@ -10,7 +10,7 @@
 #   RUN_IDs: optional; without them the artifacts are found by name through the API (GH_TOKEN, GH_REPO from exp.yml).
 # Local records (out/*) are never included. One source ("gh"); inside it a9check picks one results file per unit.
 # Exits 1 and writes exp_out/GATE_FAIL unless the verdict is COVERED AND VERIFIED and the gate passes.
-set -u
+set -u -o pipefail
 # A timeout or interruption must leave a durable failure marker for exp.yml (which masks pipeline exits).
 mkdir -p exp_out
 echo "A9 final has not completed" > exp_out/GATE_FAIL
@@ -21,7 +21,7 @@ case "$PART" in */*) ;; *) echo "PART must be K/N"; mkdir -p exp_out; echo "bad 
 case "$W" in ''|*[!0-9]*) echo "WORKERS must be a number"; mkdir -p exp_out; echo "bad WORKERS" > exp_out/GATE_FAIL; exit 1;; esac
 mkdir -p exp_out in
 # code identity of this part: all parts of one claim must show the same sums
-sha256sum exp/*.py exp/*.sh bin/cadical bin/cake_lpr bin/lrat-trim | tee exp_out/code.sha256
+sha256sum exp/*.py exp/*.sh .github/workflows/exp.yml .github/workflows/a9final_check.yml SHA256SUMS bin/cadical bin/cake_lpr bin/lrat-trim | tee exp_out/code.sha256 || { echo "code hashing failed" > exp_out/GATE_FAIL; exit 1; }
 echo "code digest: $(sha256sum exp_out/code.sha256 | cut -c1-16)  part $PART" | tee -a exp_out/code.sha256
 if [ $# -gt 0 ]; then
   for RID in "$@"; do
@@ -43,7 +43,7 @@ while read -r RID NAME EXP; do
   [ -f "$D/results.jsonl" ] || continue
   RES="${RES:+$RES,}gh=$D/results.jsonl"; LAZ="${LAZ:+$LAZ,}$D/lazy"
 done < exp_out/selected.txt
-export CAD=$PWD/bin/cadical CAKE=$PWD/bin/cake_lpr
+export CAD=$PWD/bin/cadical CAKE=$PWD/bin/cake_lpr TRIM=$PWD/bin/lrat-trim
 python3 -I -B exp/a9check.py "$RES" "$LAZ" exp_out/chk --final --partition leaves --part "$PART" --workers "$W" > exp_out/final_full.log 2>&1
 CHK=$?
 grep -v '"pass": true' exp_out/final_full.log > exp_out/final.log
@@ -53,5 +53,6 @@ FAIL=""
 grep -q "COVERED AND VERIFIED" exp_out/final.log || FAIL="${FAIL:+$FAIL; }no COVERED verdict"
 python3 -I -B exp/a9gate.py exp_out/final.log in exp_out || FAIL="${FAIL:+$FAIL; }gate"
 if [ -n "$FAIL" ]; then echo "$FAIL" > exp_out/GATE_FAIL; echo "GATE FAIL: $FAIL"; exit 1; fi
+printf '%s\n' "$PART leaves-v1" > exp_out/GATE_PASS
 rm -f exp_out/GATE_FAIL
 echo "GATE PASS"

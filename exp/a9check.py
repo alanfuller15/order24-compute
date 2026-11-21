@@ -91,6 +91,8 @@ def replay(a):
                 res['trim_exit'] = tr.returncode
                 if tr.returncode in (0, 20) and os.path.exists(t): os.replace(t, p)
             if cp.returncode == 20:
+                with open(f, 'rb') as fh:   # review fix: the file cake_lpr reads must still be the SHA-matched CNF
+                    if hashlib.sha256(fh.read()).hexdigest() != r.get('cnf_sha256'): raise ValueError('CNF changed before cake_lpr')
                 with open(os.path.join(work, '.cake.lock'), 'w') as lk:
                     fcntl.flock(lk, fcntl.LOCK_EX)
                     ck = subprocess.run([CAKE, '--CML_HEAP_SIZE=' + os.environ.get('A9_CAKE_HEAP', '3000'), '--CML_STACK_SIZE=256', f, p],
@@ -101,7 +103,7 @@ def replay(a):
     finally:
         for x in (f, p, t):
             if os.path.exists(x): os.remove(x)
-    res['pass'] = bool(res.get('cnf_match')) and res.get('cadical_exit') == 20 and res.get('cake_lpr') == VER
+    res['pass'] = 'error' not in res and bool(res.get('cnf_match')) and res.get('cadical_exit') == 20 and res.get('cake_lpr') == VER
     res['seconds'] = round(time.monotonic() - started, 3)
     return key, res
 
