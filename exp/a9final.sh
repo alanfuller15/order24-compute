@@ -1,7 +1,9 @@
 #!/bin/bash
 # a9final.sh PART WORKERS [RUN_ID ...] -- the final claim (RA9C item 4): download every production artifact
 # (a9v2_s<K> and round-2+ a9v2r<R>_s<K>), then run  a9check --final --part PART  over exactly that set.
-#   PART = K/N: this job replays the leaves of the profiles with list position mod N == K (all of them for 0/1).
+#   PART = K/N: this job replays UNSAT records with record position mod N == K (all for 0/1).
+#   This splits large profiles across parts. Every part checks whole-tree structural coverage;
+#   foreign leaves are provisional until ALL N parts pass their assigned replays (leaves-v1).
 #   The final claim is exactly the N jobs K = 0..N-1 (same N), with the SAME input digest and the SAME code digest
 #   (exp_out/code.sha256), each printing
 #   "A9 FINAL VERDICT (part K/N, input digest D, ...): COVERED AND VERIFIED".
@@ -9,6 +11,9 @@
 # Local records (out/*) are never included. One source ("gh"); inside it a9check picks one results file per unit.
 # Exits 1 and writes exp_out/GATE_FAIL unless the verdict is COVERED AND VERIFIED and the gate passes.
 set -u
+# A timeout or interruption must leave a durable failure marker for exp.yml (which masks pipeline exits).
+mkdir -p exp_out
+echo "A9 final has not completed" > exp_out/GATE_FAIL
 export A9_CAKE_HEAP=${A9_CAKE_HEAP:-6000}
 if [ $# -lt 2 ]; then echo "usage: a9final.sh PART WORKERS [RUN_ID ...] (PART and WORKERS are required)"; mkdir -p exp_out; echo "bad arguments" > exp_out/GATE_FAIL; exit 1; fi
 PART=$1; W=$2; shift 2
@@ -39,13 +44,14 @@ while read -r RID NAME EXP; do
   RES="${RES:+$RES,}gh=$D/results.jsonl"; LAZ="${LAZ:+$LAZ,}$D/lazy"
 done < exp_out/selected.txt
 export CAD=$PWD/bin/cadical CAKE=$PWD/bin/cake_lpr
-python3 -I -B exp/a9check.py "$RES" "$LAZ" exp_out/chk --final --part "$PART" --workers "$W" > exp_out/final_full.log 2>&1
+python3 -I -B exp/a9check.py "$RES" "$LAZ" exp_out/chk --final --partition leaves --part "$PART" --workers "$W" > exp_out/final_full.log 2>&1
 CHK=$?
-grep -v '"pass": true' exp_out/final_full.log > exp_out/final.log; rm -f exp_out/final_full.log
+grep -v '"pass": true' exp_out/final_full.log > exp_out/final.log
 tail -n 6 exp_out/final.log
 FAIL=""
 [ "$CHK" = 0 ] || FAIL="a9check --final exit $CHK"
 grep -q "COVERED AND VERIFIED" exp_out/final.log || FAIL="${FAIL:+$FAIL; }no COVERED verdict"
 python3 -I -B exp/a9gate.py exp_out/final.log in exp_out || FAIL="${FAIL:+$FAIL; }gate"
 if [ -n "$FAIL" ]; then echo "$FAIL" > exp_out/GATE_FAIL; echo "GATE FAIL: $FAIL"; exit 1; fi
+rm -f exp_out/GATE_FAIL
 echo "GATE PASS"
