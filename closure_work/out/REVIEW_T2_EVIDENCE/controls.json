@@ -1,0 +1,62 @@
+[
+  {
+    "profile": "B16",
+    "threshold": 0,
+    "drop_m1": true,
+    "solver_exit": 10,
+    "all_clauses_checked": true,
+    "graph": {
+      "triangle_free": true,
+      "max_degree": 8,
+      "alpha": 9,
+      "nonmaximal_pairs": 0,
+      "min_edges_12": 5,
+      "twelve_sets_checked": 2704156
+    }
+  },
+  {
+    "profile": "B17",
+    "threshold": 0,
+    "drop_m1": true,
+    "solver_exit": 10,
+    "all_clauses_checked": true,
+    "graph": {
+      "triangle_free": true,
+      "max_degree": 8,
+      "alpha": 9,
+      "nonmaximal_pairs": 0,
+      "min_edges_12": 4,
+      "twelve_sets_checked": 2704156
+    }
+  },
+  {
+    "profile": "B18",
+    "threshold": 0,
+    "drop_m1": true,
+    "solver_exit": 10,
+    "all_clauses_checked": true,
+    "graph": {
+      "triangle_free": true,
+      "max_degree": 8,
+      "alpha": 9,
+      "nonmaximal_pairs": 0,
+      "min_edges_12": 4,
+      "twelve_sets_checked": 2704156
+    }
+  },
+  {
+    "profile": "B19",
+    "threshold": 6,
+    "drop_m1": false,
+    "solver_exit": 10,
+    "all_clauses_checked": true,
+    "graph": {
+      "triangle_free": true,
+      "max_degree": 7,
+      "alpha": 9,
+      "nonmaximal_pairs": 0,
+      "min_edges_12": 6,
+      "twelve_sets_checked": 2704156
+    }
+  }
+]

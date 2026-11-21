@@ -1,0 +1,1 @@
+{"status": "PASS", "assignments_checked": 2260, "scope": ["seqcounter atmost n<=7", "lex length<=4", "signed AND3"]}

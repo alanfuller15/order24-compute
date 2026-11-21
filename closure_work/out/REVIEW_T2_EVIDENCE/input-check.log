@@ -1,0 +1,14 @@
+closure_work/TASKS.md: OK
+closure_work/research/alpha9/v2/MATH.md: OK
+closure_work/research/alpha9/v2/exp_B4/model_B4.py: OK
+closure_work/research/alpha9/v2/exp_B4/README.md: OK
+bin/cadical: OK
+bin/cake_lpr: OK
+closure_work/research/alpha9/v2/exp_B4/main_b0_v3_out.txt: OK
+closure_work/research/alpha9/v2/exp_B4/main_b1_v3_out.txt: OK
+closure_work/research/alpha9/v2/exp_B4/main_b2_v3_out.txt: OK
+closure_work/research/alpha9/v2/exp_B4/main_b3_v3_out.txt: OK
+closure_work/research/alpha9/v2/exp_B4/ablate_main_b0_thr0_dropM1_candidate.json: OK
+closure_work/research/alpha9/v2/exp_B4/ablate_main_b1_thr0_dropM1_candidate.json: OK
+closure_work/research/alpha9/v2/exp_B4/ablate_main_b2_thr0_dropM1_candidate.json: OK
+closure_work/research/alpha9/v2/exp_B4/candidate_b3_thr6_v2.json: OK

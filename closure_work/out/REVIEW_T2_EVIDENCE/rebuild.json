@@ -1,0 +1,50 @@
+[
+  {
+    "name": "independent_B16",
+    "cnf_sha256": "46ed1d61c5ac6d784fd5c9d61563a66c92a20887a93c357af1ff35ba863e759d",
+    "build_output": "{\"b\": 0, \"threshold\": 12, \"drop_m1\": false, \"vars\": 305442, \"clauses\": 597383, \"families\": {\"profile\": 1200, \"disjointness\": 3885, \"symmetry\": 1911, \"degree\": 2289, \"maximality\": 10377, \"multiplicity\": 481, \"floors\": 6670, \"outside12\": 570570}}",
+    "retained_logs_consistent": true
+  },
+  {
+    "name": "producer_B16",
+    "cnf_sha256": "f0ed60cbc464367c94c32d60f2c54e2add25f5c86899d930558b375ac4248a1c",
+    "build_output": "{\"source_sha256\": \"74944e47e97e25a485a61b9bf39680822bd758b36fade71d75d84b973a040e1b\", \"b\": 0, \"vars\": 192493, \"clauses\": 1220713, \"cnf_sha256\": \"f0ed60cbc464367c94c32d60f2c54e2add25f5c86899d930558b375ac4248a1c\", \"argv\": [\"0\", \"--nocore\"], \"bip\": false}",
+    "retained_logs_consistent": true
+  },
+  {
+    "name": "independent_B17",
+    "cnf_sha256": "b8a85348cdc90a2d8c71fe57d4b8ab33357454f30fda3032bbd2ef5f4e6daacc",
+    "build_output": "{\"b\": 1, \"threshold\": 12, \"drop_m1\": false, \"vars\": 304906, \"clauses\": 596235, \"families\": {\"profile\": 1200, \"disjointness\": 3885, \"symmetry\": 1842, \"degree\": 2261, \"maximality\": 10125, \"multiplicity\": 444, \"floors\": 5908, \"outside12\": 570570}}",
+    "retained_logs_consistent": true
+  },
+  {
+    "name": "producer_B17",
+    "cnf_sha256": "e203177ef7f4d627daccd1ac37a331d90ab9b0ce11a9a4ebf8db3334b8950a09",
+    "build_output": "{\"source_sha256\": \"74944e47e97e25a485a61b9bf39680822bd758b36fade71d75d84b973a040e1b\", \"b\": 1, \"vars\": 192249, \"clauses\": 1218805, \"cnf_sha256\": \"e203177ef7f4d627daccd1ac37a331d90ab9b0ce11a9a4ebf8db3334b8950a09\", \"argv\": [\"1\", \"--nocore\"], \"bip\": false}",
+    "retained_logs_consistent": true
+  },
+  {
+    "name": "independent_B18",
+    "cnf_sha256": "859e614c2869f0fcefa42591f58a1605336b268067fcb909a9a44e10bb5f352e",
+    "build_output": "{\"b\": 2, \"threshold\": 12, \"drop_m1\": false, \"vars\": 304451, \"clauses\": 595284, \"families\": {\"profile\": 1200, \"disjointness\": 3886, \"symmetry\": 1842, \"degree\": 2233, \"maximality\": 9873, \"multiplicity\": 407, \"floors\": 5273, \"outside12\": 570570}}",
+    "retained_logs_consistent": true
+  },
+  {
+    "name": "producer_B18",
+    "cnf_sha256": "3e61cf593bc52a949eb4a1e9172b754b60e3648d65e8702d0a8416e48dfbc1fc",
+    "build_output": "{\"source_sha256\": \"74944e47e97e25a485a61b9bf39680822bd758b36fade71d75d84b973a040e1b\", \"b\": 2, \"vars\": 189702, \"clauses\": 1196032, \"cnf_sha256\": \"3e61cf593bc52a949eb4a1e9172b754b60e3648d65e8702d0a8416e48dfbc1fc\", \"argv\": [\"2\", \"--nocore\"], \"bip\": false}",
+    "retained_logs_consistent": true
+  },
+  {
+    "name": "independent_B19",
+    "cnf_sha256": "6de75c3899a9aab26a160d0e363e253725aff5a6b4f9e29e86cc1cf9ed5a9e12",
+    "build_output": "{\"b\": 3, \"threshold\": 12, \"drop_m1\": false, \"vars\": 304054, \"clauses\": 594449, \"families\": {\"profile\": 1200, \"disjointness\": 3888, \"symmetry\": 1842, \"degree\": 2205, \"maximality\": 9621, \"multiplicity\": 370, \"floors\": 4753, \"outside12\": 570570}}",
+    "retained_logs_consistent": true
+  },
+  {
+    "name": "producer_B19",
+    "cnf_sha256": "2ce4bfd56143f1c6f37f917cb26afbba653473b34de89923bbf1d19bc9758d9e",
+    "build_output": "{\"source_sha256\": \"74944e47e97e25a485a61b9bf39680822bd758b36fade71d75d84b973a040e1b\", \"b\": 3, \"vars\": 185064, \"clauses\": 1153213, \"cnf_sha256\": \"2ce4bfd56143f1c6f37f917cb26afbba653473b34de89923bbf1d19bc9758d9e\", \"argv\": [\"3\", \"--nocore\"], \"bip\": false}",
+    "retained_logs_consistent": true
+  }
+]

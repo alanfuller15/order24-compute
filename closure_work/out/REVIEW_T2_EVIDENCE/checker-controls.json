@@ -1,0 +1,12 @@
+{
+  "positive": {
+    "exit": 0,
+    "stdout": "s VERIFIED UNSAT\n",
+    "stderr": ""
+  },
+  "wrong_cnf": {
+    "exit": 0,
+    "stdout": "",
+    "stderr": "c Checking failed at line: 0. Reason: pivot must be non-zero\n"
+  }
+}
