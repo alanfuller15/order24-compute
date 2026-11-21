@@ -22,7 +22,7 @@ case "$W" in ''|*[!0-9]*) echo "WORKERS must be a number"; mkdir -p exp_out; ech
 mkdir -p exp_out in
 # code identity of this part: all parts of one claim must show the same sums
 sha256sum exp/*.py exp/*.sh .github/workflows/exp.yml .github/workflows/a9final_check.yml SHA256SUMS bin/cadical bin/cake_lpr bin/lrat-trim | tee exp_out/code.sha256 || { echo "code hashing failed" > exp_out/GATE_FAIL; exit 1; }
-echo "code digest: $(sha256sum exp_out/code.sha256 | cut -c1-16)  part $PART" | tee -a exp_out/code.sha256
+echo "code digest: $(sha256sum exp_out/code.sha256 | cut -c1-64)  part $PART" | tee -a exp_out/code.sha256
 if [ $# -gt 0 ]; then
   for RID in "$@"; do
     gh api "repos/$GH_REPO/actions/runs/$RID/artifacts" -q '.artifacts[] | "\(.workflow_run.id) \(.name) \(.expired)"'

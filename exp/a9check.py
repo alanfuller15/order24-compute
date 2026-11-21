@@ -156,7 +156,7 @@ def main():
         for l in raw.decode().splitlines():
             if not l.strip(): continue
             r = json.loads(l); r['_lazydir'] = d; r['_label'] = lab; r['_file'] = path; recs.append(r)
-    digest = dig.hexdigest()[:16]
+    digest = dig.hexdigest()
     os.makedirs(a.work, exist_ok=True)
     model = [r for r in recs if r.get('status') == 'MODEL']
     if model: print('A MODEL RECORD IS PRESENT:', [r['tag'] for r in model])
