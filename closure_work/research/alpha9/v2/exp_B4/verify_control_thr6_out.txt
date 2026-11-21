@@ -1,0 +1,2 @@
+profile [4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 5, 5, 5] thr 6: triangle-free True, max degree 7, alpha 9, non-adjacent pairs without common neighbour 0, G[O] bipartite False (one 2-colouring: class sizes 7+8), edges in O 12, min edges over 12-sets 6 (e.g. (9, 10, 11, 12, 13, 14, 15, 18, 19, 21, 22, 23))
+cpu_user 6.31 wall 25.79

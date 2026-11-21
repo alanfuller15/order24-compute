@@ -1,0 +1,4 @@
+args ['--part', '2', '--b', '2', '--sym', '--only', 'c1']
+b2_c1_distinct {'Xcompleted': 894326, 'Xdeg3': 17493, 'Xfloor4': 240, 'Xfloor5': 240, 'Xnodes': 4849351, 'Ynodes': 240, 'cap_0': 240, 'roots': 8, 'stab': 288} 81.8s
+b2_c1_doubled {'Xcompleted': 708944, 'Xdeg3': 12957, 'Xfloor4': 243, 'Xfloor5': 243, 'Xnodes': 3009488, 'Ynodes': 243, 'cap_0': 243, 'roots': 6, 'stab': 576} 43.9s
+TOTAL {'b2_Xcompleted': 1603270, 'b2_Xdeg3': 30450, 'b2_Xfloor4': 483, 'b2_Xfloor5': 483, 'b2_Xnodes': 7858839, 'b2_Ynodes': 483, 'b2_cap_0': 483, 'b2_roots': 14, 'b2_stab': 864}

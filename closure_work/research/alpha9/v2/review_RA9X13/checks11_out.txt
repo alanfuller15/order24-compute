@@ -1,0 +1,9 @@
+(a) admissible 4-multisets inside C: 5 all distinct: True common element sizes: [1]
+(b) masks meeting all four with |m cap C|=1: [[0, 1, 2, 8], [0, 1, 3, 8], [0, 2, 3, 8], [1, 2, 3, 8]]
+    min |m cap C| among masks meeting all four: 1
+(c) admissible completions: 1 [[[0, 1, 2, 8], [0, 1, 3, 8], [0, 2, 3, 8], [1, 2, 3, 8]]]
+    r_c(X)= 8
+(d) Y-mask degree classes (masks avoiding c): {0: 36, 1: 32, 4: 2} degree>=3: [[0, 1, 2, 3], [4, 5, 6, 7]]
+    max extra copies of [0, 1, 2, 3] in Y: 0 (B count excludes y itself)
+    max extra copies of [4, 5, 6, 7] in Y: 1 (B count excludes y itself)
+(e) floor: 32 - 20 = 12 OK

@@ -1,0 +1,15 @@
+k=0 low 4-subsets of C: 1 orbits: [[]]
+k=1 low 4-subsets of C: 1 orbits: [[[8]]]
+k=2 low 4-subsets of C: 2 orbits: [[[8], [8]], [[8], [7]]]
+k=3 low 4-subsets of C: 2 orbits: [[[8], [8], [7]], [[8], [7], [6]]]
+k=4 low 4-subsets of C: 1 orbits: [[[8], [7], [6], [5]]]
+extra high candidates: 120
+c1 distinct |stab| = 288, 1 extra high masks: 120 multisets, 8 orbits
+c1 distinct |stab| = 288, 2 extra high masks: 7260 multisets, 131 orbits
+c1 doubled |stab| = 576, 1 extra high masks: 120 multisets, 6 orbits
+c1 doubled |stab| = 576, 2 extra high masks: 7260 multisets, 85 orbits
+c2 |stab| = 576, 1 extra high masks: 120 multisets, 6 orbits
+c2 |stab| = 576, 2 extra high masks: 7260 multisets, 85 orbits
+c3 |stab| = 2880, 1 extra high masks: 120 multisets, 3 orbits
+c3 |stab| = 2880, 2 extra high masks: 7260 multisets, 33 orbits
+c3: masks with |M n C| = 1: 20 orbits: 1 contains {0,1,2,4}: True

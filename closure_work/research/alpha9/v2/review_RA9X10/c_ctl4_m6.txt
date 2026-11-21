@@ -1,0 +1,4 @@
+profile 4^7 5^6 9^2  q4 cap=4 (NEGATIVE CONTROL)
+stats: nreps=26 ysets=1541442 xnodes=94572 xleaves=4192 attach=193156 deg=13150 three=180006 ten=0 alpha=0 r=0 surv=0
+F-level survivors: 0
+time 0.7s cpu

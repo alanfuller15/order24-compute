@@ -1,0 +1,1 @@
+profile [4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 5] thr 0: triangle-free True, max degree 8, alpha 9, non-adjacent pairs without common neighbour 0, G[O] bipartite True (one 2-colouring: class sizes 8+7), edges in O 18, min edges over 12-sets 4 (e.g. (1, 2, 3, 5, 9, 10, 11, 13, 18, 19, 20, 23))

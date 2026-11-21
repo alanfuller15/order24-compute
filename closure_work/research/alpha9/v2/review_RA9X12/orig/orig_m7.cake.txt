@@ -1,0 +1,2 @@
+s VERIFIED UNSAT
+cpu_user 5.07 wall 22.84 maxrss_kb 1026860

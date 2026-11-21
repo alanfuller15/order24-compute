@@ -1,0 +1,1 @@
+args ['--mode', 'general', '--seeds', 'k1,D,R,T3,T21'] mode general

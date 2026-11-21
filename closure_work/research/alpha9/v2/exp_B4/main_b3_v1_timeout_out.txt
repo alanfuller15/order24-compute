@@ -1,0 +1,3 @@
+profile 4^12 5^3 (b=3, thr 12): vars 186338, clauses 1157283, static 12-subsets of O 455, build 3.6s
+Command exited with non-zero status 124
+cpu_user 476.03 cpu_sys 1.15 wall 1800.13 maxrss_kb 501216

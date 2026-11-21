@@ -1,0 +1,4 @@
+args ['--case', 'IIb']
+IIb {'completed_X': 416, 'nodes': 3851, 'pass_floors': 80} 0.3s
+TOTAL {'IIb_completed_X': 416, 'IIb_nodes': 3851, 'IIb_pass_floors': 80, 'Y_nodes': 80, 'Ycand_maxdeg_4': 80, 'Ycand_n_deg>=3_1': 80}
+survivors 0

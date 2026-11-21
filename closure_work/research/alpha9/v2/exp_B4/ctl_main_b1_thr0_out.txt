@@ -1,0 +1,4 @@
+profile 4^14 5^1 (b=1, thr 0): vars 8937, clauses 49506, static 12-subsets of O 455, build 0.1s
+UNSAT after 1 iterations; learned 12-set constraints 0, alpha clauses 0; last solve 21.2s; total 21.3s; core families n/a (--nocore)
+{"profile": [4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 5], "b": 1, "thr": 0, "bip": false, "sides": null, "drop": [], "survivors": 0, "iterations": 1, "learned_tw": 0, "learned_alpha": 0, "core": "n/a (--nocore)", "seconds": 21.3}
+cpu_user 9.85 wall 21.37

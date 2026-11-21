@@ -1,0 +1,3 @@
+profile 4^12 5^3 (b=3, thr 0, +4g.2 bipartite 8+7, sides: 3 high in the 8-class): vars 7401, clauses 45289, static 12-subsets of O 455, build 0.1s
+UNSAT after 1 iterations; learned 12-set constraints 0, alpha clauses 0; last solve 9.2s; total 9.3s; core families n/a (--nocore)
+{"profile": [4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 5, 5, 5], "b": 3, "thr": 0, "bip": true, "sides": 3, "drop": [], "survivors": 0, "iterations": 1, "learned_tw": 0, "learned_alpha": 0, "core": "n/a (--nocore)", "seconds": 9.3}

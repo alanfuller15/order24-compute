@@ -1,0 +1,12 @@
+args part=1 b=2 sym=0 q=3 mult=2 rmax=8 thr=12 budget=1 nofloor=0 nofull=0 only=-
+b2_hX0_hY2_c0_1111 { Xnodes:72 Xcompleted:1 Xfloor:1 Ynodes:1 } 0.0s
+b2_hX1_hY1_c0_1111 { Xnodes:2904 Xcompleted:160 Xfloor:40 Ynodes:16 } 0.0s
+b2_hX1_hY1_c1_111 { Xnodes:4311 Xcompleted:16 Xfloor:16 Ynodes:16 } 0.0s
+b2_hX1_hY1_c1_21 { Xnodes:6916 Xcompleted:81 } 0.0s
+b2_hX2_hY0_c0_1111 { Xnodes:60740 Xcompleted:8200 Xfloor:1044 } 0.0s
+b2_hX2_hY0_c1_111 { Xnodes:116824 Xcompleted:1280 Xfloor:320 Ynodes:200 } 0.0s
+b2_hX2_hY0_c1_21 { Xnodes:156528 Xcompleted:4320 Xfloor:432 } 0.0s
+b2_hX2_hY0_c2_11 { Xnodes:13262 Xcompleted:81 Xfloor:81 Ynodes:81 } 0.0s
+b2_hX2_hY0_c2_2 { Xnodes:24297 Xcompleted:256 } 0.0s
+TOTAL { Xnodes:385854 Xcompleted:14395 Xfloor:1934 Ynodes:314 }
+cpu_user 0.03 wall 0.14 maxrss_kb 1820

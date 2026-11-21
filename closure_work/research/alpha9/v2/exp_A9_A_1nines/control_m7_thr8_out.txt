@@ -1,0 +1,7 @@
+profile 4^7 5^7 9 (thr 8): vars 92718, clauses 448606, static 11-subset constraints 364, build 0.8s
+  it 1: solve 1.73s, 14 12-set violations (min edges 6), 1 alpha; learned 11/1; t=3s
+  it 2: solve 2.56s, 14 12-set violations (min edges 6), 1 alpha; learned 22/2; t=5s
+control candidate (12-set threshold lowered to 8; NOT a graph of the family)
+{"profile": [4, 4, 4, 4, 4, 4, 4, 5, 5, 5, 5, 5, 5, 5, 9], "thr": 8, "masks": [[0, 1, 2, 3], [0, 1, 2, 3], [0, 1, 2, 3], [0, 4, 5, 6], [0, 4, 5, 6], [3, 6, 7, 8], [3, 6, 7, 8], [4, 5, 6, 7, 8], [4, 5, 6, 7, 8], [4, 5, 6, 7, 8], [1, 2, 3, 7, 8], [1, 2, 3, 7, 8], [0, 1, 2, 4, 5], [0, 1, 2, 4, 5]]}
+Command exited with non-zero status 3
+cpu_user 8.43 wall 26.14

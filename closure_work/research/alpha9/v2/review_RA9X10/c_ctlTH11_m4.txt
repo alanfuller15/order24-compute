@@ -1,0 +1,5 @@
+profile 4^9 5^4 9^2  q4 cap=3  10-set threshold=11  low deg cap=5 (NEGATIVE CONTROL)
+stats: nreps=16 ysets=986695 xnodes=15198522 xleaves=2702864 attach=147184144 deg=332096 three=146852048 ten=0 alpha=0 r=0 surv=0
+noprune=0 Ylowcap=5
+F-level survivors: 0
+time 14.6s cpu

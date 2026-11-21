@@ -1,0 +1,7 @@
+=== --seed D --q 99 --exacty
+D {'cap_2': 25476, 'cap_4': 2244, 'floor_pass': 27720, 'leaves': 88930872, 'nodes': 93798643, 'seeds': 1} deg3_types_any_capacity 9
+args ['--seed', 'D', '--q', '99', '--exacty']
+cpu 235.07 s
+=== --seed R --q 99 --exacty
+DONE
+(R --q 99 run killed by reviewer to save CPU budget)

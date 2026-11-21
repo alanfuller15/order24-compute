@@ -1,0 +1,5 @@
+ctl_candidate_b3_h1_thr0.json: |X|=8 |Y|=7 X independent True Y independent True
+ctl_candidate_b3_h1_thr2.json: |X|=8 |Y|=7 X independent True Y independent True
+ctl_candidate_b3_h1_thr4.json: |X|=8 |Y|=7 X independent True Y independent True
+ctl_candidate_b3_h1_thr6.json: |X|=8 |Y|=7 X independent True Y independent True
+ablate_b0_h0_thr0_dropM1_candidate.json: |X|=8 |Y|=7 X independent True Y independent True

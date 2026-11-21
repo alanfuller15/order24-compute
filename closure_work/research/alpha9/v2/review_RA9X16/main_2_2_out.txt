@@ -1,0 +1,6 @@
+args part=2 b=2 sym=0 q=3 mult=2 rmax=8 thr=12 budget=1 nofloor=0 nofull=0 only=-
+b2_c1_distinct_nosym { Xnodes:79614996 Xcompleted:13603416 Xdeg3:263952 Xfloor4:3384 Xfloor5:3384 Ynodes:3384 roots:120 stab:288 cap_0:3384 } 4.3s
+b2_c1_doubled_nosym { Xnodes:73421220 Xcompleted:16041536 Xdeg3:270336 Xfloor4:4032 Xfloor5:4032 Ynodes:4032 roots:120 stab:576 cap_0:4032 } 4.1s
+b2_c2_one_nosym { Xnodes:18609595 Xcompleted:1381456 Xdeg3:1381456 Xfloor4:352480 Xfloor5:352480 Ynodes:352624 roots:1 stab:576 cap_0:352336 cap_1:144 } 1.5s
+TOTAL { Xnodes:171645811 Xcompleted:31026408 Xdeg3:1915744 Xfloor4:359896 Xfloor5:359896 Ynodes:360040 roots:241 stab:1440 cap_0:359752 cap_1:144 }
+cpu_user 9.86 wall 35.00 maxrss_kb 1820

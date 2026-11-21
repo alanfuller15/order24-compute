@@ -1,0 +1,9 @@
+4j.3 cand D 108
+4j.3 cand R 112
+omitted-element multisets k=2 (15, [((4, 4), 5), ((4, 5), 10)])
+omitted-element multisets k=3 (30, [((4, 4, 5), 20), ((4, 5, 6), 10)])
+windmill r [3, 3, 3, 3, 3, 3, 3, 3, 8]
+4j.2(d) degrees {0: 36, 1: 32, 4: 2} [[0, 1, 2, 3], [4, 5, 6, 7]]
+max q over pairs in B, X+w: 3  pairs in Co, X: [2, 2, 2, 2, 2, 2]
+4j.2(c) completions 1
+4j.2(a) non-distinct admissible 0

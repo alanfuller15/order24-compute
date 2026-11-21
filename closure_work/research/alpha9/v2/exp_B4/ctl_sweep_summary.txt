@@ -1,0 +1,3 @@
+b=0 h=0: thr 0 UNSAT
+b=1 h=0: thr 0 UNSAT
+b=1 h=1: thr 0 UNSAT

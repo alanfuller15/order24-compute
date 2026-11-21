@@ -1,0 +1,3 @@
+stats: {'nbr': 2, 'ysets': 9044, 'xsets': 69412, 'leaves': 9044, 'q4': 9044, 'deg': 0, 'alpha': 0, 'ten': 0, 'r': 0, 'surv': 0}
+survivors before full 24-vertex check: 0
+time 7.9s

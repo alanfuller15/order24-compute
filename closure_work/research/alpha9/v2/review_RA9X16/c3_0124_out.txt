@@ -1,0 +1,3 @@
+args part=2 b=3 sym=1 q=3 mult=2 rmax=8 thr=12 budget=1 nofloor=0 nofull=0 only=c3
+b3_c3_none_sym { Xnodes:25939250 Xcompleted:2283720 Xdeg3:2283720 Xfloor4:1192680 Xfloor5:1192680 Ynodes:1194120 roots:1 stab:2880 cap_0:1191960 cap_2:720 c3_has_one_in_C:2283720 c3_contains_0124:252602 } 3.1s
+TOTAL { Xnodes:25939250 Xcompleted:2283720 Xdeg3:2283720 Xfloor4:1192680 Xfloor5:1192680 Ynodes:1194120 roots:1 stab:2880 cap_0:1191960 cap_2:720 c3_has_one_in_C:2283720 c3_contains_0124:252602 }

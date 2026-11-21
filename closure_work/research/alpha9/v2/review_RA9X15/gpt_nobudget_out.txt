@@ -1,0 +1,2 @@
+args ['--mode', 'gpt', '--nobudget'] mode gpt
+D k=2 {'completed_X': 31381068, 'nodes': 34370910, 'pass_both': 91056, 'pass_f8': 91056} time 517.7s

@@ -1,0 +1,4 @@
+D2 {'cap_0': 6264, 'cap_1': 18504, 'cap_2': 504, 'floor_pass': 25272, 'leaves': 7177536, 'nodes': 8123553, 'seeds': 1} deg3_types_any_capacity 9
+args ['--seed', 'D2']
+R2 {'cap_0': 12306, 'cap_1': 23568, 'floor_pass': 35874, 'leaves': 3570714, 'nodes': 4050758, 'seeds': 1} deg3_types_any_capacity 22
+args ['--seed', 'R2']

@@ -1,0 +1,4 @@
+profile 4^11 5^3 9 (thr 12): vars 121516, clauses 665314, static 11-subset constraints 364, build 1.3s
+UNSAT after 1 iterations; learned 12-set constraints 0, alpha clauses 0; last solve 675.8s; total 677.1s
+{"profile": [4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 5, 5, 5, 9], "m": 3, "thr": 12, "survivors": 0, "iterations": 1, "learned_tw": 0, "learned_alpha": 0, "seconds": 677.1}
+cpu_user 179.25 cpu_sys 0.32 wall 677.93 maxrss_kb 259292

@@ -1,0 +1,5 @@
+args ['--part', '1', '--b', '2', '--only', 'hX1']
+b2_hX1_hY1_c0_1111 {'Xcompleted': 160, 'Xfloor': 40, 'Xnodes': 2904, 'Ynodes': 16} 0.2s
+b2_hX1_hY1_c1_111 {'Xcompleted': 16, 'Xfloor': 16, 'Xnodes': 4311, 'Ynodes': 16} 0.1s
+b2_hX1_hY1_c1_21 {'Xcompleted': 81, 'Xnodes': 6916} 0.1s
+TOTAL {'b2_Xcompleted': 257, 'b2_Xfloor': 56, 'b2_Xnodes': 14131, 'b2_Ynodes': 32}

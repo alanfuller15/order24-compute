@@ -1,0 +1,5 @@
+args ['--mode', 'gpt'] mode gpt
+D k=2 {'completed_X': 675096, 'nodes': 1168207, 'pass_both': 91056, 'pass_f8': 91056} time 145.0s
+R k=2 {'completed_X': 1151344, 'nodes': 1813959, 'pass_both': 100960, 'pass_f8': 100960} time 156.4s
+TOTAL {'capsum_0': 188680, 'capsum_1': 3336, 'completed_X': 1826440, 'deg3types_hist_1': 188608, 'deg3types_hist_2': 3408, 'extra_deg3_positive_cap': 3336, 'nodes': 2982166, 'pass_both': 192016, 'pass_f8': 192016}
+Y survivors 0

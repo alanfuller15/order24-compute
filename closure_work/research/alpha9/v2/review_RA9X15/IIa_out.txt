@@ -1,0 +1,5 @@
+args ['--case', 'IIa']
+IIa T3 {'completed_X': 16, 'nodes': 93, 'pass_floors': 16} 0.0s
+IIa T21 {'completed_X': 81, 'nodes': 280} 0.0s
+TOTAL {'IIa_completed_X': 97, 'IIa_nodes': 373, 'IIa_pass_floors': 16, 'Y_nodes': 16, 'Ycand_maxdeg_4': 16, 'Ycand_n_deg>=3_1': 16}
+survivors 0

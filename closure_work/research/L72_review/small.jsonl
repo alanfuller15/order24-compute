@@ -1,0 +1,1 @@
+{"n": 13, "m": 14, "exact": false, "result": "UNSAT", "iters": 2, "lazy_sets": 13, "secs": 673.6, "cnf": "cnf/n13_le14.cnf", "nv": 9398, "ncls": 18430}

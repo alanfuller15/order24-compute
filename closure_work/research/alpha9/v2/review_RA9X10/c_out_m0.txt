@@ -1,0 +1,5 @@
+profile 4^13 5^0 9^2  q4 cap=3  10-set threshold=12  low deg cap=5 (REAL RUN)
+stats: nreps=2 ysets=9044 xnodes=15748 xleaves=0 attach=0 deg=0 three=0 ten=0 alpha=0 r=0 surv=0
+noprune=0 Ylowcap=5
+F-level survivors: 0
+time 0.0s cpu

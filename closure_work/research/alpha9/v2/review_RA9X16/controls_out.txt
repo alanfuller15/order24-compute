@@ -1,0 +1,20 @@
+=== 1 2 --thr 11
+TOTAL { Xnodes:385854 Xcompleted:14395 Xfloor:10839 Ynodes:1731 }
+=== 1 3 --thr 11
+TOTAL { Xnodes:3311247 Xcompleted:168611 Xfloor:128619 Ynodes:19283 }
+=== 1 2 --thr 10
+TOTAL { Xnodes:385854 Xcompleted:14395 Xfloor:14379 Ynodes:2799 }
+=== 1 3 --thr 10
+TOTAL { Xnodes:3311247 Xcompleted:168611 Xfloor:166209 Ynodes:30143 }
+=== 1 3 --q 4 --mult 3
+TOTAL { Xnodes:5189863 Xcompleted:220943 Xfloor:35956 Ynodes:23184 }
+=== 1 3 --rmax 9 --q 4 --mult 3 --thr 11
+TOTAL { Xnodes:5189863 Xcompleted:220943 Xfloor:153391 Ynodes:147500 }
+=== 2 2 --sym --thr 11
+TOTAL { Xnodes:26468434 Xcompleted:2984726 Xdeg3:1411906 Xfloor4:1144429 Xfloor5:1144429 Ynodes:1162690 roots:15 stab:1440 cap_0:1133800 cap_1:2997 cap_2:7632 }
+=== 2 3 --sym --thr 11
+TOTAL { Xnodes:38044707 Xcompleted:5152883 Xdeg3:2351648 Xfloor4:2304892 Xfloor5:2304892 Ynodes:2372557 roots:223 roots_dead:42 stab:4320 cap_0:2262667 cap_1:17145 cap_2:25080 c3_has_one_in_C:2283720 c3_contains_0124:252602 }
+=== 2 3 --sym --q 4 --mult 3
+TOTAL { Xnodes:75927860 Xcompleted:17318517 Xdeg3:10317285 Xfloor4:3993911 Xfloor5:3993911 Ynodes:5800175 cap_ok:7380 roots:223 roots_dead:18 stab:4320 cap_0:2642900 cap_1:1205307 cap_2:20868 cap_3:116736 cap_4:720 cap_6:2160 cap_9:5220 c3_has_one_in_C:10195500 c3_contains_0124:1181114 }
+=== 2 3 --sym --thr 10
+TOTAL { Xnodes:38044707 Xcompleted:5152883 Xdeg3:2351648 Xfloor4:2332765 Xfloor5:2332765 Ynodes:2419153 roots:223 roots_dead:42 stab:4320 cap_0:2274343 cap_1:32022 cap_2:26400 c3_has_one_in_C:2283720 c3_contains_0124:252602 }

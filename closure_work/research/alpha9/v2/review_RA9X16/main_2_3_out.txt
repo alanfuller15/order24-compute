@@ -1,0 +1,7 @@
+args part=2 b=3 sym=0 q=3 mult=2 rmax=8 thr=12 budget=1 nofloor=0 nofull=0 only=-
+b3_c1_distinct_nosym { Xnodes:216055229 Xcompleted:54914548 Xdeg3:390600 Xfloor4:9612 Xfloor5:9612 Ynodes:13932 roots:7260 roots_dead:737 stab:288 cap_0:5292 cap_1:4320 } 13.3s
+b3_c1_doubled_nosym { Xnodes:171685860 Xcompleted:50234264 Xdeg3:387480 Xfloor4:11808 Xfloor5:11808 Ynodes:15264 roots:7260 roots_dead:1164 stab:576 cap_0:8352 cap_1:3456 } 11.1s
+b3_c2_one_nosym { Xnodes:162359382 Xcompleted:28422488 Xdeg3:499440 Xfloor4:31032 Xfloor5:31032 Ynodes:43128 roots:120 stab:576 cap_0:18936 cap_1:12096 } 8.9s
+b3_c3_none_nosym { Xnodes:25939250 Xcompleted:2283720 Xdeg3:2283720 Xfloor4:1192680 Xfloor5:1192680 Ynodes:1194120 roots:1 stab:2880 cap_0:1191960 cap_2:720 c3_has_one_in_C:2283720 } 3.0s
+TOTAL { Xnodes:576039721 Xcompleted:135855020 Xdeg3:3561240 Xfloor4:1245132 Xfloor5:1245132 Ynodes:1266444 roots:14641 roots_dead:1901 stab:4320 cap_0:1224540 cap_1:19872 cap_2:720 c3_has_one_in_C:2283720 }
+cpu_user 36.18 wall 119.48 maxrss_kb 1944

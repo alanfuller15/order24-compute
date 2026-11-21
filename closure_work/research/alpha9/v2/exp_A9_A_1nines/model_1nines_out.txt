@@ -1,0 +1,10 @@
+exp:A9-A-1nines summary (supporting evidence only; not a SAT certificate; no coverage credit)
+m=0: {"profile": [4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 9], "m": 0, "thr": 12, "survivors": 0, "iterations": 1, "learned_tw": 0, "learned_alpha": 0, "seconds": 278.2} | cpu_user 79.25 cpu_sys 0.38 wall 278.95 maxrss_kb 279392
+m=1: {"profile": [4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 5, 9], "m": 1, "thr": 12, "survivors": 0, "iterations": 1, "learned_tw": 0, "learned_alpha": 0, "seconds": 685.7} | cpu_user 146.60 cpu_sys 0.36 wall 686.43 maxrss_kb 278956
+m=2: {"profile": [4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 5, 5, 9], "m": 2, "thr": 12, "survivors": 0, "iterations": 1, "learned_tw": 0, "learned_alpha": 0, "seconds": 599.2} | cpu_user 158.99 cpu_sys 0.26 wall 600.20 maxrss_kb 263508
+m=3: {"profile": [4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 5, 5, 5, 9], "m": 3, "thr": 12, "survivors": 0, "iterations": 1, "learned_tw": 0, "learned_alpha": 0, "seconds": 677.1} | cpu_user 179.25 cpu_sys 0.32 wall 677.93 maxrss_kb 259292
+m=4: {"profile": [4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 5, 5, 5, 5, 9], "m": 4, "thr": 12, "survivors": 0, "iterations": 1, "learned_tw": 0, "learned_alpha": 0, "seconds": 671.4} | cpu_user 185.27 cpu_sys 0.36 wall 672.32 maxrss_kb 258804
+m=5: {"profile": [4, 4, 4, 4, 4, 4, 4, 4, 4, 5, 5, 5, 5, 5, 9], "m": 5, "thr": 12, "survivors": 0, "iterations": 1, "learned_tw": 0, "learned_alpha": 0, "seconds": 421.3} | cpu_user 112.41 cpu_sys 0.28 wall 422.31 maxrss_kb 242568
+m=6: {"profile": [4, 4, 4, 4, 4, 4, 4, 4, 5, 5, 5, 5, 5, 5, 9], "m": 6, "thr": 12, "survivors": 0, "iterations": 1, "learned_tw": 0, "learned_alpha": 0, "seconds": 375.5} | cpu_user 85.44 cpu_sys 0.25 wall 376.18 maxrss_kb 214492
+m=7: {"profile": [4, 4, 4, 4, 4, 4, 4, 5, 5, 5, 5, 5, 5, 5, 9], "m": 7, "thr": 12, "survivors": 0, "iterations": 1, "learned_tw": 0, "learned_alpha": 0, "seconds": 145.7} | cpu_user 41.63 cpu_sys 0.14 wall 146.39 maxrss_kb 198992
+controls: thr0 m7 SAT (trial run), thr8 m7 SAT + brute-force verify (verify_control_out.txt), thr11 m7 UNSAT (control_m7_thr11_out.txt)

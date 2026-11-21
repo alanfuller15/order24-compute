@@ -1,0 +1,50 @@
+== control --y4 8
+args ['--case', 'IIb', '--y4', '8', '--limit', '3']
+IIb {'completed_X': 416, 'nodes': 3851, 'pass_floors': 80} 0.2s
+TOTAL {'IIb_completed_X': 416, 'IIb_nodes': 3851, 'IIb_pass_floors': 80, 'Y_nodes': 80, 'Ycand_maxdeg_4': 80, 'Ycand_n_deg>=3_1': 80}
+survivors 0
+== control --q 4 --mult 3
+args ['--case', 'IIb', '--q', '4', '--mult', '3', '--limit', '3']
+IIb {'completed_X': 1420, 'nodes': 16701, 'pass_floors': 104} 0.7s
+TOTAL {'IIb_completed_X': 1420, 'IIb_nodes': 16701, 'IIb_pass_floors': 104, 'Y_nodes': 208, 'Ycand_maxdeg_4': 104, 'Ycand_n_deg>=3_1': 104}
+survivors 0
+== control --y4 10 --q 4 --mult 3 --yfloor 0 --nomaxh
+args ['--case', 'IIb', '--y4', '10', '--q', '4', '--mult', '3', '--yfloor', '0', '--nomaxh', '--limit', '3']
+IIb {'completed_X': 1420, 'nodes': 16701, 'pass_floors': 104} 0.7s
+TOTAL {'IIb_completed_X': 1420, 'IIb_nodes': 16701, 'IIb_pass_floors': 104, 'Y_nodes': 208, 'Ycand_maxdeg_4': 104, 'Ycand_n_deg>=3_1': 104}
+survivors 0
+== control --y4 0 --yfloor 0 --nomaxh
+IIb {'completed_X': 416, 'nodes': 3851, 'pass_floors': 80} 31.4s
+TOTAL {'IIb_completed_X': 416, 'IIb_nodes': 3851, 'IIb_pass_floors': 80, 'Y_nodes': 121812, 'Ycand_maxdeg_4': 80, 'Ycand_n_deg>=3_1': 80}
+survivors 0
+== control --y4 6 --yfloor 0 --nomaxh
+IIb {'completed_X': 416, 'nodes': 3851, 'pass_floors': 80} 0.3s
+TOTAL {'IIb_completed_X': 416, 'IIb_nodes': 3851, 'IIb_pass_floors': 80, 'Y_nodes': 80, 'Ycand_maxdeg_4': 80, 'Ycand_n_deg>=3_1': 80}
+survivors 0
+== control --y4 8 --yfloor 0 --nomaxh
+IIb {'completed_X': 416, 'nodes': 3851, 'pass_floors': 80} 0.3s
+TOTAL {'IIb_completed_X': 416, 'IIb_nodes': 3851, 'IIb_pass_floors': 80, 'Y_nodes': 80, 'Ycand_maxdeg_4': 80, 'Ycand_n_deg>=3_1': 80}
+survivors 0
+== control --y4 8 --nomaxh
+IIb {'completed_X': 416, 'nodes': 3851, 'pass_floors': 80} 0.2s
+TOTAL {'IIb_completed_X': 416, 'IIb_nodes': 3851, 'IIb_pass_floors': 80, 'Y_nodes': 80, 'Ycand_maxdeg_4': 80, 'Ycand_n_deg>=3_1': 80}
+survivors 0
+== control --y4 8 --yfloor 0
+IIb {'completed_X': 416, 'nodes': 3851, 'pass_floors': 80} 0.1s
+TOTAL {'IIb_completed_X': 416, 'IIb_nodes': 3851, 'IIb_pass_floors': 80, 'Y_nodes': 80, 'Ycand_maxdeg_4': 80, 'Ycand_n_deg>=3_1': 80}
+survivors 0
+== control --y4 0 --yfloor 0 --nomaxh --rmax 9
+args ['--case', 'IIb', '--y4', '0', '--yfloor', '0', '--nomaxh', '--rmax', '9', '--limit', '3']
+IIb {'completed_X': 416, 'nodes': 3851, 'pass_floors': 80} 24.9s
+TOTAL {'IIb_completed_X': 416, 'IIb_nodes': 3851, 'IIb_pass_floors': 80, 'Y_nodes': 122072, 'Ycand_maxdeg_4': 80, 'Ycand_n_deg>=3_1': 80}
+survivors 0
+== control --y4 0 --yfloor 0 --nomaxh --rmax 9 --q 4 --mult 3
+example X [[0, 1, 2, 3, 8], [5, 6, 7, 8], [4, 6, 7, 8], [4, 5, 7, 8], [4, 5, 6, 8], [0, 1, 2, 8], [0, 1, 3, 8], [0, 2, 3, 8]] Y [[0, 1, 2, 3], [0, 1, 2, 3], [1, 2, 3, 4], [1, 4, 5, 6], [1, 4, 5, 7], [1, 4, 6, 7], [2, 5, 6, 7]]
+example X [[1, 2, 3, 4, 5], [5, 6, 7, 8], [4, 6, 7, 8], [4, 5, 7, 8], [4, 5, 6, 8], [0, 1, 2, 8], [0, 1, 3, 8], [0, 2, 3, 8]] Y [[0, 1, 2, 3], [0, 1, 2, 3], [1, 2, 3, 4], [1, 4, 5, 6], [1, 4, 5, 7], [1, 4, 6, 7], [2, 5, 6, 7]]
+example X [[1, 2, 3, 4, 6], [5, 6, 7, 8], [4, 6, 7, 8], [4, 5, 7, 8], [4, 5, 6, 8], [0, 1, 2, 8], [0, 1, 3, 8], [0, 2, 3, 8]] Y [[0, 1, 2, 3], [0, 1, 2, 3], [1, 2, 3, 4], [1, 4, 5, 6], [1, 4, 5, 7], [1, 4, 6, 7], [2, 5, 6, 7]]
+survivors 63
+== control --rmax 9 --q 4 --mult 3 --y4 8
+args ['--case', 'IIb', '--rmax', '9', '--q', '4', '--mult', '3', '--y4', '8', '--limit', '3']
+IIb {'completed_X': 1420, 'nodes': 16701, 'pass_floors': 104} 0.6s
+TOTAL {'IIb_completed_X': 1420, 'IIb_nodes': 16701, 'IIb_pass_floors': 104, 'Y_nodes': 208, 'Ycand_maxdeg_4': 104, 'Ycand_n_deg>=3_1': 104}
+survivors 0

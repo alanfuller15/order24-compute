@@ -1,0 +1,3 @@
+D {'cap_10': 144, 'cap_4': 6108, 'cap_5': 17136, 'cap_8': 1164, 'cap_9': 720, 'floor_pass': 25272, 'leaves': 7177536, 'nodes': 8123553, 'relax_survivors': 2028, 'seeds': 1} deg3_types_any_capacity 9
+args ['--seed', 'D', '--yrelax']
+cpu 38.21 s

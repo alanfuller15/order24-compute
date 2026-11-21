@@ -1,0 +1,33 @@
+OK   15 profiles: s+m+t=15, |H|<=8
+OK   4h.1 independent set size 11 for all 15
+OK   4h.2(iii) t=1: bound 1092/55 = 19.855, ceil 20
+OK   4h.2(iii) t=2: bound 104/5 = 20.800, ceil 21
+OK   4h.2 table t=2 m=0 r=4: 9+4+0=13 < 21
+OK   4h.2 table t=2 m=1 r=3: 9+2+3=14 < 21
+OK   4h.2 table t=2 m=2 r=2: 9+1+4=14 < 21
+OK   4h.2 table t=2 m=3 r=1: 9+0+3=12 < 21
+OK   4h.2 table t=2 m=4 r=0: 9+0+4=13 < 21
+     t=2 m=5 s=8<9: no odd cycle
+     t=2 m=6 s=7<9: no odd cycle
+OK   4h.2 table t=1 m=0 r=5: 9+6+0=15 < 20
+OK   4h.2 table t=1 m=1 r=4: 9+4+4=17 < 20
+OK   4h.2 table t=1 m=2 r=3: 9+2+6=17 < 20
+OK   4h.2 table t=1 m=3 r=2: 9+1+6=16 < 20
+OK   4h.2 table t=1 m=4 r=1: 9+0+4=13 < 20
+OK   4h.2 table t=1 m=5 r=0: 9+0+5=14 < 20
+     t=1 m=6 s=8<9: no odd cycle
+     t=1 m=7 s=7<9: no odd cycle
+OK   4h.3: 20 triples, each x in 10, 240/10=24
+OK   4h.4: of 126 five-multisets only the 5 distinct subsets pass
+OK   4h.6(a): of 70 four-multisets 5 pass, all distinct
+OK   4h.4: 21 addable masks, |B∩C|<=1, pairwise meeting
+OK   4h.6(b): mask != A disjoint from <= 1 four-subset of C
+OK   4h.6(c): distinct B,B'' have <=1 common disjoint 4-set
+OK   4h.5: 45 addable masks, |B∩A|<=1, pairwise meeting
+OK   4h.5 scope (s+t>=13): [84, 85, 86, 87, 88, 91]
+     s-3+t for others: {90: 9, 94: 8, 98: 7, 101: 6, 104: 5, 95: 9, 99: 8, 102: 7, 105: 6}
+     s-5+t: {84: 10, 85: 9, 87: 8, 90: 7, 94: 6, 98: 5, 101: 4, 104: 3, 86: 10, 88: 9, 91: 8, 95: 7, 99: 6, 102: 5, 105: 4}
+OK   4h.4: 86 and 84 give 10
+OK   4b.11: shortest odd closed walk in K(9,4) has length 9
+OK   ledger Case A open 14: [84, 85, 87, 88, 90, 91, 94, 95, 98, 99, 101, 102, 104, 105]
+ALL OK

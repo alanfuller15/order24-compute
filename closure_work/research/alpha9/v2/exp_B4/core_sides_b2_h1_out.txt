@@ -1,0 +1,4 @@
+profile 4^13 5^2 (b=2, thr 12, +4g.2 bipartite 8+7, sides: 1 high in the 8-class): vars 147376, clauses 639534, static 12-subsets of O 455, build 2.0s
+UNSAT after 1 iterations; learned 12-set constraints 0, alpha clauses 0; last solve 68.6s; total 70.6s; core families ['BP', 'C8', 'D2', 'DH', 'DL', 'M1', 'MX', 'N3', 'TW']
+{"profile": [4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 5, 5], "b": 2, "thr": 12, "bip": true, "sides": 1, "drop": [], "survivors": 0, "iterations": 1, "learned_tw": 0, "learned_alpha": 0, "core": ["BP", "C8", "D2", "DH", "DL", "M1", "MX", "N3", "TW"], "seconds": 70.6}
+cpu_user 23.06 cpu_sys 0.23 wall 71.39 maxrss_kb 298584

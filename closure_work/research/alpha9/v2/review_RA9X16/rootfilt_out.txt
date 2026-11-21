@@ -1,0 +1,2 @@
+distinct orbits 131 complements meet 121 +deg<=3 121 +r<=8 121
+doubled orbits 85 complements meet 78 +deg<=3 77 +r<=8 77

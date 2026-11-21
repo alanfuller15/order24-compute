@@ -1,0 +1,6 @@
+options {'QMAX': 3, 'MMAX': 2, 'RMAX': 8, 'FLOOR': True, 'MEETB': True, 'YNEED': 7, 'YDEG': 3}
+seed D: nodes 8123553 leaves 7177536 floor_pass 25272 candidate_types 3 max_capacity 2 survivors 0
+   capacity distribution {0: 6264, 1: 18504, 2: 504}
+seed R: nodes 4050758 leaves 3570714 floor_pass 35874 candidate_types 1 max_capacity 1 survivors 0
+   capacity distribution {0: 12306, 1: 23568}
+TOTAL survivors 0

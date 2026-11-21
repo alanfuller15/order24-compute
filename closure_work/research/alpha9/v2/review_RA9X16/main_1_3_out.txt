@@ -1,0 +1,18 @@
+args part=1 b=3 sym=0 q=3 mult=2 rmax=8 thr=12 budget=1 nofloor=0 nofull=0 only=-
+b3_hX0_hY3_c0_1111 { Xnodes:72 Xcompleted:1 Xfloor:1 Ynodes:1 } 0.0s
+b3_hX1_hY2_c0_1111 { Xnodes:2904 Xcompleted:160 Xfloor:40 Ynodes:16 } 0.0s
+b3_hX1_hY2_c1_111 { Xnodes:4311 Xcompleted:16 Xfloor:16 Ynodes:16 } 0.0s
+b3_hX1_hY2_c1_21 { Xnodes:6916 Xcompleted:81 } 0.0s
+b3_hX2_hY1_c0_1111 { Xnodes:60740 Xcompleted:8200 Xfloor:1044 } 0.0s
+b3_hX2_hY1_c1_111 { Xnodes:116824 Xcompleted:1280 Xfloor:320 Ynodes:200 } 0.0s
+b3_hX2_hY1_c1_21 { Xnodes:156528 Xcompleted:4320 Xfloor:432 } 0.0s
+b3_hX2_hY1_c2_11 { Xnodes:13262 Xcompleted:81 Xfloor:81 Ynodes:81 } 0.0s
+b3_hX2_hY1_c2_2 { Xnodes:24297 Xcompleted:256 } 0.0s
+b3_hX3_hY0_c0_1111 { Xnodes:925000 Xcompleted:45920 Xfloor:15560 } 0.2s
+b3_hX3_hY0_c1_111 { Xnodes:613460 Xcompleted:29520 Xfloor:7152 Ynodes:744 } 0.0s
+b3_hX3_hY0_c1_21 { Xnodes:631740 Xcompleted:63960 Xfloor:7602 } 0.1s
+b3_hX3_hY0_c2_11 { Xnodes:285732 Xcompleted:4320 Xfloor:1404 Ynodes:1332 } 0.0s
+b3_hX3_hY0_c2_2 { Xnodes:445164 Xcompleted:10240 Xfloor:1024 Ynodes:976 } 0.0s
+b3_hX3_hY0_c3_1 { Xnodes:24297 Xcompleted:256 Xfloor:256 Ynodes:256 } 0.0s
+TOTAL { Xnodes:3311247 Xcompleted:168611 Xfloor:34932 Ynodes:3622 }
+cpu_user 0.41 wall 1.34 maxrss_kb 1820

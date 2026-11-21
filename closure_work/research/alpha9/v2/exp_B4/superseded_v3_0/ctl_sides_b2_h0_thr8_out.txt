@@ -1,0 +1,1 @@
+profile 4^13 5^2 (b=2, thr 8, +4g.2 bipartite 8+7, sides: 0 high in the 8-class): vars 149201, clauses 649409, static 12-subsets of O 455, build 1.4s

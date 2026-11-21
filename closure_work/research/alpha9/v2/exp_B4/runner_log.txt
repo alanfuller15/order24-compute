@@ -1,0 +1,105 @@
+=== control_b3_thr8 (3 --thr 8) start 2026-11-19T05:38:27Z avail 2549 MB
+exit 143 : profile 4^12 5^3 (b=3, thr 8): vars 185650, clauses 1151433, static 12-subsets of O 455, build 4.1s 
+control_b3_thr8 killed manually after ~14 min wall (~3.7 CPU-min, heavy host contention) to run cheaper control first
+=== control_b3_thr0 (3 --thr 0) start 2026-11-19T05:52:28Z avail 3518 MB
+exit 3 : Command exited with non-zero status 3 cpu_user 5.80 cpu_sys 0.02 wall 20.40 maxrss_kb 73604 
+=== control_b3_thr8_lazyTW (3 --thr 8 --drop TW) start 2026-11-19T05:52:56Z avail 3434 MB
+exit 143 : profile 4^12 5^3 (b=3, thr 8, drop TW): vars 10294, clauses 54757, static 12-subsets of O 0, build 0.2s   it 1: solve 54.94s, 246 12-set violations (min edges 6), 0 alpha; learned 40/0; t=56s 
+control_b3_thr8_lazyTW killed manually after ~15 min wall (stuck in solve 2; assumptions mode)
+=== control_b3_thr6 (3 --thr 6 --drop TW --nocore) start 2026-11-19T06:07:22Z avail 4206 MB
+exit 3 : Command exited with non-zero status 3 cpu_user 18.96 cpu_sys 0.02 wall 76.97 maxrss_kb 61648 
+=== main_b3 (3 --nocore) start 2026-11-19T06:09:49Z avail 4145 MB
+exit 124 : Command exited with non-zero status 124 cpu_user 476.03 cpu_sys 1.15 wall 1800.13 maxrss_kb 501216 
+=== control_b3_thr6_v2 (3 --thr 6 --drop TW --nocore) start 2026-11-19T06:39:56Z avail 3256 MB
+exit 3 : Command exited with non-zero status 3 cpu_user 8.36 cpu_sys 0.01 wall 48.12 maxrss_kb 47672 
+=== main_b3_v2 (3 --nocore) start 2026-11-19T06:41:29Z avail 3109 MB
+main_b3_v2 (nohup) killed after seconds; restarted under the background runner
+=== main_b3_v2 (3 --nocore) start 2026-11-19T06:41:44Z avail 2970 MB
+exit 124 : Command exited with non-zero status 124 cpu_user 388.95 cpu_sys 2.28 wall 1800.26 maxrss_kb 500480 
+=== bip_b3 (3 --nocore --bip) start 2026-11-19T07:12:03Z avail 3909 MB
+exit 143 : profile 4^12 5^3 (b=3, thr 12, +4g.2 bipartite 8+7): vars 185192, clauses 1153642, static 12-subsets of O 455, build 4.6s 
+bip_b3 (sigma-variable bipartition) killed manually after ~7 min wall to switch to the --sides case split
+=== sides_b0_h0 (0 --nocore --sides 0) start 2026-11-19T07:19:02Z avail 3654 MB
+exit 0 : {"profile": [4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4], "b": 0, "thr": 12, "bip": true, "sides": 0, "drop": [], "survivors": 0, "iterations": 1, "learned_tw": 0, "learned_alpha": 0, "core": "n/a (--nocore)", "seconds": 38.3} cpu_user 12.53 cpu_sys 0.22 wall 39.40 maxrss_kb 300648 
+=== sides_b1_h0 (1 --nocore --sides 0) start 2026-11-19T07:20:00Z avail 3568 MB
+exit 0 : {"profile": [4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 5], "b": 1, "thr": 12, "bip": true, "sides": 0, "drop": [], "survivors": 0, "iterations": 1, "learned_tw": 0, "learned_alpha": 0, "core": "n/a (--nocore)", "seconds": 57.8} cpu_user 19.78 cpu_sys 0.22 wall 58.45 maxrss_kb 300352 
+=== sides_b1_h1 (1 --nocore --sides 1) start 2026-11-19T07:20:58Z avail 3858 MB
+exit 0 : {"profile": [4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 5], "b": 1, "thr": 12, "bip": true, "sides": 1, "drop": [], "survivors": 0, "iterations": 1, "learned_tw": 0, "learned_alpha": 0, "core": "n/a (--nocore)", "seconds": 40.8} cpu_user 15.10 cpu_sys 0.26 wall 41.52 maxrss_kb 297188 
+=== sides_b2_h0 (2 --nocore --sides 0) start 2026-11-19T07:21:40Z avail 3622 MB
+exit 0 : {"profile": [4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 5, 5], "b": 2, "thr": 12, "bip": true, "sides": 0, "drop": [], "survivors": 0, "iterations": 1, "learned_tw": 0, "learned_alpha": 0, "core": "n/a (--nocore)", "seconds": 20.4} cpu_user 7.68 cpu_sys 0.16 wall 21.05 maxrss_kb 298832 
+=== sides_b2_h1 (2 --nocore --sides 1) start 2026-11-19T07:22:01Z avail 3791 MB
+exit 0 : {"profile": [4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 5, 5], "b": 2, "thr": 12, "bip": true, "sides": 1, "drop": [], "survivors": 0, "iterations": 1, "learned_tw": 0, "learned_alpha": 0, "core": "n/a (--nocore)", "seconds": 73.9} cpu_user 22.13 cpu_sys 0.23 wall 74.84 maxrss_kb 294480 
+=== sides_b2_h2 (2 --nocore --sides 2) start 2026-11-19T07:23:16Z avail 3535 MB
+exit 0 : {"profile": [4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 5, 5], "b": 2, "thr": 12, "bip": true, "sides": 2, "drop": [], "survivors": 0, "iterations": 1, "learned_tw": 0, "learned_alpha": 0, "core": "n/a (--nocore)", "seconds": 97.7} cpu_user 35.23 cpu_sys 0.22 wall 98.49 maxrss_kb 297624 
+=== sides_b3_h0 (3 --nocore --sides 0) start 2026-11-19T07:24:54Z avail 3796 MB
+exit 0 : {"profile": [4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 5, 5, 5], "b": 3, "thr": 12, "bip": true, "sides": 0, "drop": [], "survivors": 0, "iterations": 1, "learned_tw": 0, "learned_alpha": 0, "core": "n/a (--nocore)", "seconds": 41.3} cpu_user 16.30 cpu_sys 0.12 wall 42.78 maxrss_kb 300068 
+=== sides_b3_h1 (3 --nocore --sides 1) start 2026-11-19T07:25:37Z avail 3844 MB
+exit 0 : {"profile": [4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 5, 5, 5], "b": 3, "thr": 12, "bip": true, "sides": 1, "drop": [], "survivors": 0, "iterations": 1, "learned_tw": 0, "learned_alpha": 0, "core": "n/a (--nocore)", "seconds": 35.3} cpu_user 13.66 cpu_sys 0.16 wall 36.74 maxrss_kb 289280 
+=== sides_b3_h2 (3 --nocore --sides 2) start 2026-11-19T07:26:14Z avail 4001 MB
+exit 0 : {"profile": [4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 5, 5, 5], "b": 3, "thr": 12, "bip": true, "sides": 2, "drop": [], "survivors": 0, "iterations": 1, "learned_tw": 0, "learned_alpha": 0, "core": "n/a (--nocore)", "seconds": 87.9} cpu_user 34.64 cpu_sys 0.15 wall 88.75 maxrss_kb 288628 
+=== sides_b3_h3 (3 --nocore --sides 3) start 2026-11-19T07:27:43Z avail 3883 MB
+exit 0 : {"profile": [4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 5, 5, 5], "b": 3, "thr": 12, "bip": true, "sides": 3, "drop": [], "survivors": 0, "iterations": 1, "learned_tw": 0, "learned_alpha": 0, "core": "n/a (--nocore)", "seconds": 77.3} cpu_user 33.10 cpu_sys 0.10 wall 77.78 maxrss_kb 297500 
+=== ctl_sides_b0_h0_thr8 (0 --nocore --sides 0 --thr 8) start 2026-11-19T07:53:45Z avail 4086 MB
+exit 0 : {"profile": [4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4], "b": 0, "thr": 8, "bip": true, "sides": 0, "drop": [], "survivors": 0, "iterations": 1, "learned_tw": 0, "learned_alpha": 0, "core": "n/a (--nocore)", "seconds": 83.9} cpu_user 21.97 cpu_sys 0.18 wall 85.01 maxrss_kb 305592 
+=== ctl_sides_b1_h0_thr8 (1 --nocore --sides 0 --thr 8) start 2026-11-19T07:55:10Z avail 3795 MB
+exit 0 : {"profile": [4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 5], "b": 1, "thr": 8, "bip": true, "sides": 0, "drop": [], "survivors": 0, "iterations": 1, "learned_tw": 0, "learned_alpha": 0, "core": "n/a (--nocore)", "seconds": 194.0} cpu_user 55.49 cpu_sys 0.25 wall 194.85 maxrss_kb 302184 
+=== ctl_sides_b1_h1_thr8 (1 --nocore --sides 1 --thr 8) start 2026-11-19T07:58:25Z avail 3982 MB
+exit 0 : {"profile": [4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 5], "b": 1, "thr": 8, "bip": true, "sides": 1, "drop": [], "survivors": 0, "iterations": 1, "learned_tw": 0, "learned_alpha": 0, "core": "n/a (--nocore)", "seconds": 79.0} cpu_user 30.42 cpu_sys 0.14 wall 79.74 maxrss_kb 302760 
+=== ctl_sides_b2_h0_thr8 (2 --nocore --sides 0 --thr 8) start 2026-11-19T07:59:45Z avail 3917 MB
+thr8 control batch stopped after 3 runs: --sides encoding gap found (same-class high/low pairs not forced to meet); fixed in v3.1, all sides runs redone
+=== sides_b0_h0 (0 --nocore --sides 0) start 2026-11-19T08:00:58Z avail 3737 MB
+exit 0 : {"profile": [4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4], "b": 0, "thr": 12, "bip": true, "sides": 0, "drop": [], "survivors": 0, "iterations": 1, "learned_tw": 0, "learned_alpha": 0, "core": "n/a (--nocore)", "seconds": 38.9} cpu_user 12.48 cpu_sys 0.17 wall 39.80 maxrss_kb 299816 
+=== sides_b1_h0 (1 --nocore --sides 0) start 2026-11-19T08:01:38Z avail 3579 MB
+exit 0 : {"profile": [4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 5], "b": 1, "thr": 12, "bip": true, "sides": 0, "drop": [], "survivors": 0, "iterations": 1, "learned_tw": 0, "learned_alpha": 0, "core": "n/a (--nocore)", "seconds": 44.6} cpu_user 16.51 cpu_sys 0.19 wall 45.19 maxrss_kb 303160 
+=== sides_b1_h1 (1 --nocore --sides 1) start 2026-11-19T08:02:24Z avail 2974 MB
+exit 0 : {"profile": [4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 5], "b": 1, "thr": 12, "bip": true, "sides": 1, "drop": [], "survivors": 0, "iterations": 1, "learned_tw": 0, "learned_alpha": 0, "core": "n/a (--nocore)", "seconds": 45.6} cpu_user 15.71 cpu_sys 0.15 wall 48.32 maxrss_kb 299736 
+=== sides_b2_h0 (2 --nocore --sides 0) start 2026-11-19T08:03:12Z avail 3518 MB
+exit 0 : {"profile": [4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 5, 5], "b": 2, "thr": 12, "bip": true, "sides": 0, "drop": [], "survivors": 0, "iterations": 1, "learned_tw": 0, "learned_alpha": 0, "core": "n/a (--nocore)", "seconds": 41.1} cpu_user 12.83 cpu_sys 0.20 wall 41.83 maxrss_kb 301612 
+=== sides_b2_h1 (2 --nocore --sides 1) start 2026-11-19T08:03:54Z avail 3751 MB
+exit 0 : {"profile": [4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 5, 5], "b": 2, "thr": 12, "bip": true, "sides": 1, "drop": [], "survivors": 0, "iterations": 1, "learned_tw": 0, "learned_alpha": 0, "core": "n/a (--nocore)", "seconds": 82.4} cpu_user 24.74 cpu_sys 0.22 wall 83.47 maxrss_kb 296204 
+=== sides_b2_h2 (2 --nocore --sides 2) start 2026-11-19T08:05:18Z avail 3467 MB
+exit 0 : {"profile": [4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 5, 5], "b": 2, "thr": 12, "bip": true, "sides": 2, "drop": [], "survivors": 0, "iterations": 1, "learned_tw": 0, "learned_alpha": 0, "core": "n/a (--nocore)", "seconds": 90.3} cpu_user 28.74 cpu_sys 0.25 wall 91.06 maxrss_kb 298656 
+=== sides_b3_h0 (3 --nocore --sides 0) start 2026-11-19T08:06:49Z avail 3647 MB
+exit 0 : {"profile": [4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 5, 5, 5], "b": 3, "thr": 12, "bip": true, "sides": 0, "drop": [], "survivors": 0, "iterations": 1, "learned_tw": 0, "learned_alpha": 0, "core": "n/a (--nocore)", "seconds": 43.4} cpu_user 16.07 cpu_sys 0.14 wall 44.04 maxrss_kb 299016 
+=== sides_b3_h1 (3 --nocore --sides 1) start 2026-11-19T08:07:33Z avail 3947 MB
+exit 0 : {"profile": [4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 5, 5, 5], "b": 3, "thr": 12, "bip": true, "sides": 1, "drop": [], "survivors": 0, "iterations": 1, "learned_tw": 0, "learned_alpha": 0, "core": "n/a (--nocore)", "seconds": 30.4} cpu_user 10.59 cpu_sys 0.11 wall 30.95 maxrss_kb 289608 
+=== sides_b3_h2 (3 --nocore --sides 2) start 2026-11-19T08:08:04Z avail 3650 MB
+exit 0 : {"profile": [4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 5, 5, 5], "b": 3, "thr": 12, "bip": true, "sides": 2, "drop": [], "survivors": 0, "iterations": 1, "learned_tw": 0, "learned_alpha": 0, "core": "n/a (--nocore)", "seconds": 93.8} cpu_user 32.76 cpu_sys 0.15 wall 94.85 maxrss_kb 290292 
+=== sides_b3_h3 (3 --nocore --sides 3) start 2026-11-19T08:09:39Z avail 3860 MB
+exit 0 : {"profile": [4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 5, 5, 5], "b": 3, "thr": 12, "bip": true, "sides": 3, "drop": [], "survivors": 0, "iterations": 1, "learned_tw": 0, "learned_alpha": 0, "core": "n/a (--nocore)", "seconds": 94.4} cpu_user 34.54 cpu_sys 0.17 wall 95.07 maxrss_kb 300960 
+=== ctl_sides_b0_h0_thr0 (0 --nocore --sides 0 --thr 0) start 2026-11-19T08:11:29Z avail 4135 MB
+exit 0 : {"profile": [4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4], "b": 0, "thr": 0, "bip": true, "sides": 0, "drop": [], "survivors": 0, "iterations": 1, "learned_tw": 0, "learned_alpha": 0, "core": "n/a (--nocore)", "seconds": 5.9} cpu_user 2.00 cpu_sys 0.01 wall 6.38 maxrss_kb 41436 
+=== ctl_sides_b1_h0_thr0 (1 --nocore --sides 0 --thr 0) start 2026-11-19T08:11:35Z avail 4092 MB
+exit 0 : {"profile": [4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 5], "b": 1, "thr": 0, "bip": true, "sides": 0, "drop": [], "survivors": 0, "iterations": 1, "learned_tw": 0, "learned_alpha": 0, "core": "n/a (--nocore)", "seconds": 11.9} cpu_user 3.94 cpu_sys 0.03 wall 12.02 maxrss_kb 44252 
+=== ctl_sides_b1_h1_thr0 (1 --nocore --sides 1 --thr 0) start 2026-11-19T08:11:47Z avail 4154 MB
+exit 0 : {"profile": [4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 5], "b": 1, "thr": 0, "bip": true, "sides": 1, "drop": [], "survivors": 0, "iterations": 1, "learned_tw": 0, "learned_alpha": 0, "core": "n/a (--nocore)", "seconds": 6.7} cpu_user 2.18 cpu_sys 0.01 wall 6.99 maxrss_kb 41304 
+=== ctl_sides_b2_h0_thr0 (2 --nocore --sides 0 --thr 0) start 2026-11-19T08:11:54Z avail 4099 MB
+ctl_sweep stopped after 3 cases (all thr 0 UNSAT) for diagnosis
+=== core_sides_b0_h0 (0 --sides 0) start 2026-11-19T18:11:11Z avail 7280 MB
+exit 0 : {"profile": [4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4], "b": 0, "thr": 12, "bip": true, "sides": 0, "drop": [], "survivors": 0, "iterations": 1, "learned_tw": 0, "learned_alpha": 0, "core": ["BP", "C8", "D2", "DL", "M1", "MX", "N3", "TW"], "seconds": 16.9} cpu_user 8.95 cpu_sys 0.22 wall 18.21 maxrss_kb 305668 
+=== core_sides_b1_h0 (1 --sides 0) start 2026-11-19T18:11:30Z avail 5624 MB
+exit 0 : {"profile": [4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 5], "b": 1, "thr": 12, "bip": true, "sides": 0, "drop": [], "survivors": 0, "iterations": 1, "learned_tw": 0, "learned_alpha": 0, "core": ["BP", "C8", "D2", "DH", "DL", "M1", "MX", "N3", "TW"], "seconds": 37.2} cpu_user 13.22 cpu_sys 0.16 wall 38.03 maxrss_kb 317904 
+=== core_sides_b1_h1 (1 --sides 1) start 2026-11-19T18:12:08Z avail 3688 MB
+exit 0 : {"profile": [4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 5], "b": 1, "thr": 12, "bip": true, "sides": 1, "drop": [], "survivors": 0, "iterations": 1, "learned_tw": 0, "learned_alpha": 0, "core": ["BP", "C8", "D2", "DH", "DL", "M1", "MX", "N3", "TW"], "seconds": 89.7} cpu_user 26.09 cpu_sys 0.29 wall 90.33 maxrss_kb 306820 
+=== core_sides_b2_h0 (2 --sides 0) start 2026-11-19T18:13:38Z avail 3679 MB
+exit 0 : {"profile": [4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 5, 5], "b": 2, "thr": 12, "bip": true, "sides": 0, "drop": [], "survivors": 0, "iterations": 1, "learned_tw": 0, "learned_alpha": 0, "core": ["BP", "C8", "DH", "DL", "M1", "MX", "N3", "TW"], "seconds": 37.3} cpu_user 12.36 cpu_sys 0.17 wall 38.07 maxrss_kb 305312 
+=== core_sides_b2_h1 (2 --sides 1) start 2026-11-19T18:14:17Z avail 3608 MB
+exit 0 : {"profile": [4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 5, 5], "b": 2, "thr": 12, "bip": true, "sides": 1, "drop": [], "survivors": 0, "iterations": 1, "learned_tw": 0, "learned_alpha": 0, "core": ["BP", "C8", "D2", "DH", "DL", "M1", "MX", "N3", "TW"], "seconds": 70.6} cpu_user 23.06 cpu_sys 0.23 wall 71.39 maxrss_kb 298584 
+=== core_sides_b2_h2 (2 --sides 2) start 2026-11-19T18:15:28Z avail 3339 MB
+exit 0 : {"profile": [4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 5, 5], "b": 2, "thr": 12, "bip": true, "sides": 2, "drop": [], "survivors": 0, "iterations": 1, "learned_tw": 0, "learned_alpha": 0, "core": ["BP", "C8", "D2", "DH", "DL", "FL", "M1", "MX", "N3", "TW"], "seconds": 111.7} cpu_user 35.56 cpu_sys 0.22 wall 112.53 maxrss_kb 303328 
+=== core_sides_b3_h0 (3 --sides 0) start 2026-11-19T18:17:21Z avail 2995 MB
+exit 0 : {"profile": [4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 5, 5, 5], "b": 3, "thr": 12, "bip": true, "sides": 0, "drop": [], "survivors": 0, "iterations": 1, "learned_tw": 0, "learned_alpha": 0, "core": ["BP", "D2", "DH", "DL", "M1", "MX", "N3"], "seconds": 23.9} cpu_user 7.15 cpu_sys 0.13 wall 25.24 maxrss_kb 303688 
+=== core_sides_b3_h1 (3 --sides 1) start 2026-11-19T18:17:46Z avail 2097 MB
+exit 0 : {"profile": [4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 5, 5, 5], "b": 3, "thr": 12, "bip": true, "sides": 1, "drop": [], "survivors": 0, "iterations": 1, "learned_tw": 0, "learned_alpha": 0, "core": ["BP", "C8", "D2", "DH", "DL", "M1", "MX", "N3"], "seconds": 28.7} cpu_user 9.02 cpu_sys 0.11 wall 29.52 maxrss_kb 296440 
+=== core_sides_b3_h2 (3 --sides 2) start 2026-11-19T18:18:16Z avail 2397 MB
+exit 0 : {"profile": [4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 5, 5, 5], "b": 3, "thr": 12, "bip": true, "sides": 2, "drop": [], "survivors": 0, "iterations": 1, "learned_tw": 0, "learned_alpha": 0, "core": ["BP", "C8", "D2", "DH", "DL", "FL", "M1", "MX", "N3", "TW"], "seconds": 116.9} cpu_user 35.47 cpu_sys 0.30 wall 118.51 maxrss_kb 290024 
+=== core_sides_b3_h3 (3 --sides 3) start 2026-11-19T18:20:14Z avail 3681 MB
+exit 0 : {"profile": [4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 5, 5, 5], "b": 3, "thr": 12, "bip": true, "sides": 3, "drop": [], "survivors": 0, "iterations": 1, "learned_tw": 0, "learned_alpha": 0, "core": ["BP", "C8", "D2", "DH", "DL", "FL", "M1", "MX", "N3", "TW"], "seconds": 123.0} cpu_user 37.69 cpu_sys 0.36 wall 123.92 maxrss_kb 304124 
+=== main_b0_v3 (0 --nocore) start 2026-11-19T18:22:31Z avail 3727 MB
+exit 0 : {"profile": [4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4], "b": 0, "thr": 12, "bip": false, "sides": null, "drop": [], "survivors": 0, "iterations": 1, "learned_tw": 0, "learned_alpha": 0, "core": "n/a (--nocore)", "seconds": 215.2} cpu_user 62.58 cpu_sys 0.96 wall 216.36 maxrss_kb 522872 
+=== main_b1_v3 (1 --nocore) start 2026-11-19T18:26:19Z avail 3826 MB
+exit 0 : {"profile": [4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 5], "b": 1, "thr": 12, "bip": false, "sides": null, "drop": [], "survivors": 0, "iterations": 1, "learned_tw": 0, "learned_alpha": 0, "core": "n/a (--nocore)", "seconds": 672.1} cpu_user 232.26 cpu_sys 0.55 wall 673.41 maxrss_kb 523336 
+=== main_b2_v3 (2 --nocore) start 2026-11-19T18:37:32Z avail 3307 MB
+exit 0 : {"profile": [4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 5, 5], "b": 2, "thr": 12, "bip": false, "sides": null, "drop": [], "survivors": 0, "iterations": 1, "learned_tw": 0, "learned_alpha": 0, "core": "n/a (--nocore)", "seconds": 1019.9} cpu_user 373.29 cpu_sys 0.83 wall 1020.70 maxrss_kb 523928 
+=== main_b3_v3 (3 --nocore) start 2026-11-19T18:54:33Z avail 3924 MB
+exit 0 : {"profile": [4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 5, 5, 5], "b": 3, "thr": 12, "bip": false, "sides": null, "drop": [], "survivors": 0, "iterations": 1, "learned_tw": 0, "learned_alpha": 0, "core": "n/a (--nocore)", "seconds": 939.5} cpu_user 399.96 cpu_sys 1.93 wall 940.41 maxrss_kb 500704 

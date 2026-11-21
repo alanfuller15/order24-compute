@@ -1,0 +1,3 @@
+s UNSATISFIABLE
+Command exited with non-zero status 20
+cpu_user 135.30 wall 412.54 maxrss_kb 184312

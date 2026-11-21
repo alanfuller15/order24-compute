@@ -1,0 +1,2 @@
+profile 4^12 5^3 (b=3, thr 8, drop TW): vars 10294, clauses 54757, static 12-subsets of O 0, build 0.2s
+  it 1: solve 54.94s, 246 12-set violations (min edges 6), 0 alpha; learned 40/0; t=56s

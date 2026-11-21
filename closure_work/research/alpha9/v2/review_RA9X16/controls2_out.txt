@@ -1,0 +1,18 @@
+=== 2 2 --sym --q 5 --mult 4 --rmax 10 --only c1_distinct
+args part=2 b=2 sym=1 q=5 mult=4 rmax=10 thr=12 budget=1 nofloor=0 nofull=0 only=c1_distinct
+b2_c1_distinct_sym { Xnodes:13445196 Xcompleted:2630790 Xdeg3:51913 Xfloor4:467 Xfloor5:467 Ynodes:1860 roots:8 stab:288 cap_2:467 } 0.7s
+TOTAL { Xnodes:13445196 Xcompleted:2630790 Xdeg3:51913 Xfloor4:467 Xfloor5:467 Ynodes:1860 roots:8 stab:288 cap_2:467 }
+=== 2 2 --sym --q 6 --mult 7 --rmax 12 --only c1_distinct
+args part=2 b=2 sym=1 q=6 mult=7 rmax=12 thr=12 budget=1 nofloor=0 nofull=0 only=c1_distinct
+b2_c1_distinct_sym { Xnodes:13545977 Xcompleted:2641481 Xdeg3:51913 Xfloor4:467 Xfloor5:467 Ynodes:1868 roots:8 stab:288 cap_2:467 } 0.7s
+TOTAL { Xnodes:13545977 Xcompleted:2641481 Xdeg3:51913 Xfloor4:467 Xfloor5:467 Ynodes:1868 roots:8 stab:288 cap_2:467 }
+=== 1 2 --q 5 --mult 4 --rmax 10 --thr 10 --only hX1
+args part=1 b=2 sym=0 q=5 mult=4 rmax=10 thr=10 budget=1 nofloor=0 nofull=0 only=hX1
+  (leaf failing full check: notmaximal)   X: {5678} {4678} {4578} {4568} H{01245} {0128} {0128} {0128} Y: {0123} {3678} {0123} {3456} {3456} {3457} H{34567}
+  (leaf failing full check: notmaximal)   X: {5678} {4678} {4578} {4568} H{01245} {0128} {0128} {0128} Y: {0123} {3678} {0123} {3456} {3456} {3467} H{34567}
+  (leaf failing full check: notmaximal)   X: {5678} {4678} {4578} {4568} H{01245} {0128} {0128} {0128} Y: {0123} {3678} {0123} {3456} {3456} {3567} H{34567}
+=== 1 2 --q 6 --mult 7 --rmax 12 --thr 8 --only hX1
+args part=1 b=2 sym=0 q=6 mult=7 rmax=12 thr=8 budget=1 nofloor=0 nofull=0 only=hX1
+  (leaf failing full check: notmaximal)   X: {5678} {4678} {4578} {4568} H{01245} {0128} {0128} {0128} Y: {0123} {3678} {0123} {0123} {3456} {3456} H{34567}
+  (leaf failing full check: notmaximal)   X: {5678} {4678} {4578} {4568} H{01245} {0128} {0128} {0128} Y: {0123} {3678} {0123} {0123} {3456} {3456} H{01234}
+  (leaf failing full check: notmaximal)   X: {5678} {4678} {4578} {4568} H{01245} {0128} {0128} {0128} Y: {0123} {3678} {0123} {0123} {3456} {3456} H{01235}

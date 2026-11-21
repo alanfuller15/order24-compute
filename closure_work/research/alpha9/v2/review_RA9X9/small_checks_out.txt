@@ -1,0 +1,22 @@
+d=5: multisets 126, q4<=3: 1, all distinct: True
+d=4: multisets 70, q4<=3: 5, all distinct: True
+d=5: masks addable keeping q4<=3: 21 all |m&C|<=1: True
+  pairwise meeting: True
+(3) violations of 'mask != A disjoint from <=1 of y1..y4': 0
+(4) max # masks disjoint from two distinct masks: 1
+(5) claim-1 bound table:
+  t=2 m=0 s=13 r=4: bound 13 (with M1 cap 13) vs need 21: ok
+  t=2 m=1 s=12 r=3: bound 14 (with M1 cap 14) vs need 21: ok
+  t=2 m=2 s=11 r=2: bound 14 (with M1 cap 14) vs need 21: ok
+  t=2 m=3 s=10 r=1: bound 12 (with M1 cap 12) vs need 21: ok
+  t=2 m=4 s=9 r=0: bound 13 (with M1 cap 13) vs need 21: ok
+  t=1 m=0 s=14 r=5: bound 15 (with M1 cap 15) vs need 20: ok
+  t=1 m=1 s=13 r=4: bound 17 (with M1 cap 16) vs need 20: ok
+  t=1 m=2 s=12 r=3: bound 17 (with M1 cap 17) vs need 20: ok
+  t=1 m=3 s=11 r=2: bound 16 (with M1 cap 16) vs need 20: ok
+  t=1 m=4 s=10 r=1: bound 13 (with M1 cap 13) vs need 20: ok
+  t=1 m=5 s=9 r=0: bound 14 (with M1 cap 14) vs need 20: ok
+(6) averaging: t=1 e>= 1092/55 19.854545454545455  t=2 e>= 104/5 20.8
+(7) t=2 triples of 6-class: 10 e >= 240 -> 24.0
+(8) masks addable to a tripled A: 45 all |m&A|<=1: True pairwise meeting: True -> independent set 10 + 2 = 12 > 9
+ALL OK

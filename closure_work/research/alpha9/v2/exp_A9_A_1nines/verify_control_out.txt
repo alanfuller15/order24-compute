@@ -1,0 +1,2 @@
+profile [4, 4, 4, 4, 4, 4, 4, 5, 5, 5, 5, 5, 5, 5, 9] thr 8: triangle-free True, max degree 9, alpha 9, non-adjacent pairs without common neighbour 0, min edges over 12-sets 8 (e.g. (0, 1, 2, 3, 9, 13, 14, 15, 16, 17, 18, 19))
+cpu_user 6.06 wall 18.90

@@ -1,0 +1,4 @@
+args ['--mode', 'gpt', '--seeds', 'D', '--q', '4', '--mult', '3'] mode gpt
+D k=2 {'completed_X': 3123456, 'nodes': 3900378, 'pass_both': 176232, 'pass_f8': 176232} time 241.2s
+TOTAL {'B_positive_cap': 91824, 'capsum_0': 77856, 'capsum_1': 90000, 'capsum_2': 6264, 'capsum_3': 2112, 'completed_X': 3123456, 'deg3types_hist_1': 167496, 'deg3types_hist_2': 8736, 'extra_deg3_positive_cap': 8736, 'extra_deg3_positive_cap_meeting_B': 612, 'nodes': 3900378, 'pass_both': 176232, 'pass_f8': 176232}
+Y survivors 0

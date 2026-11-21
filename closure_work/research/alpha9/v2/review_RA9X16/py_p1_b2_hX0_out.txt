@@ -1,0 +1,3 @@
+args ['--part', '1', '--b', '2', '--only', 'hX0']
+b2_hX0_hY2_c0_1111 {'Xcompleted': 1, 'Xfloor': 1, 'Xnodes': 72, 'Ynodes': 1} 0.0s
+TOTAL {'b2_Xcompleted': 1, 'b2_Xfloor': 1, 'b2_Xnodes': 72, 'b2_Ynodes': 1}

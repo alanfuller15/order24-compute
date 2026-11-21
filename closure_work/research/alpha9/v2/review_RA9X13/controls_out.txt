@@ -1,0 +1,11 @@
+=== --seed D --q 4 --mult 3
+D {'cap_0': 72, 'cap_1': 5964, 'cap_2': 19956, 'cap_3': 1224, 'cap_4': 504, 'floor_pass': 27720, 'leaves': 53388744, 'nodes': 57119214, 'seeds': 1} deg3_types_any_capacity 9
+args ['--seed', 'D', '--q', '4', '--mult', '3']
+cpu 165.85 s
+=== --seed D --floorthr 10
+D {'cap_0': 868728, 'cap_1': 1840260, 'cap_2': 112644, 'floor_pass': 2821632, 'leaves': 7177536, 'nodes': 8123553, 'seeds': 1} deg3_types_any_capacity 73
+args ['--seed', 'D', '--floorthr', '10']
+cpu 158.68 s
+=== --seed D --q 4 --mult 3 --floorthr 10
+DONE
+(killed by reviewer after ~3 CPU-min to save budget; not needed)

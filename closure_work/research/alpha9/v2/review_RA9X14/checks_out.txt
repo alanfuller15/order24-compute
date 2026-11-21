@@ -1,0 +1,32 @@
+OK   (L1) k=4: admissible multisets of 4 4-subsets of C are sets
+OK   (L1) k=5: admissible multisets of 5 4-subsets of C are sets
+OK   (L1) k=4 with A in family
+OK   (L1) k=5 with A in family
+OK   (L2) <=1 4-set disjoint from two distinct 4-sets
+OK   (L3) no B != A disjoint from 2 nbr types of a dense star
+OK   (L4) |A&B|>=2 impossible under q4<=3 when mu sum>=4
+OK   (L4) |A&B|=1 -> no 4-set disjoint from both
+OK   (L5)
+OK   m=5(II): no admissible A,B (mult sum>=4) with a common disjoint 4-set
+OK   (f1) min deg >= 2
+OK   (f2) <=1 entry <=3
+OK   (f3a) one <=3 -> >=4 fives
+OK   (f3b) one <=2 -> five fives
+OK   (b) sum >= 24
+OK   m=2 r=3: 5*4+2+1=23<24
+OK   m=3 (i): 6+3a<=15 for a<=3, +9 =24
+OK   m=3 (i) two tripled: 3*4=12<15
+OK   m=4 (I): 3*5=15, need 9 from 4 highs, 4*2=8
+OK   m=5 (I): cap 25; highs>=14; 3*3+2*2=13
+OK   m=5 (I) two tripled: 15+6=21
+OK   m=6 (I): 23
+OK   m=6 (II): 27>25
+OK   m=3 (ii) two largest multiplicities sum >= 4
+OK   m=1: (I) lY=6, (II) lY=7
+OK   m=2: (I) lY=5, (II) lY=6
+OK   m=3: (I) lY=4, (II) lY=5
+OK   m=4: (I) lY=3, (II) lY=4
+OK   m=5: (I) lY=2, (II) lY=3
+OK   m=6: (I) lY=1, (II) lY=2
+OK   4h.5 scope
+ALL OK

@@ -1,0 +1,1 @@
+profile 4^12 5^3 (b=3, thr 8): vars 185650, clauses 1151433, static 12-subsets of O 455, build 4.1s

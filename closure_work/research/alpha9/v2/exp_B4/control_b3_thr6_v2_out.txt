@@ -1,0 +1,5 @@
+profile 4^12 5^3 (b=3, thr 6, drop TW): vars 8620, clauses 48150, static 12-subsets of O 0, build 0.2s
+control candidate (12-set threshold lowered to 6; NOT a graph of the family)
+{"profile": [4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 5, 5, 5], "thr": 6, "bip": false, "masks": [[5, 6, 7, 8], [2, 3, 4, 8], [1, 5, 6, 7], [1, 4, 7, 8], [1, 4, 7, 8], [1, 2, 3, 4], [0, 5, 6, 7], [0, 3, 6, 8], [0, 3, 6, 8], [0, 2, 3, 4], [0, 1, 2, 5], [0, 1, 2, 5], [3, 4, 6, 7, 8], [1, 2, 4, 5, 7], [0, 2, 3, 5, 6]]}
+Command exited with non-zero status 3
+cpu_user 8.36 cpu_sys 0.01 wall 48.12 maxrss_kb 47672

@@ -1,0 +1,16 @@
+orig thr=0: cadical exit 10
+  masks [[0, 1, 2, 3], [0, 1, 2, 3], [0, 1, 2, 3], [0, 4, 5, 6], [0, 4, 5, 6], [0, 4, 5, 6], [1, 4, 7, 8], [4, 5, 6, 7, 8], [4, 5, 6, 7, 8], [4, 5, 6, 7, 8], [4, 5, 6, 7, 8], [1, 2, 3, 7, 8], [1, 2, 3, 7, 8], [0, 2, 3, 5, 6]]
+  check {"sizes": true, "deg": true, "r_i<=8": true, "MX": true, "q4<=3": true, "slot0": true, "sorted": true, "min_e11": 7, "tw>=thr": true, "ALL_OK": true}
+orig thr=8: cadical exit 10
+  masks [[0, 1, 2, 3], [0, 1, 2, 3], [0, 1, 2, 3], [0, 4, 5, 6], [0, 4, 5, 6], [0, 4, 5, 6], [3, 6, 7, 8], [4, 5, 6, 7, 8], [4, 5, 6, 7, 8], [4, 5, 6, 7, 8], [1, 2, 3, 7, 8], [1, 2, 3, 7, 8], [0, 1, 2, 4, 5], [0, 1, 2, 4, 5]]
+  check {"sizes": true, "deg": true, "r_i<=8": true, "MX": true, "q4<=3": true, "slot0": true, "sorted": true, "min_e11": 8, "tw>=thr": true, "ALL_OK": true}
+mine thr=0: cadical exit 10
+  masks [[0, 1, 2, 3], [0, 3, 5, 8], [1, 2, 3, 4], [1, 2, 3, 7], [1, 4, 6, 8], [4, 5, 6, 8], [5, 6, 7, 8], [0, 1, 2, 3, 7], [0, 2, 3, 5, 7], [0, 4, 5, 6, 8], [0, 4, 5, 6, 8], [0, 5, 6, 7, 8], [0, 5, 6, 7, 8], [1, 2, 4, 6, 7]]
+  check {"sizes": true, "deg": true, "r_i<=8": true, "MX": true, "q4<=3": true, "slot0": true, "sorted": true, "min_e11": 3, "tw>=thr": true, "ALL_OK": true}
+mine thr=8: cadical exit 10
+  masks [[0, 1, 2, 3], [0, 1, 2, 3], [0, 1, 2, 3], [0, 4, 5, 6], [0, 4, 5, 6], [0, 4, 5, 6], [3, 6, 7, 8], [0, 1, 2, 4, 5], [0, 1, 2, 4, 5], [1, 2, 3, 7, 8], [1, 2, 3, 7, 8], [1, 2, 3, 7, 8], [4, 5, 6, 7, 8], [4, 5, 6, 7, 8]]
+  check {"sizes": true, "deg": true, "r_i<=8": true, "MX": true, "q4<=3": true, "slot0": true, "sorted": true, "min_e11": 8, "tw>=thr": true, "ALL_OK": true}
+cross-feed orig thr8 model -> mine thr8: cadical exit 10 (min_e11 of the model = 8)
+cross-feed orig thr8 model -> mine thr12: cadical exit 20 (min_e11 of the model = 8)
+cross-feed mine thr8 model -> orig thr8: cadical exit 10 (min_e11 of the model = 8)
+cross-feed mine thr8 model -> orig thr12: cadical exit 20 (min_e11 of the model = 8)

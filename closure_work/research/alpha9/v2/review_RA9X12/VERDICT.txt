@@ -1,0 +1,8 @@
+RA9X12 review of exp_A9_A_1nines (computer-checked exclusion of a finite model built on hand-proved MATH.md lemmas;
+not the certified a9 production run, not a hand proof, no order-24 claim).
+Reviewed: model_1nines.py sha256 c5f29088...6a43, MATH.md sha256 c336b97b...a78d.
+Encoding review: every constraint is a correct consequence of accepted MATH.md lemmas; symmetry breaking sound. No repair needed.
+Certificates: 8/8 original CNFs (exact static clause set, dumped from the reviewed source) and 8/8 independent
+re-encodings: CaDiCaL 3.0.1 (repo binary) exit 20, binary LRAT, cake_lpr "s VERIFIED UNSAT". See orig/log.txt, mine/log.txt.
+Controls: thr 0 and thr 8 SAT in both encodings, models re-checked directly; cross-feeds consistent (controls_out.txt).
+Verdict: ACCEPT for v1 84, 85, 87, 90, 94, 98, 101, 104 (m = 0..7).
