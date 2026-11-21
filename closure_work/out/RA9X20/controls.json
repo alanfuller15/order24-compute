@@ -1,0 +1,90 @@
+[
+  {
+    "name": "control_B16",
+    "source_candidate": "closure_work/research/alpha9/v2/exp_B4/ablate_main_b0_thr0_dropM1_candidate.json",
+    "source_candidate_sha256": "43f36608ca847556e8517f51fa0be473efc291f4d15b713b9a6adf6ff5c0fe84",
+    "threshold": 0,
+    "drop_m1": true,
+    "floors_enabled": false,
+    "cnf_sha256": "0581d00812e072cd8db549de51b6737e0b4adebb6a2dbbb0a6a1063ab8829b1a",
+    "vars": 5906,
+    "clauses": 17362,
+    "solver_exit": 10,
+    "all_clauses_checked": true,
+    "graph": {
+      "triangle_free": true,
+      "max_degree": 8,
+      "alpha": 9,
+      "nonmaximal_pairs": 0,
+      "min_edges_12": 5,
+      "twelve_sets_checked": 2704156
+    },
+    "binary_sha256": "77ee2da7725f238373df299ee3e4e966945c9d88e0f700012714037b15b8201b"
+  },
+  {
+    "name": "control_B17",
+    "source_candidate": "closure_work/research/alpha9/v2/exp_B4/ablate_main_b1_thr0_dropM1_candidate.json",
+    "source_candidate_sha256": "456cfc7ee8f7465f9789c745a88975de7da9a50ded28c11093b096a351fb4e1d",
+    "threshold": 0,
+    "drop_m1": true,
+    "floors_enabled": false,
+    "cnf_sha256": "c0bfec594e00a58c60d0b92e1b2a822e69ed25657b576aff4c069e37cada2db4",
+    "vars": 5864,
+    "clauses": 17228,
+    "solver_exit": 10,
+    "all_clauses_checked": true,
+    "graph": {
+      "triangle_free": true,
+      "max_degree": 8,
+      "alpha": 9,
+      "nonmaximal_pairs": 0,
+      "min_edges_12": 4,
+      "twelve_sets_checked": 2704156
+    },
+    "binary_sha256": "77ee2da7725f238373df299ee3e4e966945c9d88e0f700012714037b15b8201b"
+  },
+  {
+    "name": "control_B18",
+    "source_candidate": "closure_work/research/alpha9/v2/exp_B4/ablate_main_b2_thr0_dropM1_candidate.json",
+    "source_candidate_sha256": "505aaba299f7f7bf8330c277db2af13750d1724b964a2c4e2241a4d6bad5414e",
+    "threshold": 0,
+    "drop_m1": true,
+    "floors_enabled": false,
+    "cnf_sha256": "827557b1fb2837dc9f105fc385aadc17d6304b6c01c012097a2603534451ad4c",
+    "vars": 5839,
+    "clauses": 17164,
+    "solver_exit": 10,
+    "all_clauses_checked": true,
+    "graph": {
+      "triangle_free": true,
+      "max_degree": 8,
+      "alpha": 9,
+      "nonmaximal_pairs": 0,
+      "min_edges_12": 4,
+      "twelve_sets_checked": 2704156
+    },
+    "binary_sha256": "77ee2da7725f238373df299ee3e4e966945c9d88e0f700012714037b15b8201b"
+  },
+  {
+    "name": "control_B19",
+    "source_candidate": "closure_work/research/alpha9/v2/exp_B4/candidate_b3_thr6_v2.json",
+    "source_candidate_sha256": "1f84a3f20a7ffee367aedc51560f051ae2984cdbd6348adf4b4f4d8b51bce834",
+    "threshold": 6,
+    "drop_m1": false,
+    "floors_enabled": false,
+    "cnf_sha256": "acff5c7c987c645b03ede3d44041a45379c2c731e88d02f84d2033f31aff551c",
+    "vars": 170586,
+    "clauses": 322291,
+    "solver_exit": 10,
+    "all_clauses_checked": true,
+    "graph": {
+      "triangle_free": true,
+      "max_degree": 7,
+      "alpha": 9,
+      "nonmaximal_pairs": 0,
+      "min_edges_12": 6,
+      "twelve_sets_checked": 2704156
+    },
+    "binary_sha256": "77ee2da7725f238373df299ee3e4e966945c9d88e0f700012714037b15b8201b"
+  }
+]

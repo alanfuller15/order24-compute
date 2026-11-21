@@ -1,0 +1,26 @@
+{
+  "solver_exit": 20,
+  "command": [
+    "/workspace/r/bin/cadical",
+    "-q",
+    "--lrat=true",
+    "--binary=true",
+    "/workspace/work/RA9X20/checker_unsat.cnf",
+    "/workspace/work/RA9X20/checker.lrat"
+  ],
+  "proof_sha256": "8cd7608dabe9d3657bb3270cd5a679a5b006f753f4eaf378ab90e9f7dc279370",
+  "proof_bytes": 6,
+  "positive": {
+    "cnf_sha256": "ac42a371b5a124286c410ed5dfa2e3be7ee7d5b1feac6f08e7e1715f0c3669a8",
+    "exit": 0,
+    "stdout": "s VERIFIED UNSAT\n",
+    "stderr": ""
+  },
+  "wrong_cnf": {
+    "cnf_sha256": "139098746dcb0c2fbf2ca679aa3685151ae36a54f2e527a67cb0cbac1606bed4",
+    "exit": 0,
+    "stdout": "",
+    "stderr": "c Checking failed at line: 0. Reason: pivot must be non-zero\n"
+  },
+  "proof_deleted_after_verification": true
+}

@@ -1,0 +1,1 @@
+{"source_sha256": "74944e47e97e25a485a61b9bf39680822bd758b36fade71d75d84b973a040e1b", "b": 3, "vars": 185064, "clauses": 1153213, "cnf_sha256": "2ce4bfd56143f1c6f37f917cb26afbba653473b34de89923bbf1d19bc9758d9e", "argv": ["3", "--nocore"], "bip": false}

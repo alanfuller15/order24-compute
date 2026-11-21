@@ -1,0 +1,30 @@
+{
+  "reviewed_commit": "b15336cf1907d32d6c7ea3afed9404d98da9bb66",
+  "python": "3.12.14",
+  "pysat": "1.9.dev21",
+  "cadical": "3.0.1",
+  "g++": "g++ (Debian 14.2.0-19) 14.2.0",
+  "checked_at_utc": "2026-11-21T04:04:25.528243+00:00",
+  "CNF_profile_scope": "B16-B19, unconditional only",
+  "reviewer": "Codex lane 3 chat / RA9X20",
+  "producer": "pre-existing exp:B4 discovery lane, imported in b15336cf1907d32d6c7ea3afed9404d98da9bb66",
+  "shared_dependency_hashes": {
+    "pysat.card": {
+      "file": "/workspace/sat-venv/lib/python3.12/site-packages/pysat/card.py",
+      "sha256": "a683ba71f65d530a1eefc0b179c2c758d4709a81cf95b2b21a72902315960ebb"
+    },
+    "pysat.formula": {
+      "file": "/workspace/sat-venv/lib/python3.12/site-packages/pysat/formula.py",
+      "sha256": "aad003a5abe5e66fa91d10e767b3c3122a2c4fb4db682c2a63fc69bfffbe365c"
+    },
+    "pycard": {
+      "file": "/workspace/sat-venv/lib/python3.12/site-packages/pycard.cpython-312-x86_64-linux-gnu.so",
+      "sha256": "f2b48822558f75d1c74195bd5caee4092d34623bdd8c4b9c0546d5b5fc8f819c"
+    },
+    "pysolvers": {
+      "file": "/workspace/sat-venv/lib/python3.12/site-packages/pysolvers.cpython-312-x86_64-linux-gnu.so",
+      "sha256": "46548fdd61adcf5713f459d87c8817a00727a5f50e1afb09f2dfb18623557f85"
+    }
+  },
+  "certificate_completed_at_utc": "2026-11-21T04:28:53.908452+00:00"
+}

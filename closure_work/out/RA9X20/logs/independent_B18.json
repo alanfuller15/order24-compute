@@ -1,0 +1,33 @@
+{
+  "profile": "B18",
+  "b": 2,
+  "encoding": "independent",
+  "cnf_sha256": "859e614c2869f0fcefa42591f58a1605336b268067fcb909a9a44e10bb5f352e",
+  "cnf_bytes": 11073614,
+  "cadical_sha256": "eae671d6fab57f7bf909e621adee2a2bd550a0ae0b561065c815f599c7696fe8",
+  "cake_lpr_sha256": "29e02af756c1f0fc4ccac78e9a908e0d8ef01201786f257f1b27b26603390798",
+  "command": [
+    "/workspace/r/bin/cadical",
+    "--lrat=true",
+    "--binary=true",
+    "/workspace/work/RA9X20/independent_B18.cnf",
+    "/workspace/work/RA9X20/independent_B18.lrat"
+  ],
+  "solver_exit": 20,
+  "solver_seconds": 372.379,
+  "verified": true,
+  "status": "UNSAT",
+  "proof_sha256": "92e332e190a178a0a75b0f4138c1ca488fe1b0a761605d7bc399c5ea8f627e0d",
+  "proof_bytes": 175945854,
+  "cake_command": [
+    "/workspace/r/bin/cake_lpr",
+    "--CML_HEAP_SIZE=2000",
+    "--CML_STACK_SIZE=256",
+    "/workspace/work/RA9X20/independent_B18.cnf",
+    "/workspace/work/RA9X20/independent_B18.lrat"
+  ],
+  "cake_exit": 0,
+  "cake_seconds": 5.359,
+  "cake_stdout": "s VERIFIED UNSAT\n",
+  "proof_deleted_after_verification": true
+}

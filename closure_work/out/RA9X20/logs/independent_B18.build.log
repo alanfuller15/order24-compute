@@ -1,0 +1,1 @@
+{"b": 2, "threshold": 12, "drop_m1": false, "vars": 304451, "clauses": 595284, "families": {"profile": 1200, "disjointness": 3886, "symmetry": 1842, "degree": 2233, "maximality": 9873, "multiplicity": 407, "floors": 5273, "outside12": 570570}}
