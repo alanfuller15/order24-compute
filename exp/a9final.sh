@@ -21,7 +21,7 @@ case "$PART" in */*) ;; *) echo "PART must be K/N"; mkdir -p exp_out; echo "bad 
 case "$W" in ''|*[!0-9]*) echo "WORKERS must be a number"; mkdir -p exp_out; echo "bad WORKERS" > exp_out/GATE_FAIL; exit 1;; esac
 mkdir -p exp_out in
 # code identity of this part: all parts of one claim must show the same sums
-sha256sum exp/*.py exp/*.sh bin/cadical bin/cake_lpr | tee exp_out/code.sha256
+sha256sum exp/*.py exp/*.sh bin/cadical bin/cake_lpr bin/lrat-trim | tee exp_out/code.sha256
 echo "code digest: $(sha256sum exp_out/code.sha256 | cut -c1-16)  part $PART" | tee -a exp_out/code.sha256
 if [ $# -gt 0 ]; then
   for RID in "$@"; do

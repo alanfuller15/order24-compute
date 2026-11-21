@@ -92,10 +92,26 @@ class FinalPartitionTests(unittest.TestCase):
                 with gzip.open(Path(d,r['tag']+'.json.gz'),'wt') as f: json.dump([],f)
                 calls = [subprocess.CompletedProcess([],cad,b'',b''),
                          subprocess.CompletedProcess([],0,cake+'\n','')]
-                with patch.object(check,'rebuild',return_value=cnf), patch.object(check.subprocess,'run',side_effect=calls) as proc:
+                with patch.object(check,'rebuild',return_value=cnf), patch.object(check,'TRIM',None), \
+                     patch.object(check.subprocess,'run',side_effect=calls) as proc:
                     _, result = check.replay((0,r,d,'CAD','CAKE'))
                 self.assertEqual(result['pass'],expected)
                 self.assertEqual(proc.call_count,0 if not match else (1 if cad != 20 else 2))
+
+    def test_trim_is_untrusted_cake_still_decides(self):
+        # with lrat-trim present: trim runs between CaDiCaL and cake_lpr, any trim outcome leaves cake_lpr as the judge
+        cnf = b'p cnf 1 2\n1 0\n-1 0\n'
+        for trim_rc, cake, expected in [(20,check.VER,True), (1,check.VER,True), (20,'NOT VERIFIED',False)]:
+            with self.subTest(trim_rc=trim_rc,cake=cake), tempfile.TemporaryDirectory() as d:
+                r = dict(self.record([]), _label='gh', _file='records', _lazydir=d, cnf_sha256=hashlib.sha256(cnf).hexdigest())
+                with gzip.open(Path(d,r['tag']+'.json.gz'),'wt') as f: json.dump([],f)
+                calls = [subprocess.CompletedProcess([],20,b'',b''), subprocess.CompletedProcess([],trim_rc,b'',b''),
+                         subprocess.CompletedProcess([],0,cake+'\n','')]
+                with patch.object(check,'rebuild',return_value=cnf), patch.object(check,'TRIM','TRIM'), \
+                     patch.object(check.subprocess,'run',side_effect=calls) as proc:
+                    _, result = check.replay((0,r,d,'CAD','CAKE'))
+                self.assertEqual(result['pass'],expected); self.assertEqual(proc.call_count,3)
+                self.assertEqual(proc.call_args_list[2].args[0][0],'CAKE')
 
     def test_wrapper_fails_closed_before_starting_any_work(self):
         script = Path(__file__).resolve().with_name('a9final.sh')

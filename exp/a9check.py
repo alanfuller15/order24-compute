@@ -38,6 +38,7 @@ HERE = os.path.dirname(os.path.abspath(__file__)); sys.path.insert(0, HERE)
 import a9core as C, a9run as R
 
 VER = 's VERIFIED UNSAT'
+TRIM = next((x for x in (os.environ.get('TRIM'), os.path.join(HERE, '..', 'bin', 'lrat-trim')) if x and os.path.exists(x)), None)
 
 def leaf_part(records, k, n):
     """Stable, disjoint exhaustive slices of the SAME ordered input on every part."""
@@ -73,7 +74,7 @@ def replay(a):
     started = time.monotonic()
     key, r, work, CAD, CAKE = a
     res = {'tag': r['tag'], 'source': r['_label'], 'file': r['_file']}
-    base = os.path.join(work, '%d_%s' % (key, r['tag'])); f = base + '.cnf'; p = base + '.lrat'
+    base = os.path.join(work, '%d_%s' % (key, r['tag'])); f = base + '.cnf'; p = base + '.lrat'; t = base + '.trim.lrat'
     try:
         lazy = json.load(gzip.open(os.path.join(r['_lazydir'], r['tag'] + '.json.gz'), 'rt'))
         b = rebuild(r, lazy); res['cnf_match'] = C.sha(b) == r.get('cnf_sha256')
@@ -82,6 +83,13 @@ def replay(a):
             del b
             cp = subprocess.run([CAD, '-q', '--lrat=true', '--binary=false', f, p], capture_output=True)
             res['cadical_exit'] = cp.returncode
+            if cp.returncode == 20 and TRIM:
+                # Untrusted speed-up only: lrat-trim drops unused proof steps (about 5x smaller, cake_lpr about 3x
+                # faster on real B011/A072 leaves). cake_lpr still checks the trimmed proof against the SHA-matched CNF;
+                # a bad trim can only make a leaf fail, never pass. Without the binary the full proof is checked.
+                tr = subprocess.run([TRIM, '-q', '-a', f, p, t], capture_output=True)
+                res['trim_exit'] = tr.returncode
+                if tr.returncode in (0, 20) and os.path.exists(t): os.replace(t, p)
             if cp.returncode == 20:
                 with open(os.path.join(work, '.cake.lock'), 'w') as lk:
                     fcntl.flock(lk, fcntl.LOCK_EX)
@@ -91,7 +99,7 @@ def replay(a):
     except Exception as e:                                      # missing/corrupt lazy file, malformed record, ...
         res['error'] = repr(e)[:200]
     finally:
-        for x in (f, p):
+        for x in (f, p, t):
             if os.path.exists(x): os.remove(x)
     res['pass'] = bool(res.get('cnf_match')) and res.get('cadical_exit') == 20 and res.get('cake_lpr') == VER
     res['seconds'] = round(time.monotonic() - started, 3)
