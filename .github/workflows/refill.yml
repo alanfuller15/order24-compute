@@ -87,3 +87,5 @@ jobs:
           ELAPSED=$(( $(date +%s) - $(date -d "$(gh api repos/${{ github.repository }}/actions/runs/${{ github.run_id }} -q .run_started_at)" +%s) ))
           W=$(( 480 - ELAPSED )); if [ $W -gt 0 ]; then echo "waiting ${W}s so passes are about 8 min apart"; sleep $W; fi
           gh api -X POST repos/${{ github.repository }}/actions/workflows/refill.yml/dispatches -f ref=main -f 'inputs[dry_run]=false' && echo "next pass dispatched"
+          # the A9 collector's hourly cron is throttled too: nudge it about every 4th pass (minute < 15 of the hour)
+          if [ "$(date -u +%M)" -lt 15 ]; then gh api -X POST repos/${{ github.repository }}/actions/workflows/a9final_check.yml/dispatches -f ref=main && echo "a9final_check dispatched"; fi
