@@ -70,6 +70,20 @@ for M in range(hi, lo - 1, -1):
         fin = ' **finished, waiting for the manager**' if t in waiting else ''
         cells.append(f'{short}: {g}{ln}{fin}')
     o.append(f'| L{M} | {len(rec)}/{len(tags)} | {"<br>".join(cells) if cells else "all recorded"} |')
+# 2026-11-21: closure progress (A9 final claim, closure issues, Codex branch) so this page is the one live dashboard
+def _gh(path, q):
+    try: return subprocess.run(['gh', 'api', path, '-q', q], capture_output=True, text=True, timeout=60).stdout.strip()
+    except Exception: return ''
+o.append('\n## Closure progress\n')
+_a9 = _gh('repos/alanfuller15/order24-compute/contents/A9_FINAL.md?ref=a9-final-status', '.content')
+try:
+    import base64; _a9 = base64.b64decode(_a9).decode()
+    _l = [x for x in _a9.splitlines() if x.startswith('**')] + [x for x in _a9.splitlines() if x.startswith('# ')]
+    o.append('- A9 final claim: ' + (_l[0].replace('**', '') if _l else 'no collection yet') + (' (' + _l[1][2:] + ')' if len(_l) > 1 else '') + '\n')
+except Exception: o.append('- A9 final claim: not readable\n')
+for _x in _gh('repos/alanfuller15/order24-compute/issues?state=all&per_page=20', '.[]|select(.title|startswith("Closure"))|"- #\\(.number) \\(.state): \\(.title) (\\(.comments) comments)"').splitlines()[::-1]: o.append(_x + '\n')
+_c = _gh('repos/alanfuller15/order24-compute/commits?sha=closure-work&per_page=1', '.[0]|"\\(.commit.author.date) \\(.commit.message|split("\\n")[0])"')
+if _c: o.append('- Codex branch closure-work, latest: ' + _c[:140] + '\n')
 o.append('\n## Compute\n')
 if jb:
     o.append(f'- GitHub jobs running+queued at the start of the pass: {jb.get("busy")}/{jb.get("cap", 40)} (refill job not counted)'
