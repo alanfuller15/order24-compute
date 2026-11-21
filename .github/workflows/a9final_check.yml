@@ -1,5 +1,5 @@
 name: a9final_check
-# Collects the 8 parts of the A9 final claim (exp artifacts a9v3_final_p0..p7, from exp/a9final.sh) without anyone watching.
+# Collects the 32 parts of the A9 final claim (exp artifacts a9v6_final_p0..p31, from exp/a9final.sh) without anyone watching.
 # Writes A9_FINAL.md to the one-commit branch a9-final-status: per part, the VERDICT line, the input digest and code.sha256,
 # and an overall line. "ALL 32 PARTS AGREE" is a mechanical check of the job outputs only: the final claim still needs an
 # independent review (a reviewer that did not produce it) before it is stated anywhere.
@@ -27,9 +27,9 @@ jobs:
         run: |
           set +e; R=${{ github.repository }}; O=$RUNNER_TEMP/a9; mkdir -p $O; S=$RUNNER_TEMP/A9_FINAL.md
           echo "# A9 final claim: mechanical collection ($(date -u +%Y-%m-%dT%H:%MZ))" > $S; echo >> $S
-          ok=0; D=""; C=""; same=1
+          ok=0; D=""; C=""; same=1; NP=32
           for k in $(seq 0 31); do
-            n=a9v5_final_p$k
+            n=a9v6_final_p$k
             id=$(gh api "repos/$R/actions/artifacts?name=$n&per_page=1" -q '.artifacts[0].workflow_run.id // empty')
             if [ -z "$id" ]; then echo "- part $k: no artifact yet" >> $S; continue; fi
             st=$(gh api repos/$R/actions/runs/$id -q '.status+" "+(.conclusion//"")')
@@ -39,7 +39,10 @@ jobs:
             d=$(echo "$v" | grep -o 'input digest [0-9a-f]*' | awk '{print $3}')
             gf=$( [ -e $O/$k/GATE_FAIL ] && echo " GATE_FAIL" )
             echo "- part $k: run $id ($st)$gf; code $c; ${v:-no verdict line}" >> $S
-            if echo "$v" | grep -q "COVERED AND VERIFIED" && [ -z "$gf" ]; then ok=$((ok+1)); fi
+            gp=$(cat $O/$k/GATE_PASS 2>/dev/null)
+            # review fix: count a part only with a successful job, its own GATE_PASS marker, no GATE_FAIL and non-empty digests
+            if [ "$st" = "completed success" ] && [ "$gp" = "$k/$NP leaves-v1" ] && [ -z "$gf" ] && [ -n "$d" ] && [ -n "$c" ] \
+               && echo "$v" | grep -q "part $k/$NP,.*COVERED AND VERIFIED"; then ok=$((ok+1)); fi
             [ -z "$D" ] && D=$d; [ -z "$C" ] && C=$c
             { [ -n "$d" ] && [ "$d" != "$D" ]; } && same=0; [ "$c" != "$C" ] && same=0
           done
@@ -50,7 +53,7 @@ jobs:
           T=$(printf '100644 blob %s\tA9_FINAL.md\n' "$(git hash-object -w $S)" | git mktree)
           M=$(git -c user.name='github-actions[bot]' -c user.email='41898282+github-actions[bot]@users.noreply.github.com' commit-tree "$T" -m "a9 final status $(date -u +%Y-%m-%dT%H:%MZ)")
           git push -q -f origin "$M:refs/heads/a9-final-status" && echo pushed
-          # notify once: an issue (GitHub sends the owner a notification) when all 8 parts are in, or when any part failed
+          # notify once: an issue (GitHub sends the owner a notification) when all 32 parts are in, or when any part failed
           fin=$(grep -c "^- part .*completed" $S); bad=$(grep -c "GATE_FAIL\|completed failure\|no verdict line" $S)
           if [ $ok -eq 32 ] && [ $same -eq 1 ]; then TT="A9 final: all 32 parts COVERED AND VERIFIED (needs independent review)"
           elif [ $fin -eq 32 ] || [ $bad -gt 0 ]; then TT="A9 final: attention ($ok/32 verified, $bad failed)"; else exit 0; fi
