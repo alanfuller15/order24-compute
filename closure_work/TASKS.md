@@ -35,3 +35,13 @@ it; if not, propose exact wording. -> closure_work/out/ROUTE_FIXCHECK.md
 
 ## Later: T1 review of the A9 final claim (#3, when A9_FINAL.md says ALL 32 PARTS AGREE); T4a outside packages (#6,
 materials not in this branch); T5 final statement (#7, after #3-#6).
+
+## T6 (new issue) - A22 re-check feasibility  -> closure_work/out/A22_FEASIBILITY.md
+A22: a(22) = 17, i.e. every triangle-free graph on 22 vertices has beta <= 17 (OEIS A389646, McKay; uncertified).
+Read closure_work/research/review_a22/ (REVIEW_A22.md says exactly what is used, including the stronger 'McKay-max'
+extremal-list assumption). Deliver: (1) the precise statement(s) the route uses; (2) known methods (McKay's, if
+documented; nauty/geng triangle-free generation, maximal triangle-free graphs, SAT/ILP formulations) and an estimate of
+the size of a full independent re-computation for n = 22, with a small-n pilot (n <= 16 or 18) timed on your machine,
+extrapolated; (3) a plan that splits it into independent jobs of < 5 h each on GitHub's free 4-core runners, with a
+certificate story (how a checker other than the producer would trust each piece); (4) a go/no-go recommendation.
+Do not start a big computation; pilots only.
